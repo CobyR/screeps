@@ -44,10 +44,10 @@
 
    if(workers < MAX_WORKERS) {
      if(Game.spawns.Harbor.energy >= 150) {
-       var results = Game.spawns.Harbor.createCreep( [MOVE, CARRY, WORK], chance.first(), { role: 'harvester'});
+       var results = Game.spawns.Harbor.createCreep( [MOVE, CARRY, WORK], Game.rooms.W11S23.memory.worker_counter, { role: 'harvester'});
        console.log('Spawning a new worker - ' + results +'.');
        if(results == 0 || results == -3) {
-         Game.rooms.W1S6.memory.worker_counter +=1;
+         Game.rooms.W11S23.memory.worker_counter +=1;
        }
      }
      else {
@@ -60,9 +60,9 @@
    if(guards < MAX_GUARDS && workers == MAX_WORKERS) {
         if(Game.spawns.Harbor.energy >=200){
           console.log('Spawning a new guard.');
-          var results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,MOVE,MOVE], 'g' + Game.rooms.W1S6.memory.guard_counter, { role: 'guard'});
+          var results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,MOVE,MOVE], 'g' + Game.rooms.W11S23.memory.guard_counter, { role: 'guard'});
         if(results ==0 || results == -3) {
-          Game.rooms.W1S6.memory.guard_counter +=1;
+          Game.rooms.W11S23.memory.guard_counter +=1;
           }
             }
      else {
@@ -72,9 +72,9 @@
    if(builders < MAX_BUILDERS && workers == MAX_WORKERS && guards == MAX_GUARDS) {
      if(Game.spawns.Harbor.energy > 200){
        console.log('Spawning a new builder.');
-         var results = Game.spawns.Harbor.createCreep([WORK,WORK,CARRY,MOVE], 'b' + Game.rooms.W1S6.memory.builder_counter, { role: 'builder'});
+         var results = Game.spawns.Harbor.createCreep([WORK,WORK,CARRY,MOVE], 'b' + Game.rooms.W11S23.memory.builder_counter, { role: 'builder'});
        if(results == 0 || results == -3) {
-         Game.rooms.W1S6.memory.builder_counter += 1;
+         Game.rooms.W11S23.memory.builder_counter += 1;
        }
      }
      else {
