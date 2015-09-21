@@ -1,0 +1,28 @@
+{
+  "name": "screeps",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "grunt-cli": "latest",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-contrib-concat": "latest",
+    "grunt-screeps": "latest",
+    "sync-exec": "latest"
+  },
+  "jshintConfig": {
+    "asi": true,
+    "globalstrict": true,
+    "strict": true,
+    "predef": [
+      "global", "Game", "Memory", "console", "_", "performance", "module",
+
+      "FIND_SOURCES", "FIND_MY_SPAWNS", "FIND_CONSTRUCTION_SITES", "FIND_DROPPED_ENERGY",
+      "FIND_MY_STRUCTURES", "FIND_FLAGS", "FIND_MY_CREEPS",
+
+      "STRUCTURE_CONTROLLER", "STRUCTURE_EXTENSION", "STRUCTURE_STORAGE", "STRUCTURE_LINK",
+
+      "WORK", "CARRY", "MOVE",
+      "OK", "ERR_NOT_FOUND", "ERR_INVALID_ARGS", "ERR_TIRED"
+    ]
+  }
+}
