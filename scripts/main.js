@@ -3,19 +3,21 @@ var upgrade = require('upgrade');
 var stayalive = require('stayalive');
 var protect = require('protect');
 
+var p_room = Game.rooms['W11S25']
+
 for(var name in Game.creeps) {
     var creep = Game.creeps[name];
 
     if(creep.memory.role == 'guard') {
-        protect(creep);
+        protect(creep, p_room);
     }
 
     if(creep.memory.role == 'harvester') {
-        harvester(creep);
+        harvester(creep, p_room);
     }
 
     if(creep.memory.role == 'upgrade') {
-        upgrade(creep);
+        upgrade(creep, p_room);
     }
 
     if(creep.memory.role == 'builder') {
@@ -34,4 +36,4 @@ for(var name in Game.creeps) {
 
 }
 
-stayalive();
+stayalive(p_room);

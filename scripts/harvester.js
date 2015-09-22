@@ -7,7 +7,15 @@ module.exports = function (creep) {
     }
     else {
         if(Game.spawns.Harbor.energy == Game.spawns.Harbor.energyCapacity) {
-            for(var id in Game.structures) {
+                      creep.memory.role = 'upgrade';
+        }
+        else {
+            creep.moveTo(Game.spawns.Harbor);
+            creep.transferEnergy(Game.spawns.Harbor);
+        }
+    }
+}
+/*            for(var id in Game.structures) {
                 var structure = Game.structures[id];
                 if(structure.structureType == 'extension') {
                     if(structure.energy < structure.energyCapacity) {
@@ -20,10 +28,4 @@ module.exports = function (creep) {
                     }
                 }
             }
-        }
-        else {
-            creep.moveTo(Game.spawns.Harbor);
-            creep.transferEnergy(Game.spawns.Harbor);
-        }
-    }
-}
+*/

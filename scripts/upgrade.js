@@ -1,12 +1,14 @@
-module.exports = function (creep) {
+module.exports = function (creep, p_room) {
 
     if(creep.memory.state == 'fill') {
         if(creep.carry.energy == creep.carryCapacity) {
             if(Game.spawns.Harbor.energy < Game.spawns.Harbor.energyCapacity) {
                 creep.memory.role = 'harvester';
+                console.log(creep.name + ' is now in \'harvester\' mode.');
             }
             else {
                 creep.memory.state = 'upgrade';
+                console.log(creep.name + ' is now in \'upgrade\' mode.');
             }
         }
     }
@@ -22,7 +24,7 @@ module.exports = function (creep) {
         creep.harvest(sources[0]);
     }
     else {
-        creep.moveTo(Game.rooms.E15S3.controller);
-        creep.upgradeController(Game.rooms.E15S3.controller);
+        creep.moveTo(p_room.controller);
+        creep.upgradeController(p_room.controller);
     }
 }
