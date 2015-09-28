@@ -117,9 +117,9 @@ module.exports = function(p_room) {
   if(builders < MAX_BUILDERS && workers >= MAX_WORKERS && guards >= MAX_GUARDS) {
     if(p_room.energyAvailable >= 300){
       var results = OK;
-      if(p_room.energyAvailable == 300) {
+      if(p_room.energyAvailable < 400) {
 	results = Game.spawns.Harbor.createCreep([WORK,CARRY,CARRY,MOVE], 'a' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
-      } else if(p_room.energyAvailable > 300) {
+      } else if(p_room.energyAvailable >= 400) {
         results = Game.spawns.Harbor.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], 'b' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
       }
       console.log('Spawning a new builder ' + displayError(results));
