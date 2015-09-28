@@ -13,7 +13,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['jshint', 'upload'])
     grunt.registerTask('upload', ['concat', 'screeps'])
 
-    var branch = exec('ref=$(git symbolic-ref HEAD 2> /dev/null);echo ${ref#refs/heads/}').stdout.replace(/\n$/, '')
+  var branch = exec('ref=$(git symbolic-ref HEAD 2> /dev/null);echo ${ref#refs/heads/}').stdout.replace(/\n$/, '');
 
     grunt.initConfig({
         jshint: {
@@ -33,10 +33,10 @@ module.exports = function(grunt) {
             options: {
                 email: auth.username,
                 password: auth.password,
-                branch: (grunt.option('branch') || branch)
+                branch: 'default'
             },
             dist: {
-                src: ['dist/main.js']
+                src: ['dist/*.js']
             }
         }
     });
