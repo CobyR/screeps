@@ -89,12 +89,12 @@ module.exports = function(creep) {
       // Take Action
       //Move
       var results = creep.moveTo(t);
-      if(results != OK) { console.log(creep.name + '|' + creep.memory.role + ' call to MoveTo returned: ' + displayError(results)); }
+      if(results != OK) { lca(creep, 'call to MoveTo returned: ' + displayError(results)); }
       // attempt repairGam
       results = creep.repair(t);
-      if(results != OK && results != ERR_NOT_IN_RANGE) { console.log(creep.name + ' call to repair returned: ' + displayError(results)); }
+      if(results != OK && results != ERR_NOT_IN_RANGE) { lca(creep, 'call to repair returned: ' + displayError(results)); }
     } else {
-      console.log(creep.name + '|' + creep.memory.role + ' has a currentTarget that is ' + t);
+      lca(creep, 'has a currentTarget that is ' + t);
     }
   }
 };
