@@ -4,22 +4,23 @@ var stayalive = require('stayalive');
 var protect = require('protect');
 var buildThings = require('builder');
 var explore = require('explore');
-var numberWithCommas = require('numberWithCommas')
-var totalEnergy = require('totalEnergy')
+var numberWithCommas = require('numberWithCommas');
+var totalEnergy = require('totalEnergy');
+var lca = require('logCreepAction');
 
-var p_room = Game.rooms['W19S22']
+var p_room = Game.rooms['W11S25'];
 
-module.exporsts.loop = function () {
+module.exports.loop = function () {
 
-    console.log('===== New Tick =====')
+  console.log('===== Tick =====');
 
     stayalive(p_room);
 
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
 
-        if(creep.age < 100) {
-            console.log(creep.name + ' is about to die in ' + creep.age + ' ticks.');
+        if(creep.age < 25) {
+          lca(creep, 'is about to die in ' + creep.age + ' ticks.');
         }
 
         if(creep.memory.role == 'guard') {
@@ -44,8 +45,8 @@ module.exporsts.loop = function () {
 
     }
 
-    console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + numberWithCommas(Game.gcl.progress) + ' of ' + numberWithCommas(Game.gcl.progressTotal) + '.')
+  console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + numberWithCommas(Game.gcl.progress) + ' of ' + numberWithCommas(Game.gcl.progressTotal) + '.');
     console.log('Total Energy: ' + numberWithCommas(totalEnergy()));
-    console.log('all scripts completed ' + Game.time)
+  console.log('all scripts completed ' + Game.time);
 
 }
