@@ -76,11 +76,11 @@ module.exports = function (creep, p_room) {
           // guard_from is set on the flag
           if(creep.pos.x == gf.x && creep.pos.y == gf.y) {
             // do nothing in the correct location
-            lca(creep,'is in the right guard from location',true);
+            // lca(creep,'is in the right guard from location',true);
           } else {
             lca(creep,'needs to move to guard from location',true);
             var results = creep.moveTo(gf.x, gf.y);
-            lca(creep, 'err while moving to gf spot: ' + displayErr(results), true);
+            // lca(creep, 'err while moving to gf spot: ' + displayErr(results), true);
           }
         }
         lca(creep, 'waiting for Hostiles at ' + creep.memory.destination.name +'.');
