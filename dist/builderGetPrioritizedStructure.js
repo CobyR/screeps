@@ -13,7 +13,7 @@ module.exports = function(creep) {
   var numberWithCommas = require('numberWithCommas');
   var GAP_BEFORE_CHANGING_TARGET = 0.05; // aka 5 %
 
-  var MIN_HITS = 100;
+  var MIN_HITS = 1000;
 
   var targets = creep.room.find(FIND_STRUCTURES);
   // console.log('gps found ' + targets.length + ' structures to consider.');
