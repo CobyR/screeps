@@ -46,7 +46,7 @@ module.exports.loop = function () {
     }
 
   console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + numberWithCommas(Game.gcl.progress) + ' of ' + numberWithCommas(Game.gcl.progressTotal) + '.');
-    console.log('Total Energy: ' + numberWithCommas(totalEnergy()));
+  console.log(' Energy: ' + numberWithCommas(p_room.energyAvailable) + ' of ' + numberWithCommas(p_room.energyCapacityAvailable));
   console.log('all scripts completed ' + Game.time);
 
 }
