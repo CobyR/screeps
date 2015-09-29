@@ -33,10 +33,11 @@ module.exports = function (creep, p_room) {
           target.memory.manned = creep;
           creep.memory.state = 'traveling';
           lca(creep, 'is assigned to ' + creep.memory.destination.name + ' which is manned by ' + target.memory.manned.name, true);
+          break;  // break the for loop so the guard doesn't get assigned to multiple flags
         } else {
           // house cleaning - make sure creep is alive, if not clear manned position
           var checkCreep = Game.getObjectById(target.memory.manned.id);
-
+          // lca(creep,'check creep returned:' + checkCreep + ' for ' + target.name,true);
           if(checkCreep == null) {
             console.log('[DEBUG the creep guarding ' + target.name + ' is gone...');
             target.memory.manned = null;
