@@ -83,8 +83,8 @@ module.exports = function(creep) {
 
     if(t) {
       console.log(creep.name + '|' + creep.memory.role + ' is repairing ' +
-                  t.id + ' - ' +
-                  t.structureType + ' has ' +
+                  t.structureType + ' at x:' +
+                  t.pos.x + ' y:' + t.pos.y + 'has ' +
                   numberWithCommas(t.hits) + ' of ' +
                   numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
                   (calcRatio(t) * 100).toFixed(2) + '%');
