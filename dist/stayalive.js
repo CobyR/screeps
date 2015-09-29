@@ -63,6 +63,8 @@ module.exports = function(p_room) {
     MAX_BUILDERS = 1;
   } else if (workers == 6 && guards == 1) {
     MAX_BUILDERS =2;
+  } else if (workers >=8 && guards >= 4) {
+    MAX_GUARDS = p_room.find(FIND_FLAGS).length;
   }
 
   // report stats
@@ -74,14 +76,14 @@ module.exports = function(p_room) {
 
   // spawn guards
   if(guards < MAX_GUARDS && workers > MAX_WORKERS / 2 ) {
-    if(p_room.energyAvailable >=200){
+    if(p_room.energyAvailable >= 270){
       console.log('Spawning a new guard.');
       var results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + p_room.memory.guard_counter, { role: 'guard'});
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.guard_counter +=1;
       }
     } else {
-      console.log('I wanted to spawn a guard - energy levels at ' + Game.spawns.Harbor.energy + ' of required 270.');
+      console.log('I wanted to spawn a guard - energy levels at ' + p_room.energyAvailable + ' of required 270.');
     }
   }
 
