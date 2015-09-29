@@ -77,8 +77,16 @@ module.exports = function(p_room) {
   // spawn guards
   if(guards < MAX_GUARDS && workers > MAX_WORKERS / 2 ) {
     if(p_room.energyAvailable >= 270){
-      console.log('Spawning a new guard.');
-      var results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + p_room.memory.guard_counter, { role: 'guard'});
+      var results = 0;
+        // spawn standard guard
+
+        console.log('Spawning a new tough guard.');
+        results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,ATTACK,ATTACK,ATTACK,MOVE,MOVE], 'G' + p_room.memory.guard_counter, { role: 'guard'});
+      if(results == ERR_NOT_ENOUGH_ENERGY){
+        console.log('Spawning a new guard, tough guard said ' + displayErr(results) + '.');
+        results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + p_room.memory.guard_counter, { role: 'guard'});
+      }
+
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.guard_counter +=1;
       }
