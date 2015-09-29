@@ -99,8 +99,13 @@ module.exports = function(p_room) {
   // spawn workers
   if(workers < MAX_WORKERS && (guards >= MAX_GUARDS || workers < 5)) {
     if(p_room.energyAvailable >= 250) {
-      var results = Game.spawns.Harbor.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
-      console.log('Spawning a new worker - ' + displayError(results) +'.');
+      var results = 0;
+      console.log('Spawning a new mega worker.');
+      results = Game.spawns.Harbor.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
+      if(results == ERR_NOT_ENOUGH_ENERGY){
+        console.log('Spawning a new worker - mega worker said: ' + displayError(results) +'.');
+        results = Game.spawns.Harbor.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
+      }
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.worker_counter +=1;
       }
@@ -127,12 +132,12 @@ module.exports = function(p_room) {
   if(builders < MAX_BUILDERS && workers >= MAX_WORKERS && guards >= MAX_GUARDS) {
     if(p_room.energyAvailable >= 300){
       var results = OK;
-      if(p_room.energyAvailable < 400) {
-	results = Game.spawns.Harbor.createCreep([WORK,CARRY,CARRY,MOVE], 'a' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
-      } else if(p_room.energyAvailable >= 400) {
-        results = Game.spawns.Harbor.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], 'b' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+      console.log('Spawning a new mega builder.');
+      results = Game.spawns.Harbor.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+      if(results == ERR_NOT_ENOUGH_ENERGY) {
+        console.log('Spawning a new builder, mega builder said: ' + displayError(results));
+        results = Game.spawns.Harbor.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
       }
-      console.log('Spawning a new builder ' + displayError(results));
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.builder_counter += 1;
       }
