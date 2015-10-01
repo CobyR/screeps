@@ -11,7 +11,7 @@ module.exports = function(creep) {
   var lca = require('logCreepAction');
 
   var numberWithCommas = require('numberWithCommas');
-  var GAP_BEFORE_CHANGING_TARGET = 0.05; // aka 5 %
+  var GAP_BEFORE_CHANGING_TARGET = 0.25; // aka 25 %
 
   var MIN_HITS = 1000;
 
@@ -84,7 +84,7 @@ module.exports = function(creep) {
     if(t) {
       console.log(creep.name + '|' + creep.memory.role + ' is repairing ' +
                   t.structureType + ' at x:' +
-                  t.pos.x + ' y:' + t.pos.y + 'has ' +
+                  t.pos.x + ' y:' + t.pos.y + ' has ' +
                   numberWithCommas(t.hits) + ' of ' +
                   numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
                   (calcRatio(t) * 100).toFixed(2) + '%');

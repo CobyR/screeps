@@ -40,13 +40,14 @@ module.exports.loop = function () {
         }
 
         if(creep.memory.role == 'explorer') {
-            explore(creep);
+          explore(creep);
         }
 
     }
 
   console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + numberWithCommas(Game.gcl.progress) + ' of ' + numberWithCommas(Game.gcl.progressTotal) + '.');
   console.log(' Energy: ' + numberWithCommas(p_room.energyAvailable) + ' of ' + numberWithCommas(p_room.energyCapacityAvailable));
+  console.log('totalEnergy: ' + numberWithCommas(totalEnergy(p_room)));
   console.log('all scripts completed ' + Game.time);
 
 }
