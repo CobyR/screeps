@@ -1,5 +1,6 @@
 module.exports = function (creep, p_room) {
   var lca = require('logCreepAction');
+  var pickup = require('pickupEnergy');
 
   if(creep.spawning == true) {
     lca(creep,'is still spawning.');
@@ -31,6 +32,7 @@ module.exports = function (creep, p_room) {
     lca(creep, 'is gathering energy.');
     creep.moveTo(sources[0]);
     creep.harvest(sources[0]);
+    pickup(creep);
   } else {
     if(Game.spawns.Harbor.energy < Game.spawns.Harbor.energyCapacity) {
       lca(creep, 'spawn is low on energy changing to harvester mode.');
@@ -38,6 +40,7 @@ module.exports = function (creep, p_room) {
     } else {
       lca(creep, 'is upgrading controller.');
       creep.moveTo(creep.room.controller);
+      pickup(creep);
       creep.upgradeController(creep.room.controller);
     }
   }

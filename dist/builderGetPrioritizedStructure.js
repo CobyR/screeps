@@ -11,10 +11,9 @@ module.exports = function(creep) {
   var lca = require('logCreepAction');
 
   var numberWithCommas = require('numberWithCommas');
-  var GAP_BEFORE_CHANGING_TARGET = 0.05; // aka 5 %
+  var GAP_BEFORE_CHANGING_TARGET = 0.25; // aka 25 %
 
-  var WALL_HEALTH = 25000;
-  var MIN_HITS = 100;
+  var MIN_HITS = 1000;
 
   var targets = creep.room.find(FIND_STRUCTURES);
   // console.log('gps found ' + targets.length + ' structures to consider.');
@@ -49,7 +48,8 @@ module.exports = function(creep) {
   }
 
   // Consider current target vs preferredTarget
-  if(typeof creep.memory.currentTarget === 'undefined' || creep.memory.currentTarget == null) {
+  if(typeof creep.memory.currentTarget === 'undefined' ||
+     creep.memory.currentTarget == null) {
     // Creep had no currentTarget - set it.
     lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
     creep.memory.currentTarget = preferredTarget;
@@ -66,7 +66,9 @@ module.exports = function(creep) {
     // 1. first  clause is that pt ratio is lower than ct - GAP
     // 2. second clause is that ct has at least MIN_HITS
     // 3. third  clause is that pt has less than MIN_HITS
-    if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) || ctHitsRatio >= MIN_HITS || preferredTarget.hits <= MIN_HITS){
+    if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
+       ctHitsRatio >= MIN_HITS ||
+       preferredTarget.hits <= MIN_HITS) {
       lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
       creep.memory.currentTarget = preferredTarget;
     }
@@ -81,20 +83,20 @@ module.exports = function(creep) {
 
     if(t) {
       console.log(creep.name + '|' + creep.memory.role + ' is repairing ' +
-                  t.id + ' - ' +
-                  t.structureType + ' has ' +
+                  t.structureType + ' at x:' +
+                  t.pos.x + ' y:' + t.pos.y + ' has ' +
                   numberWithCommas(t.hits) + ' of ' +
                   numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
                   (calcRatio(t) * 100).toFixed(2) + '%');
       // Take Action
-      //Move
+      // Move
       var results = creep.moveTo(t);
-      if(results != OK) { console.log(creep.name + '|' + creep.memory.role + ' call to MoveTo returned: ' + displayError(results)); }
-      // attempt repairGam
+      if(results != OK) { lca(creep, 'call to MoveTo returned: ' + displayError(results)); }
+      // attempt repair target
       results = creep.repair(t);
-      if(results != OK && results != ERR_NOT_IN_RANGE) { console.log(creep.name + ' call to repair returned: ' + displayError(results)); }
+      if(results != OK && results != ERR_NOT_IN_RANGE) { lca(creep, 'call to repair returned: ' + displayError(results)); }
     } else {
-      console.log(creep.name + '|' + creep.memory.role + ' has a currentTarget that is ' + t);
+      lca(creep, 'has a currentTarget that is ' + t);
     }
   }
 };

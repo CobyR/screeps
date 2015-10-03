@@ -3,14 +3,12 @@ module.exports = function (creep, p_room) {
 
   var fixPrioritizedStructure = require('builderGetPrioritizedStructure');
 
-    var WALL_HEALTH = 20000;
-
     if(creep.spawning == true) {
       lca(creep, 'is still spawning.');
       return 0;
     }
 
-    if(creep.carry.energy == 0  && Game.spawns.Harbor.energy >= (Game.spawns.Harbor.energyCapacity - 50)) {
+    if(creep.carry.energy == 0  && p_room.energyAvailable > 200) {
       lca( creep, 'is getting energy from spawn.');
         creep.moveTo(Game.spawns.Harbor);
         Game.spawns.Harbor.transferEnergy(creep);
@@ -24,7 +22,7 @@ module.exports = function (creep, p_room) {
             var targets = p_room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length == 0) {
               // lca(creep, 'calling fixPrioritizedStructure', true);
-              creep.memory.state = 'reparing';
+              creep.memory.state = 'repairing';
               fixPrioritizedStructure(creep);
             }
             else {
