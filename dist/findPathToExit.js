@@ -1,6 +1,7 @@
 module.exports = function(creep, destRoomName) {
   var lca = require('logCreepAction');
   var displayErr = require('displayError');
+  var secretMission = require('secretMission');
 
   var dRoom = null;
   var cRoom = creep.room;
@@ -40,8 +41,8 @@ module.exports = function(creep, destRoomName) {
 
   default:
     if(creep.room.name == creep.memory.roomDestination){
-      lca(creep, 'destination reached, going to pillage!');
-      creep.memory.mode='pillage';
+      lca(creep, 'destination reached, executing the secret mission!');
+      var results = secretMission(creep);
     }
     lca(creep, 'an exit to reach ' + destRoomName + ' doesn\'t exist');
     return OK;

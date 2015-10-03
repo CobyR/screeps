@@ -22,7 +22,7 @@ module.exports = function (creep, p_room) {
             var targets = p_room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length == 0) {
               // lca(creep, 'calling fixPrioritizedStructure', true);
-              creep.memory.state = 'reparing';
+              creep.memory.state = 'repairing';
               fixPrioritizedStructure(creep);
             }
             else {

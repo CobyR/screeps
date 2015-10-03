@@ -22,7 +22,7 @@ module.exports = function(creep, p_room) {
     // lca(creep, 'pillageing in ' + creep.room.name + '.',true);
     var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
     // lca(creep, 'hostile creeps present: ' + hostileCreeps.length,true);
-    if(hostileCreeps) {
+    if(hostileCreeps && hostileCreeps.length > 0) {
       // There are hostiles, run without concern and attack them.
       lca(creep, ' pillaging ' + hostileCreeps.length + ' hostile creeps in ' + creep.room.name + '.');
       creep.moveTo(hostileCreeps[0]);
@@ -30,7 +30,7 @@ module.exports = function(creep, p_room) {
     } else {
       var hostileTargets = creep.room.find(FIND_HOSTILE_STRUCTURES);
       // lca(creep, 'hostile targets present: ' + hostileTargets.length,true);
-      if(hostileTargets.length > 1){
+      if(hostileTargets && hostileTargets.length > 1){
          lca(creep, ' pillaging ' + hostileTargets.length + ' hostile structures in ' + creep.room.name + '.');
         for(id in hostileTargets) {
           var target = hostileTargets[id];
@@ -40,17 +40,16 @@ module.exports = function(creep, p_room) {
             break;
           }
         }
-      }
-    }
-    if(hostileTargets.length <= 1) {
-      targets = creep.room.find(FIND_STRUCTURES);
-      lca(creep, ' pillaging ' + targets.length + ' standard structures in ' + creep.room.name + '.');
-      for(id in targets) {
-        var target = targets[id];
-        if(target.structureType != 'controller') {
-          creep.moveTo(target);
-          creep.attack(target);
-          break;
+      } else {
+        targets = creep.room.find(FIND_STRUCTURES);
+        for(id in targets) {
+          var target = targets[id];
+          if(target.structureType != 'controller') {
+            lca(creep, ' pillaging a ' + target.structureType + ' at ' + target.pos.x + ',' + target.pos.y + ' of '+ targets.length + ' standard structures in ' + creep.room.name + '.');
+            creep.moveTo(target);
+            creep.attack(target);
+            break;
+          }
         }
       }
     }
@@ -107,15 +106,17 @@ module.exports = function(creep, p_room) {
       console.log(creep.name + 'is in target mode, but has no targetDestination');
     } else {
       // targetDestination is defined
-      var target = creep.memory.targetDestination
+      var target = creep.memory.targetDestination;
       results = creep.moveTo(Game.structures[target.id]);
-      if(results != OK) { console.log(creep.name + ' call to moveTo returned: ' + displayError(results)) }
+      if(results != OK) { console.log(creep.name + ' call to moveTo returned: ' + displayError(results)); }
     }
     break;
   case 'controller':
     creep.moveTo(creep.room.controller);
     results = creep.claimController(creep.room.controller);
-    if(results != OK) { console.log(creep.name + ' call to claimController returned: ' + displayError(results)) }
+    if(results != OK) {
+      console.log(creep.name + ' call to claimController returned: ' + displayError(results));
+    }
     break;
   default:
     //console.log(creep.name + ' is in ' + creep.memory.mode + ' mode (default?).');

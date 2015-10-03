@@ -19,8 +19,10 @@ module.exports = function(p_room) {
   var MAX_BUILDERS = 2;
   var MAX_WARRIORS = 0;
   var MAX_HEALERS = 0;
-  var MAX_EXPLORERS = 0;
-  var MAX_HOARDERS = 0;
+  var MAX_EXPLORERS = 1;
+  var MAX_HOARDERS = 1;
+
+  var explorerDestination = 'W11S26';
 
   if(typeof p_room.memory.worker_counter === 'undefined') {
     p_room.memory.worker_counter = 0;
@@ -68,7 +70,7 @@ module.exports = function(p_room) {
   }
 
   if (workers >=8 && guards >= 4 && builders >= 2) {
-    MAX_EXPLORERS=2;
+    MAX_EXPLORERS=1;
   }
 
   // report stats
@@ -121,7 +123,7 @@ module.exports = function(p_room) {
   // spawn hoarders
   if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS) {
     if(p_room.energyAvailable >= 250) {
-      var results = Game.spawns.Harbor.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + p_room.memory.worker_counter, { role: 'hoarder', locked: true});
+      var results = Game.spawns.Harbor.createCreep( [MOVE, MOVE,CARRY, CARRY, CARRY,CARRY, CARRY,WORK, WORK,WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
       console.log('Spawning a new hoarder - ' + displayErr(results) +'.');
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.hoarder_counter +=1;
@@ -157,7 +159,7 @@ module.exports = function(p_room) {
       var explorerName = 'E' + p_room.memory.explorer_counter;
       console.log('Spawning a new explorer - ' + explorerName + '.');
 
-      var results = Game.spawns.Harbor.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: 'W12S22'});
+      var results = Game.spawns.Harbor.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.explorer_counter += 1;
       } else {
