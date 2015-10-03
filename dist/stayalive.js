@@ -70,7 +70,7 @@ module.exports = function(p_room) {
   }
 
   if (workers >=8 && guards >= 4 && builders >= 2) {
-    MAX_EXPLORERS=1;
+    MAX_EXPLORERS=3;
   }
 
   // report stats

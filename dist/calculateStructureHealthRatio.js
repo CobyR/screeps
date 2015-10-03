@@ -1,6 +1,6 @@
 module.exports = function(target){
-  var RAMPART_HITS = 100000;
-  var WALL_HITS = 10000;
+  var RAMPART_HITS = 200000;
+  var WALL_HITS = 20000;
   var ratio = 0;
 
   switch(target.structureType) {

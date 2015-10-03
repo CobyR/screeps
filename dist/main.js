@@ -1,30 +1,37 @@
-var stayalive = require('stayalive');
+Structure.prototype.needsRepair = function(name) {
+  return this.hits < this.hitsMax / 2;
+};
 
-var harvester = require('harvester');
-var upgrade = require('upgrade');
-var protect = require('protect');
-var buildThings = require('builder');
-var explore = require('explore');
-var hoard = require('hoarder');
+
+var stayalive = require('stayalive');
 
 var numberWithCommas = require('numberWithCommas');
 var totalEnergy = require('totalEnergy');
 var lca = require('logCreepAction');
 var setupPrototypes = require('setupPrototypes');
 
+var processExplorers = require('processExplorers');
+var processBuilders = require('processBuilders');
+var processGuards = require('processGuards');
+var processWorkers = require('processWorkers');
+var processHoarders = require('processHoarders');
+
 var p_room = Game.rooms['W11S25'];
 
 //setupPrototypes();
 
-Structure.prototype.needsRepair = function(name) {
-  return this.hits < this.hitsMax / 2;
-};
 
 module.exports.loop = function () {
 
   console.log('===== Tick =====');
 
     stayalive(p_room);
+
+    var explorers = [];
+    var builders = [];
+    var workers = [];
+    var guards = [];
+    var hoarders = [];
 
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
@@ -35,28 +42,34 @@ module.exports.loop = function () {
 
       switch(creep.memory.role) {
         case 'guard':
-          protect(creep, p_room);
+          guards.push(creep.id);
           break;
         case 'harvester':
-          harvester(creep, p_room);
+          workers.push(creep.id);
           break;
         case 'upgrade':
-          upgrade(creep, p_room);
+          workers.push(creep.id);
           break;
         case 'builder':
-          buildThings(creep, p_room);
-          break;
+          builders.push(creep.id);
+        break;
         case 'explorer':
-          explore(creep);
+          explorers.push(creep.id);
           break;
         case 'hoarder':
-          hoard(creep);
+          hoarders.push(creep.id);
           break;
         default:
           lca(creep, 'does not have a programmed role.');
           break;
       }
     }
+
+    processGuards(guards, p_room);
+    processWorkers(workers, p_room);
+    processBuilders(builders, p_room);
+    processHoarders(hoarders, p_room);
+    processExplorers(explorers);
 
   console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + numberWithCommas(Game.gcl.progress) + ' of ' + numberWithCommas(Game.gcl.progressTotal) + '.');
   console.log(' Energy: ' + numberWithCommas(p_room.energyAvailable) + ' of ' + numberWithCommas(p_room.energyCapacityAvailable));
