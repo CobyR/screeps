@@ -8,10 +8,10 @@ module.exports = function (creep, p_room) {
       return 0;
     }
 
-    if(creep.carry.energy == 0  && p_room.energyAvailable > 200) {
-      lca( creep, 'is getting energy from spawn.');
-        creep.moveTo(Game.spawns.Harbor);
-        Game.spawns.Harbor.transferEnergy(creep);
+    if(creep.carry.energy == 0  && creep.room.storage.store.energy >= 10000) {
+      lca( creep, 'is getting energy from storage.');
+        creep.moveTo(creep.room.storage);
+      creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
     }
     else {
         if(creep.carry.energy == 0) {
