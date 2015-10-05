@@ -20,7 +20,7 @@ module.exports = function(p_room) {
   var MAX_WARRIORS = 0;
   var MAX_HEALERS = 0;
   var MAX_EXPLORERS = 1;
-  var MAX_HOARDERS = 1;
+  var MAX_HOARDERS = 2;
 
   var explorerDestination = 'W11S26';
 
@@ -70,15 +70,16 @@ module.exports = function(p_room) {
   }
 
   if (workers >=8 && guards >= 4 && builders >= 2) {
-    MAX_EXPLORERS=3;
+    MAX_EXPLORERS=0;
   }
 
   // report stats
-  console.log('There are currently ' + workers + ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
-              guards + ' guards, ' +
-              builders + ' builders, ' +
-              explorers + ' explorers, and ' +
-              hoarders + ' hoarders.');
+  console.log('There are currently ' +
+              workers + ' of ' + MAX_WORKERS +  ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
+              guards + ' of ' + MAX_GUARDS + ' guards, ' +
+              builders + ' of ' + MAX_BUILDERS + ' builders, ' +
+              explorers + ' of ' + MAX_EXPLORERS + ' explorers, and ' +
+              hoarders + ' of ' + MAX_HOARDERS + ' hoarders.');
 
   // spawn guards
   if(guards < MAX_GUARDS && workers > MAX_WORKERS / 2 ) {
@@ -154,23 +155,26 @@ module.exports = function(p_room) {
 
 
   // spawn explorers
-  if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
-    if(p_room.energyAvailable >= 540) {
-      var explorerName = 'E' + p_room.memory.explorer_counter;
-      console.log('Spawning a new explorer - ' + explorerName + '.');
+  if(typeof Game.spawns.Harbor.memory.explorersEnabled === 'undefined' || Game.spawns.Harbor.memory.explorersEnabled == false ) {
+    // not launching any explorers
+  } else {
+    if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
+      if(p_room.energyAvailable >= 540) {
+        var explorerName = 'E' + p_room.memory.explorer_counter;
+        console.log('Spawning a new explorer - ' + explorerName + '.');
 
-      var results = Game.spawns.Harbor.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
-      if(results == OK || results == ERR_NAME_EXISTS) {
-        p_room.memory.explorer_counter += 1;
+        var results = Game.spawns.Harbor.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
+        if(results == OK || results == ERR_NAME_EXISTS) {
+          p_room.memory.explorer_counter += 1;
+        } else {
+          console.log('trying to create an explorer resulted in ' + displayErr(results));
+        }
       } else {
-        console.log('trying to create an explorer resulted in ' + displayErr(results));
+        console.log('I wanted to spawn an explorer - energy levels at ' + Game.spawns.Harbor.energy + ' of required 540');
       }
-    } else {
-      console.log('I wanted to spawn an explorer - energy levels at ' + Game.spawns.Harbor.energy + ' of required 540');
     }
   }
 
-  // clean memory
   // var noticeMessage = '';
 
   // for(var i in Memory.creeps) {

@@ -65,6 +65,7 @@ module.exports.loop = function () {
       }
     }
 
+
     processGuards(guards, p_room);
     processWorkers(workers, p_room);
     processBuilders(builders, p_room);

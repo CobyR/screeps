@@ -7,9 +7,9 @@
  */
  module.exports = function(creep, message, debug) {
      if(debug) {
-        console.log('[DEBUG] ' + creep.name + '|' + creep.memory.role + ' ' + message);
+        console.log('  [DEBUG] ' + creep.name + '|' + creep.memory.role + ' ' + message);
      } else {
-        console.log(creep.name + '|' + creep.memory.role + ' (' + creep.memory.state + ') ' + message);
+        console.log('  ' + creep.name + '|' + creep.memory.role + ' (' + creep.memory.state + ') ' + message);
      }
 
 }

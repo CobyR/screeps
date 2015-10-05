@@ -82,12 +82,12 @@ module.exports = function(creep) {
     // console.log('getObjectByID for ' + creep.memory.currentTarget.id + ' returned ' + t)
 
     if(t) {
-      console.log(creep.name + '|' + creep.memory.role + ' is repairing ' +
-                  t.structureType + ' at x:' +
-                  t.pos.x + ' y:' + t.pos.y + ' has ' +
-                  numberWithCommas(t.hits) + ' of ' +
-                  numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
-                  (calcRatio(t) * 100).toFixed(2) + '%');
+      lca(creep,
+        t.structureType + ' at x:' +
+          t.pos.x + ' y:' + t.pos.y + ' has ' +
+          numberWithCommas(t.hits) + ' of ' +
+          numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
+          (calcRatio(t) * 100).toFixed(2) + '%');
       // Take Action
       // Move
       var results = creep.moveTo(t);

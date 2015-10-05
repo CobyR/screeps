@@ -2,6 +2,7 @@ module.exports = function(workers, p_room) {
   var harvest = require('harvester');
   var upgrade = require('upgrade');
 
+  console.log('[Workers] -------------------');
   for(var id in workers) {
     var creep = Game.getObjectById(workers[id]);
     switch(creep.memory.role) {

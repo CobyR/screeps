@@ -54,7 +54,7 @@ module.exports = function (creep, p_room) {
         console.log(creep.name + ' is now in \'upgrade\' mode.');
       }
     } else {
-      console.log( creep.name + '|' + creep.memory.role + ' is taking energy to spawn: ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
+      lca(creep, 'is taking energy to spawn: ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
       creep.moveTo(Game.spawns.Harbor);
       creep.transferEnergy(Game.spawns.Harbor);
     }
