@@ -124,7 +124,7 @@ module.exports = function(p_room) {
   // spawn hoarders
   if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS) {
     if(p_room.energyAvailable >= 250) {
-      var results = Game.spawns.Harbor.createCreep( [MOVE, MOVE,CARRY, CARRY, CARRY,CARRY, CARRY,WORK, WORK,WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
+      var results = Game.spawns.Harbor.createCreep( [MOVE, MOVE,MOVE, MOVE,CARRY, CARRY,CARRY, CARRY,WORK, WORK,WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
       console.log('Spawning a new hoarder - ' + displayErr(results) +'.');
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.hoarder_counter +=1;
