@@ -3,14 +3,17 @@ module.exports = function (creep, p_room) {
   var pickupEnergy = require('pickupEnergy');
 
   var busy = 0;
-  var STORAGE_LIMIT = 1000;
+  var STORAGE_LIMIT = 200000;
 
   if(creep.spawning == true) {
     lca(creep, 'is still spawning.');
     return 0;
   }
   var drops = p_room.find(FIND_DROPPED_ENERGY);
-  lca(creep,'dropped energies available: ' + drops.length);
+  if(drops > 0){
+    lca(creep,'dropped energies available: ' + drops.length);
+  }
+
   //lca(creep, creep.carry.energy + ' - ' + creep.memory.state + ' - ' + creep.carryCapacity + '.', true)
   if(creep.carry.energy == 0 || (creep.memory.state == 'gathering' && creep.carry.energy < creep.carryCapacity)) {
     var sources = creep.room.find(FIND_SOURCES);
@@ -34,7 +37,7 @@ module.exports = function (creep, p_room) {
           //console.log(creep.name + ' is evaluating ' + index + ' - structure type is: ' + target.structureType);
           if(target.structureType == 'extension' && busy == 0) {
             if(target.energy < target.energyCapacity) {
-              lca(creep, 'is taking energy to a (' + target.structureType + ' - ' + target.id + ' it is at ' + target.energy + ' of ' + target.energyCapacity + ').');
+              lca(creep, 'is taking energy to a (' + target.structureType + ' - ' + target.pos.x +',' + target.pos.y + ' it is at ' + target.energy + ' of ' + target.energyCapacity + ').');
               creep.moveTo(target);
               creep.transferEnergy(target);
               busy = 1;

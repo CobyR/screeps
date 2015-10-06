@@ -68,7 +68,8 @@ module.exports = function(creep) {
     // 3. third  clause is that pt has less than MIN_HITS
     if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
        ctHitsRatio >= MIN_HITS ||
-       preferredTarget.hits <= MIN_HITS) {
+       preferredTarget.hits <= MIN_HITS ||
+       ctHitsRatio == 1) {
       lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
       creep.memory.currentTarget = preferredTarget;
     }
@@ -83,8 +84,8 @@ module.exports = function(creep) {
 
     if(t) {
       lca(creep,
-        t.structureType + ' at x:' +
-          t.pos.x + ' y:' + t.pos.y + ' has ' +
+        t.structureType + ' at ' +
+          t.pos.x + ',' + t.pos.y + ' has ' +
           numberWithCommas(t.hits) + ' of ' +
           numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
           (calcRatio(t) * 100).toFixed(2) + '%');

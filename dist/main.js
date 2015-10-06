@@ -16,6 +16,8 @@ var processGuards = require('processGuards');
 var processWorkers = require('processWorkers');
 var processHoarders = require('processHoarders');
 
+var storageReport = require('storageReport');
+
 var p_room = Game.rooms['W11S25'];
 
 //setupPrototypes();
@@ -72,9 +74,13 @@ module.exports.loop = function () {
     processHoarders(hoarders, p_room);
     processExplorers(explorers);
 
+
+  console.log(' Energy: ' + numberWithCommas(p_room.energyAvailable) + ' of ' + numberWithCommas(p_room.energyCapacityAvailable) + ' totalEnergy calculated: ' + numberWithCommas(totalEnergy(p_room)));
+  var rptController = p_room.controller;
+  console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + numberWithCommas(rptController.progress) + '/' + numberWithCommas(rptController.progressTotal));
+  storageReport(p_room);
+
   console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + numberWithCommas(Game.gcl.progress) + ' of ' + numberWithCommas(Game.gcl.progressTotal) + '.');
-  console.log(' Energy: ' + numberWithCommas(p_room.energyAvailable) + ' of ' + numberWithCommas(p_room.energyCapacityAvailable));
-  console.log('totalEnergy: ' + numberWithCommas(totalEnergy(p_room)));
   console.log('all scripts completed ' + Game.time);
 
 }
