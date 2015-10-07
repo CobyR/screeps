@@ -4,7 +4,7 @@ module.exports = function (creep, p_room) {
 
   if(creep.spawning == true) {
     lca(creep,'is still spawning.');
-    return 0
+    return 0;
   }
 
   if(creep.memory.state == 'fill') {
@@ -44,4 +44,4 @@ module.exports = function (creep, p_room) {
       creep.upgradeController(creep.room.controller);
     }
   }
-}
+};

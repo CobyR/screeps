@@ -39,8 +39,15 @@ module.exports = function (creep, p_room) {
           var checkCreep = Game.getObjectById(target.memory.manned.id);
           // lca(creep,'check creep returned:' + checkCreep + ' for ' + target.name,true);
           if(checkCreep == null) {
-            console.log('[DEBUG the creep guarding ' + target.name + ' is gone...');
+            console.log('[DEBUG] the creep guarding ' + target.name + ' is gone...');
             target.memory.manned = null;
+          } else {
+            var checkFlag = Game.getObjectById(checkCreep.memory.destination.id);
+
+            if(checkFlag == null) {
+              console.log('[DEBUG] the target ' + checkCreep.memory.destination.name + 'does not exist, clearing memory.');
+              checkCreep.memory.destination = null;
+            }
           }
         }
       }
@@ -71,20 +78,25 @@ module.exports = function (creep, p_room) {
       if (creep.memory.state == 'guarding'){
         // do something while guarding.
         var dest = Game.getObjectById(creep.memory.destination.id);
-        var gf = dest.memory.guard_from;
+        if(dest != null) {
+          var gf = dest.memory.guard_from;
 
-        if(gf) {
-          // guard_from is set on the flag
-          if(creep.pos.x == gf.x && creep.pos.y == gf.y) {
-            // do nothing in the correct location
-            // lca(creep,'is in the right guard from location',true);
-          } else {
-            lca(creep,'needs to move to guard from location',true);
-            var results = creep.moveTo(gf.x, gf.y);
-            // lca(creep, 'err while moving to gf spot: ' + displayErr(results), true);
+          if(gf) {
+            // guard_from is set on the flag
+            if(creep.pos.x == gf.x && creep.pos.y == gf.y) {
+              // do nothing in the correct location
+              // lca(creep,'is in the right guard from location',true);
+            } else {
+              lca(creep,'needs to move to guard from location',true);
+              var results = creep.moveTo(gf.x, gf.y);
+              // lca(creep, 'err while moving to gf spot: ' + displayErr(results), true);
+            }
           }
+          lca(creep, 'waiting for Hostiles at ' + creep.memory.destination.name +'.');
+        } else {
+          lca(creep, 'flag guard was guarding is gone...');
+          creep.memory.destination = null;
         }
-        lca(creep, 'waiting for Hostiles at ' + creep.memory.destination.name +'.');
       }
     }
   }

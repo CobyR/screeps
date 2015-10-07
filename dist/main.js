@@ -18,7 +18,14 @@ var processHoarders = require('processHoarders');
 
 var storageReport = require('storageReport');
 
-var p_room = Game.rooms['W11S25'];
+var isSimulation = (Game.rooms.sim !== undefined);
+var p_room = null;
+
+if(isSimulation){
+  p_room = Game.rooms.sim;
+} else {
+  p_room = Game.rooms['W11S25'];
+}
 
 //setupPrototypes();
 

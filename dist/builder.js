@@ -9,7 +9,7 @@ module.exports = function (creep, p_room) {
     }
 
     if(creep.carry.energy == 0) {
-      if(creep.room.storage.store.energy > 10000) {
+      if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 10000) {
          lca( creep, 'is getting energy from storage.');
          creep.moveTo(creep.room.storage);
          creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
@@ -40,7 +40,7 @@ module.exports = function (creep, p_room) {
                   creep.build(targets[0]);
                   creep.memory.currentTarget = null; // this causes them to forget what they were working on before
                 } else {
-                  console.log(creep.name + '|' + creep.memory.role + ' needs a construction site.');
+                  lca(creep, 'needs a construction site.');
                 }
             }
         }

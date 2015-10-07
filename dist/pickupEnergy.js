@@ -6,10 +6,10 @@ module.exports = function(creep, drops) {
       drops = Game.rooms.W11S25.find(FIND_DROPPED_ENERGY);
   }
 
-  for(index in drops) {
+  for(var index in drops) {
     var drop = drops[index];
 
     var results = creep.pickup(drop);
     lca(creep, 'tried to pickup dropped energy: ' + displayErr(results));
   }
-}
+};

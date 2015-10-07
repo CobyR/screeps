@@ -5,7 +5,9 @@ module.exports = function(p_room) {
   var extensions = [];
   var spawns = [];
 
-  for(name in structures){
+  console.log(structures.length);
+
+  for(var name in structures){
     var structure = structures[name];
     var ext = null;
 
