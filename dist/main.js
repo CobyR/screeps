@@ -24,7 +24,7 @@ var p_room = null;
 if(isSimulation){
   p_room = Game.rooms.sim;
 } else {
-  p_room = Game.rooms['W11S25'];
+  p_room = Game.rooms['W19S29'];
 }
 
 //setupPrototypes();

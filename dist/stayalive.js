@@ -14,9 +14,9 @@ module.exports = function(p_room) {
   var explorers = 0;
   var hoarders = 0;
 
-  var MAX_WORKERS = 8;
-  var MAX_GUARDS = 4;
-  var MAX_BUILDERS = 2;
+  var MAX_WORKERS = 10;
+  var MAX_GUARDS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_RED}}).length;
+  var MAX_BUILDERS = p_room.find(FIND_FLAGS, { filter: { color: COLOR_BROWN}}).length;
   var MAX_WARRIORS = 0;
   var MAX_HEALERS = 0;
   var MAX_EXPLORERS = 1;
@@ -58,15 +58,10 @@ module.exports = function(p_room) {
   // calculate MAX #'s
   if(workers < 4 ) {
     MAX_WORKERS = 4;
-    MAX_GUARDS = 1;
     MAX_BUILDERS = 0;
-  } else if (workers == 4 && guards == 1) {
+  } else if (workers == 4 ) {
     MAX_WORKERS = 6;
     MAX_BUILDERS = 1;
-  } else if (workers == 6 && guards == 1) {
-    MAX_BUILDERS =2;
-  } else if (workers >=8 && guards >= 4) {
-    MAX_GUARDS = p_room.find(FIND_FLAGS).length;
   }
 
   if (workers >=8 && guards >= 4 && builders >= 2) {
@@ -88,10 +83,10 @@ module.exports = function(p_room) {
         // spawn standard guard
 
         console.log('Spawning a new tough guard.');
-        results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,ATTACK,ATTACK,ATTACK,MOVE,MOVE], 'G' + p_room.memory.guard_counter, { role: 'guard'});
+        results = Game.spawns.Spawn1.createCreep([TOUGH,ATTACK,ATTACK,ATTACK,ATTACK,MOVE,MOVE], 'G' + p_room.memory.guard_counter, { role: 'guard'});
       if(results == ERR_NOT_ENOUGH_ENERGY){
         console.log('Spawning a new guard, tough guard said ' + displayErr(results) + '.');
-        results = Game.spawns.Harbor.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + p_room.memory.guard_counter, { role: 'guard'});
+        results = Game.spawns.Spawn1.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + p_room.memory.guard_counter, { role: 'guard'});
       }
 
       if(results == OK || results == ERR_NAME_EXISTS) {
@@ -108,29 +103,29 @@ module.exports = function(p_room) {
     if(p_room.energyAvailable >= 250) {
       var results = 0;
       console.log('Spawning a new mega worker.');
-      results = Game.spawns.Harbor.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
+      results = Game.spawns.Spawn1.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
       if(results == ERR_NOT_ENOUGH_ENERGY){
         console.log('Spawning a new worker - mega worker said: ' + displayErr(results) +'.');
-        results = Game.spawns.Harbor.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
+        results = Game.spawns.Spawn1.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
       }
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.worker_counter +=1;
       }
     } else {
-      console.log('I wanted to spawn a worker - energy levels at ' + Game.spawns.Harbor.energy + ' of required 250.');
+      console.log('I wanted to spawn a worker - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 250.');
     }
   }
 
   // spawn hoarders
-  if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS) {
+  if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS  && p_room.controller.level >= 4) {
     if(p_room.energyAvailable >= 250) {
-      var results = Game.spawns.Harbor.createCreep( [MOVE, MOVE,MOVE, MOVE,CARRY, CARRY,CARRY, CARRY,WORK, WORK,WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
+      var results = Game.spawns.Spawn1.createCreep( [MOVE, MOVE,MOVE, MOVE,CARRY, CARRY,CARRY, CARRY,WORK, WORK,WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
       console.log('Spawning a new hoarder - ' + displayErr(results) +'.');
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.hoarder_counter +=1;
       }
     } else {
-      console.log('I wanted to spawn a hoarder - energy levels at ' + Game.spawns.Harbor.energy + ' of required 250.');
+      console.log('I wanted to spawn a hoarder - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 250.');
     }
   }
 
@@ -140,10 +135,10 @@ module.exports = function(p_room) {
     if(p_room.energyAvailable >= 300){
       var results = OK;
       console.log('Spawning a new mega builder.');
-      results = Game.spawns.Harbor.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+      results = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
       if(results == ERR_NOT_ENOUGH_ENERGY) {
         console.log('Spawning a new builder, mega builder said: ' + displayErr(results));
-        results = Game.spawns.Harbor.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
+        results = Game.spawns.Spawn1.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
       }
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.builder_counter += 1;
@@ -155,7 +150,7 @@ module.exports = function(p_room) {
 
 
   // spawn explorers
-  if(typeof Game.spawns.Harbor.memory.explorersEnabled === 'undefined' || Game.spawns.Harbor.memory.explorersEnabled == false ) {
+  if(typeof Game.spawns.Spawn1.memory.explorersEnabled === 'undefined' || Game.spawns.Spawn1.memory.explorersEnabled == false ) {
     // not launching any explorers
   } else {
     if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
@@ -163,14 +158,14 @@ module.exports = function(p_room) {
         var explorerName = 'E' + p_room.memory.explorer_counter;
         console.log('Spawning a new explorer - ' + explorerName + '.');
 
-        var results = Game.spawns.Harbor.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
+        var results = Game.spawns.Spawn1.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
         if(results == OK || results == ERR_NAME_EXISTS) {
           p_room.memory.explorer_counter += 1;
         } else {
           console.log('trying to create an explorer resulted in ' + displayErr(results));
         }
       } else {
-        console.log('I wanted to spawn an explorer - energy levels at ' + Game.spawns.Harbor.energy + ' of required 540');
+        console.log('I wanted to spawn an explorer - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 540');
       }
     }
   }

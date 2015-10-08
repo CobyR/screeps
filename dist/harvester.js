@@ -1,4 +1,4 @@
-module.exports = function (creep, p_room) {
+module.exports = function (creep, p_room, source) {
   var lca = require('logCreepAction');
   var pickupEnergy = require('pickupEnergy');
 
@@ -16,17 +16,16 @@ module.exports = function (creep, p_room) {
 
   //lca(creep, creep.carry.energy + ' - ' + creep.memory.state + ' - ' + creep.carryCapacity + '.', true)
   if(creep.carry.energy == 0 || (creep.memory.state == 'gathering' && creep.carry.energy < creep.carryCapacity)) {
-    var sources = creep.room.find(FIND_SOURCES);
     lca(creep, 'is gathering energy: ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
-    creep.moveTo(sources[0]);
+    creep.moveTo(source);
     if(drops.length > 0) {
       pickupEnergy(creep,drops);
     }
-    creep.harvest(sources[0]);
+    creep.harvest(source);
     creep.memory.state = 'gathering';
   } else {
     creep.memory.state = 'transferring';
-    if(Game.spawns.Harbor.energy == Game.spawns.Harbor.energyCapacity) {
+    if(Game.spawns.Spawn1.energy == Game.spawns.Spawn1.energyCapacity) {
       // lca(creep, 'observed that the spawn energy level is at capacity.', true);
       // lca(creep, 'has ' + creep.carry.energy + ' energy.',true);
       if(creep.carry.energy > 0) {
@@ -58,8 +57,8 @@ module.exports = function (creep, p_room) {
       }
     } else {
       lca(creep, 'is taking energy to spawn: ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
-      creep.moveTo(Game.spawns.Harbor);
-      creep.transferEnergy(Game.spawns.Harbor);
+      creep.moveTo(Game.spawns.Spawn1);
+      creep.transferEnergy(Game.spawns.Spawn1);
     }
   }
 };

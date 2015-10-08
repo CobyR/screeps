@@ -3,7 +3,7 @@ module.exports = function(creep, drops) {
   var displayErr = require('displayError');
 
   if(drops == null) {
-      drops = Game.rooms.W11S25.find(FIND_DROPPED_ENERGY);
+      drops = creep.room.find(FIND_DROPPED_ENERGY);
   }
 
   for(var index in drops) {

@@ -11,19 +11,22 @@ module.exports = function(creep) {
   var lca = require('logCreepAction');
 
   var numberWithCommas = require('numberWithCommas');
-  var GAP_BEFORE_CHANGING_TARGET = 0.25; // aka 25 %
+  var GAP_BEFORE_CHANGING_TARGET = 0.1; // aka 10 %
 
   var MIN_HITS = 1000;
 
   var targets = creep.room.find(FIND_STRUCTURES);
+  var sites = creep.room.find(FIND_CONSTRUCTION_SITES);
+
   // console.log('gps found ' + targets.length + ' structures to consider.');
 
   var preferredTarget = null;
   var lowestHits = 100000000000;
   var lowestHitsRatio = 100;
 
-  // Determine preferredTarget from all Structures
+  // Determine preferredTarget from all Structures & construction sites
   var index = 0;
+
   for(var name in targets) {
     index ++;
     var target = targets[name];
@@ -51,7 +54,7 @@ module.exports = function(creep) {
   if(typeof creep.memory.currentTarget === 'undefined' ||
      creep.memory.currentTarget == null) {
     // Creep had no currentTarget - set it.
-    lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
+    // lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
     creep.memory.currentTarget = preferredTarget;
   } else {
     // Creep has target - decide if it should switch to preferredTarget
@@ -68,9 +71,14 @@ module.exports = function(creep) {
     // 3. third  clause is that pt has less than MIN_HITS
     if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
        ctHitsRatio >= MIN_HITS ||
-       preferredTarget.hits <= MIN_HITS ||
+       (preferredTarget.hits <= MIN_HITS && ct.hits >= MIN_HITS) ||
        ctHitsRatio == 1) {
-      lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
+      if(ct == null){
+        lca(creep, 'changing focus to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
+      } else {
+        lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
+      }
+
       creep.memory.currentTarget = preferredTarget;
     }
   }
@@ -92,7 +100,9 @@ module.exports = function(creep) {
       // Take Action
       // Move
       var results = creep.moveTo(t);
-      if(results != OK) { lca(creep, 'call to MoveTo returned: ' + displayError(results)); }
+      if(results != OK) {
+        // lca(creep, 'call to MoveTo returned: ' + displayError(results));
+      }
       // attempt repair target
       results = creep.repair(t);
       if(results != OK && results != ERR_NOT_IN_RANGE) { lca(creep, 'call to repair returned: ' + displayError(results)); }

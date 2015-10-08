@@ -16,7 +16,7 @@ module.exports = function (creep, p_room) {
   } else {
     // There are no hostiles, move to a flag.
     if(typeof creep.memory.destination === 'undefined' || creep.memory.destination == null) {
-      targets = p_room.find(FIND_FLAGS);
+      targets = p_room.find(FIND_FLAGS, { filter: { color: COLOR_RED}});
       //lca(creep,'found ' + targets.length + ' flags', true);
       for(var id in targets) {
         var target = targets[id];
@@ -79,7 +79,7 @@ module.exports = function (creep, p_room) {
         // do something while guarding.
         var dest = Game.getObjectById(creep.memory.destination.id);
         if(dest != null) {
-          var gf = dest.memory.guard_from;
+          var gf = dest.memory.guard_from || dest.pos;
 
           if(gf) {
             // guard_from is set on the flag

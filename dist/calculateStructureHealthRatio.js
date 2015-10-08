@@ -3,6 +3,10 @@ module.exports = function(target){
   var WALL_HITS = 200000;
   var ratio = 0;
 
+  if(target == null){
+    return 1;
+  }
+  
   switch(target.structureType) {
   case 'rampart':
     ratio = target.hits / RAMPART_HITS;

@@ -9,7 +9,7 @@
      if(debug) {
         console.log('  [DEBUG] ' + creep.name + '|' + creep.memory.role + ' ' + message);
      } else {
-        console.log('  ' + creep.name + '|' + creep.memory.role + ' (' + creep.memory.state + ') ' + message);
+        console.log('  ' + creep.name + '|' + creep.memory.role + ' (' + creep.memory.state + '|' + creep.ticksToLive + ') ' + message);
      }
 
 }

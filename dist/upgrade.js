@@ -9,7 +9,7 @@ module.exports = function (creep, p_room) {
 
   if(creep.memory.state == 'fill') {
     if(creep.carry.energy == creep.carryCapacity) {
-      if(Game.spawns.Harbor.energy < Game.spawns.Harbor.energyCapacity) {
+      if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity) {
         creep.memory.role = 'harvester';
         lca(creep, 'is now in \'harvester\' mode.');
       } else {
@@ -34,7 +34,7 @@ module.exports = function (creep, p_room) {
     creep.harvest(sources[0]);
     pickup(creep);
   } else {
-    if(Game.spawns.Harbor.energy < Game.spawns.Harbor.energyCapacity) {
+    if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity) {
       lca(creep, 'spawn is low on energy changing to harvester mode.');
       creep.memory.role='harvester';
     } else {
