@@ -19,10 +19,10 @@ module.exports = function(p_room) {
   var MAX_BUILDERS = p_room.find(FIND_FLAGS, { filter: { color: COLOR_BROWN}}).length;
   var MAX_WARRIORS = 0;
   var MAX_HEALERS = 0;
-  var MAX_EXPLORERS = 1;
-  var MAX_HOARDERS = 2;
+  var MAX_EXPLORERS = 0;
+  var MAX_HOARDERS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_YELLOW}}).length;2;
 
-  var explorerDestination = 'W11S26';
+  var explorerDestination = 'W19S28';
 
   if(typeof p_room.memory.worker_counter === 'undefined') {
     p_room.memory.worker_counter = 0;
@@ -65,7 +65,7 @@ module.exports = function(p_room) {
   }
 
   if (workers >=8 && guards >= 4 && builders >= 2) {
-    MAX_EXPLORERS=0;
+    MAX_EXPLORERS=p_room.find(FIND_FLAGS, { filter: {color: COLOR_ORANGE}}).length;;
   }
 
   // report stats
@@ -135,10 +135,10 @@ module.exports = function(p_room) {
     if(p_room.energyAvailable >= 300){
       var results = OK;
       console.log('Spawning a new mega builder.');
-      results = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+      results = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
       if(results == ERR_NOT_ENOUGH_ENERGY) {
-        console.log('Spawning a new builder, mega builder said: ' + displayErr(results));
-        results = Game.spawns.Spawn1.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
+        //console.log('Spawning a new builder, mega builder said: ' + displayErr(results));
+        //results = Game.spawns.Spawn1.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
       }
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.builder_counter += 1;
@@ -154,18 +154,23 @@ module.exports = function(p_room) {
     // not launching any explorers
   } else {
     if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
-      if(p_room.energyAvailable >= 540) {
+      if(p_room.energyAvailable >= 550) {
         var explorerName = 'E' + p_room.memory.explorer_counter;
         console.log('Spawning a new explorer - ' + explorerName + '.');
 
-        var results = Game.spawns.Spawn1.createCreep([ATTACK,ATTACK,MOVE,MOVE,MOVE,ATTACK], explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
+        var results = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,
+                                                      MOVE,ATTACK,
+                                                      MOVE,ATTACK,
+                                                      MOVE,ATTACK,
+                                                      MOVE,ATTACK],
+                explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
         if(results == OK || results == ERR_NAME_EXISTS) {
           p_room.memory.explorer_counter += 1;
         } else {
           console.log('trying to create an explorer resulted in ' + displayErr(results));
         }
       } else {
-        console.log('I wanted to spawn an explorer - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 540');
+        console.log('I wanted to spawn an explorer - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 550');
       }
     }
   }

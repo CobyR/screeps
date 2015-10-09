@@ -8,16 +8,27 @@ module.exports = function (creep, p_room) {
       return 0;
     }
 
-    var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION } });
+  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
+                                                          structureType: STRUCTURE_EXTENSION
+                                                            } });
+  var usefulExtensions = [];
 
-    if(creep.carry.energy == 0) {
+  for(var id in extensions){
+    var extension = extensions[id];
+    if(extension.energy != 0){
+      usefulExtensions.push(extension);
+    }
+  }
+
+    if(creep.carry.energy == 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
+      creep.memory.state = 'filling';
       if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 10000) {
-         lca( creep, 'is getting energy from storage.');
-         creep.moveTo(creep.room.storage);
-         creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
-      } else if(extensions.length > 0) {
-        for(var id in extensions){
-          var extension = extensions[id];
+        lca( creep, 'is getting energy from storage.');
+        creep.moveTo(creep.room.storage);
+        creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
+      } else if(usefulExtensions.length > 0) {
+        for(var id in usefulExtensions){
+          var extension = usefulExtensions[id];
 
           if(extension.energy == extension.energyCapacity){
             lca(creep, 'is getting energy from an extension.');
