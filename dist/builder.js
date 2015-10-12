@@ -15,7 +15,7 @@ module.exports = function (creep, p_room) {
 
   for(var id in extensions){
     var extension = extensions[id];
-    if(extension.energy != 0){
+    if(extension.energy == extension.energyCapacity){
       usefulExtensions.push(extension);
     }
   }
