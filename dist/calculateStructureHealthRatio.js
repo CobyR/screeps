@@ -1,6 +1,6 @@
 module.exports = function(target){
-  var RAMPART_HITS = 300000;
-  var WALL_HITS = 500000;
+  var RAMPART_HITS = 400000;
+  var WALL_HITS = 1000000;
   var ratio = 0;
 
   if(target == null){
