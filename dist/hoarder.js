@@ -1,4 +1,4 @@
-module.exports = function(creep) {
+module.exports = function(creep, p_room, source_index) {
   var lca = require('logCreepAction');
   var nwc = require('numberWithCommas');
   var moveToDest = require('findPathToExit');
@@ -16,8 +16,8 @@ module.exports = function(creep) {
     // } else {
       var sources = creep.room.find(FIND_SOURCES);
       lca(creep, 'is gathering energy ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
-      creep.moveTo(sources[0]);
-      creep.harvest(sources[0]);
+      creep.moveTo(sources[source_index]);
+      creep.harvest(sources[source_index]);
       if(creep.carry.energy == creep.carryCapacity) {
         creep.memory.state = 'transferring';
       } else {
@@ -25,13 +25,13 @@ module.exports = function(creep) {
       }
     // }
   } else {
-    if(creep.room.name == 'W11S25'){
+    if(creep.room.name == p_room.name){
       var target = creep.room.storage;
       lca(creep, 'is taking energy (' + creep.carry.energy + ') to storage (' + nwc(target.store.energy) + ' of ' + nwc(target.storeCapacity) + ').');
       creep.moveTo(creep.room.storage);
       creep.transferEnergy(creep.room.storage);
     } else {
-      results = moveToDest(creep, 'W11S25');
+      results = moveToDest(creep, p_room.name);
     }
   }
 };

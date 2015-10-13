@@ -9,11 +9,20 @@ module.exports = function(creep, destRoomName) {
   var evalY = -1;
 
   var exitDir = cRoom.findExitTo(destRoomName || creep.memory.roomDestination);
-
+  if(typeof creep.memory.wait == 'undefined' || creep.room.name != creep.memory.roomBeforeThat){
+    creep.memory.wait = 0;
+  }
   if(creep.room.name != creep.memory.previousRoom) {
-    lca(creep,'I changed rooms ------------------------->',true);
-    var results = creep.moveTo(25, 25);
-    //lca(creep, 'trying to move in the new room yielded: ' + displayErr(results), true);
+    lca(creep,'I changed rooms ------------------------->' + creep.room.name,true);
+    if(creep.memory.wait == 2){
+      var results = creep.moveTo(25, 25);
+    } else {
+      lca(creep, 'incrementing wait by 1 from' + creep.memory.wait, true);
+      creep.memory.wait ++;
+    }
+
+    lca(creep, 'trying to move in the new room yielded: ' + displayErr(results), true);
+    creep.memory.roomBeforeThat = creep.memory.previousRoom;
     creep.memory.previousRoom = creep.room.name;
     return OK;
   }
@@ -71,7 +80,7 @@ module.exports = function(creep, destRoomName) {
       if(distance < shortestDistance){
         shortestDistance = distance;
         closestExitPos = exitPosition;
-        // lca(creep, x +  ',' + evalY + ' : ' + things[0].terrain + ' distance = ' + distance,true);
+        lca(creep, x +  ',' + y + ' : ' + things[0].terrain + ' distance = ' + distance,true);
       }
     }
   }

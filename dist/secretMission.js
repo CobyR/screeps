@@ -16,6 +16,17 @@ module.exports = function(creep) {
     creep.memory.state = "resting";
     lca(creep, 'I am home.');
     break;
+  case 'W20S29':
+    creep.memory.state = 'secret mission';
+    creep.memory.mode = 'room'
+    creep.memory.roomDestination = 'W20S30';
+    break;
+  case 'W20S30':
+    creep.memory.roomDestination = 'W19S30';
+    break;
+  case 'W16S29':
+    creep.memory.mode = 'claim';
+    break;
   default:
     creep.memory.mode = 'pillage';
     creep.memory.state = ' wreaking havoc';

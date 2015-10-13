@@ -14,15 +14,15 @@ module.exports = function(p_room) {
   var explorers = 0;
   var hoarders = 0;
 
-  var MAX_WORKERS = 10;
+  var MAX_WORKERS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_YELLOW}}).length;
   var MAX_GUARDS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_RED}}).length;
   var MAX_BUILDERS = p_room.find(FIND_FLAGS, { filter: { color: COLOR_BROWN}}).length;
   var MAX_WARRIORS = 0;
   var MAX_HEALERS = 0;
   var MAX_EXPLORERS = 0;
-  var MAX_HOARDERS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_YELLOW}}).length;2;
+  var MAX_HOARDERS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_PURPLE}}).length;
 
-  var explorerDestination = 'W19S28';
+  var explorerDestination = 'W20S29';
 
   if(typeof p_room.memory.worker_counter === 'undefined') {
     p_room.memory.worker_counter = 0;
@@ -31,7 +31,7 @@ module.exports = function(p_room) {
     p_room.memory.warrior_counter = 0;
     p_room.memory.healer_counter = 0;
     p_room.memory.explorer_counter = 0;
-    p_room.memory.horder_counter = 0;
+    p_room.memory.hoarder_counter = 0;
   }
 
   // count creeps
@@ -77,7 +77,7 @@ module.exports = function(p_room) {
               hoarders + ' of ' + MAX_HOARDERS + ' hoarders.');
 
   // spawn guards
-  if(guards < MAX_GUARDS && workers > MAX_WORKERS / 2 ) {
+  if(guards < MAX_GUARDS && workers >= MAX_WORKERS / 2 ) {
     if(p_room.energyAvailable >= 270){
       var results = 0;
         // spawn standard guard
@@ -104,6 +104,7 @@ module.exports = function(p_room) {
       var results = 0;
       console.log('Spawning a new mega worker.');
       results = Game.spawns.Spawn1.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
+      console.log('system says: ' + displayErr(results));
       if(results == ERR_NOT_ENOUGH_ENERGY){
         console.log('Spawning a new worker - mega worker said: ' + displayErr(results) +'.');
         results = Game.spawns.Spawn1.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
@@ -118,14 +119,14 @@ module.exports = function(p_room) {
 
   // spawn hoarders
   if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS  && p_room.controller.level >= 4) {
-    if(p_room.energyAvailable >= 250) {
-      var results = Game.spawns.Spawn1.createCreep( [MOVE, MOVE,MOVE, MOVE,CARRY, CARRY,CARRY, CARRY,WORK, WORK,WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
+    if(p_room.energyAvailable >= 550) {
+      var results = Game.spawns.Spawn1.createCreep( [MOVE, MOVE,CARRY, CARRY,CARRY,CARRY,CARRY,WORK,WORK, WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
       console.log('Spawning a new hoarder - ' + displayErr(results) +'.');
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.hoarder_counter +=1;
       }
     } else {
-      console.log('I wanted to spawn a hoarder - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 250.');
+      console.log('I wanted to spawn a hoarder - energy levels at ' + Game.spawns.Spawn1.energy + ' of required 550.');
     }
   }
 
@@ -135,7 +136,7 @@ module.exports = function(p_room) {
     if(p_room.energyAvailable >= 300){
       var results = OK;
       console.log('Spawning a new mega builder.');
-      results = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+      results = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
       if(results == ERR_NOT_ENOUGH_ENERGY) {
         //console.log('Spawning a new builder, mega builder said: ' + displayErr(results));
         //results = Game.spawns.Spawn1.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
@@ -159,6 +160,7 @@ module.exports = function(p_room) {
         console.log('Spawning a new explorer - ' + explorerName + '.');
 
         var results = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,
+                                                      MOVE,ATTACK,
                                                       MOVE,ATTACK,
                                                       MOVE,ATTACK,
                                                       MOVE,ATTACK,

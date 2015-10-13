@@ -1,7 +1,9 @@
-module.exports = function (creep, p_room) {
+module.exports = function (creep, p_room, builder_index) {
   var lca = require('logCreepAction');
 
   var fixPrioritizedStructure = require('builderGetPrioritizedStructure');
+
+  var USE_STORAGE_THRESHOLD = 10000;
 
     if(creep.spawning == true) {
       lca(creep, 'is still spawning.');
@@ -22,7 +24,7 @@ module.exports = function (creep, p_room) {
 
     if(creep.carry.energy == 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
-      if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 10000) {
+      if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD) {
         lca( creep, 'is getting energy from storage.');
         creep.moveTo(creep.room.storage);
         creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
@@ -37,10 +39,12 @@ module.exports = function (creep, p_room) {
             break;
           }
         }
-      } else {
+      } else if(ALLOW_SPAWN_USE == true) {
         lca( creep, 'is getting energy from spawn.');
         creep.moveTo(Game.spawns.Spawn1);
         Game.spawns.Spawn1.transferEnergy(creep);
+      } else {
+        lca(creep, 'waiting for energy in extensions or storage.');
       }
     }
     else {
@@ -58,16 +62,22 @@ module.exports = function (creep, p_room) {
             else {
                 // console.log('[DEBUG] Construction sites: ' + targets.length);
                 if(targets.length > 0) {
-                  lca(creep, 'there are construction sites');
                   if(creep.memory.state == 'repairing' && creep.carry.energy != creep.carryCapacity){
                     lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy.');
                     fixPrioritizedStructure(creep);
                   } else {
+                    var t = targets[builder_index];
                     creep.memory.state = 'constructing';
-                    lca(creep, 'found a construction site.');
-                    creep.moveTo(targets[0]);
-                    creep.build(targets[0]);
-                    creep.memory.currentTarget = null; // this causes them to forget what they were working on before
+                    if(t){
+                      lca(creep, 'found a ' + t.structureType + ' to construct at ' + t.pos.x + ',' + t.pos.y + '.');
+                      creep.moveTo(t);
+                      creep.build(t);
+                      creep.memory.currentTarget = null; // this causes them to forget what they were working on before
+                    } else {
+                      // This gets hit when there are more builders than construction sites to work on.
+                      creep.memory.state = 'repairing';
+                      fixPrioritizedStructure(creep);
+                    }
                   }
 
                 } else {

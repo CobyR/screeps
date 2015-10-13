@@ -58,7 +58,7 @@ module.exports = function(explorers) {
         assignNextPosition(cdCreeps);
       }
     } else {
-      console.log('another unexepected code branch');
+      console.log('another unexepected code branch in processExplorers');
     }
 
     // let all position based creeps do their thing

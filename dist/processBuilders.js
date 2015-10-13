@@ -4,8 +4,10 @@ module.exports = function(builders, p_room) {
   if(builders.length > 0) {
     console.log('[Builders] -------------------');
     var previousCreepsTargetId = null;
+    var index = -1;
 
     for(var id in builders) {
+      index++;
       var creep = Game.getObjectById(builders[id]);
       if(creep.spawning) {
         lca(creep, 'is still spawning.');
@@ -23,7 +25,7 @@ module.exports = function(builders, p_room) {
         previousCreepsTargetId = creep.memory.currentTarget.id;
       }
 
-      buildThings(creep, p_room);
+      buildThings(creep, p_room, index);
    }
   }
 }
