@@ -11,12 +11,12 @@ module.exports = function(creep) {
   var lca = require('logCreepAction');
 
   var numberWithCommas = require('numberWithCommas');
-  var GAP_BEFORE_CHANGING_TARGET = 0.1; // aka 10 %
+  var GAP_BEFORE_CHANGING_TARGET = 0.03; // aka 3 %
 
   var MIN_HITS = 1000;
 
   var targets = creep.room.find(FIND_STRUCTURES);
-  var sites = creep.room.find(FIND_CONSTRUCTION_SITES);
+  var sites = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
 
   // console.log('gps found ' + targets.length + ' structures to consider.');
 

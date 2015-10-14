@@ -136,7 +136,13 @@ module.exports = function(p_room) {
     if(p_room.energyAvailable >= 300){
       var results = OK;
       console.log('Spawning a new mega builder.');
-      results = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+      results = Game.spawns.Spawn1.createCreep([WORK, WORK,
+                                                CARRY, CARRY,
+                                                CARRY, CARRY,
+                                                CARRY, CARRY,
+                                                MOVE, MOVE,
+                                                MOVE, MOVE,
+                                                MOVE, MOVE], 'B' + p_room.memory.builder_counter, { role: 'builder', state: 'constructing'});
       if(results == ERR_NOT_ENOUGH_ENERGY) {
         //console.log('Spawning a new builder, mega builder said: ' + displayErr(results));
         //results = Game.spawns.Spawn1.createCreep([WORK,CARRY,CARRY,MOVE], 'b' + p_room.memory.builder_counter, {role: 'builder', state: 'constructing'});
