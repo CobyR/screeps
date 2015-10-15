@@ -9,6 +9,8 @@ if(isSimulation){
   p_room = Game.rooms.W19S29;
 }
 
+var USE_STORAGE_THRESHOLD = 10000;
+
 
 module.exports.loop = function () {
 
@@ -21,6 +23,7 @@ module.exports.loop = function () {
   var workers = [];
   var guards = [];
   var hoarders = [];
+  var sweepers = [];
 
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
@@ -48,6 +51,9 @@ module.exports.loop = function () {
     case 'hoarder':
       hoarders.push(creep.id);
       break;
+    case 'sweeper':
+      sweepers.push(creep.id);
+      break;
     default:
       lca(creep, 'does not have a programmed role.');
       break;
@@ -59,21 +65,41 @@ module.exports.loop = function () {
   processBuilders(builders, p_room);
   processHoarders(hoarders, p_room);
   processExplorers(explorers, p_room);
+  processSweepers(sweepers, p_room);
 
+  // REPORTINGS
 
+  storageReport(p_room);
   console.log(' Energy: ' + nwc(p_room.energyAvailable) + ' of ' + nwc(p_room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy()));
   var rptController = p_room.controller;
-  console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
+
 
   if(structureReports()){
-    storageReport(p_room);
+    console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
     structureReport(p_room, STRUCTURE_RAMPART);
     structureReport(p_room, STRUCTURE_ROAD);
+    structureReport(p_room, STRUCTURE_WALL);
   }
 
   console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.');
-  console.log('all scripts completed ' + nwc(Game.time));
 
+  if(Game.time % 1000 === 0){
+    var noticeMessage = '';
+
+    for(var i in Memory.creeps) {
+      if(!Game.spawns.Spawn1.spawning && !Game.creeps[i]) {
+        var message = '[MAINTENANCE] deleting memory for ' + i;
+        console.log(message );
+        noticeMessage += message + '\n';
+        delete Memory.creeps[i];
+      }
+    }
+    if(noticeMessage.length > 0) {
+      Game.notify(noticeMessage);
+    }
+  }
+
+  console.log('all scripts completed ' + nwc(Game.time));
 }
 
 

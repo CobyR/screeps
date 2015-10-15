@@ -25,7 +25,7 @@ function processBuilders(builders) {
         previousCreepsTargetId = creep.memory.currentTarget.id;
       }
 
-      buildThings(creep, p_room, index);
+      buildThings(creep, index);
    }
   }
 }

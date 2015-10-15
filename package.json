@@ -37,6 +37,7 @@
         "STRUCTURE_LINK",
         "STRUCTURE_ROAD",
         "STRUCTURE_RAMPART",
+        "STRUCTURE_WALL",
 
         "WORK",
         "CARRY",

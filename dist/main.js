@@ -9,6 +9,8 @@ if(isSimulation){
   p_room = Game.rooms.W19S29;
 }
 
+var USE_STORAGE_THRESHOLD = 10000;
+
 
 module.exports.loop = function () {
 
@@ -21,6 +23,7 @@ module.exports.loop = function () {
   var workers = [];
   var guards = [];
   var hoarders = [];
+  var sweepers = [];
 
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
@@ -48,6 +51,9 @@ module.exports.loop = function () {
     case 'hoarder':
       hoarders.push(creep.id);
       break;
+    case 'sweeper':
+      sweepers.push(creep.id);
+      break;
     default:
       lca(creep, 'does not have a programmed role.');
       break;
@@ -59,21 +65,41 @@ module.exports.loop = function () {
   processBuilders(builders, p_room);
   processHoarders(hoarders, p_room);
   processExplorers(explorers, p_room);
+  processSweepers(sweepers, p_room);
 
+  // REPORTINGS
 
+  storageReport(p_room);
   console.log(' Energy: ' + nwc(p_room.energyAvailable) + ' of ' + nwc(p_room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy()));
   var rptController = p_room.controller;
-  console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
+
 
   if(structureReports()){
-    storageReport(p_room);
+    console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
     structureReport(p_room, STRUCTURE_RAMPART);
     structureReport(p_room, STRUCTURE_ROAD);
+    structureReport(p_room, STRUCTURE_WALL);
   }
 
   console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.');
-  console.log('all scripts completed ' + nwc(Game.time));
 
+  if(Game.time % 1000 === 0){
+    var noticeMessage = '';
+
+    for(var i in Memory.creeps) {
+      if(!Game.spawns.Spawn1.spawning && !Game.creeps[i]) {
+        var message = '[MAINTENANCE] deleting memory for ' + i;
+        console.log(message );
+        noticeMessage += message + '\n';
+        delete Memory.creeps[i];
+      }
+    }
+    if(noticeMessage.length > 0) {
+      Game.notify(noticeMessage);
+    }
+  }
+
+  console.log('all scripts completed ' + nwc(Game.time));
 }
 
 
@@ -89,25 +115,14 @@ function structureReports(){
     return p_room.find(FIND_FLAGS, { filter: {name: 'SR'}}).length;
 }
 function buildThings(creep, builder_index) {
-  var USE_STORAGE_THRESHOLD = 10000;
 
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
       return 0;
     }
 
-  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
-                                                          structureType: STRUCTURE_EXTENSION
-                                                            } });
-  var usefulExtensions = [];
-  var extension = null;
-
-  for(var id in extensions){
-    extension = extensions[id];
-    if(extension.energy == extension.energyCapacity){
-      usefulExtensions.push(extension);
-    }
-  }
+    var usefulExtensions = getExtensionsWithEnergy(creep);
+    var extension = null;
 
     if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
@@ -116,7 +131,7 @@ function buildThings(creep, builder_index) {
         creep.moveTo(creep.room.storage);
         creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
       } else if(usefulExtensions.length > 0) {
-        for(id in usefulExtensions){
+        for(var id in usefulExtensions){
           extension = usefulExtensions[id];
 
           if(extension.energy == extension.energyCapacity){
@@ -140,7 +155,7 @@ function buildThings(creep, builder_index) {
           creep.moveTo(Game.spawns.Spawn1);
         }
         else {
-            var targets = p_room.find(FIND_CONSTRUCTION_SITES);
+            var targets = p_room.find(FIND_MY_CONSTRUCTION_SITES);
             if(targets.length === 0) {
               // lca(creep, 'calling fixPrioritizedStructure', true);
               creep.memory.state = 'repairing';
@@ -149,8 +164,9 @@ function buildThings(creep, builder_index) {
             else {
                 // console.log('[DEBUG] Construction sites: ' + targets.length);
                 if(targets.length > 0) {
-                  if(creep.memory.state == 'repairing' && creep.carry.energy != creep.carryCapacity){
-                    lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy.');
+                  // If creep is repairing and is mid energy and target ratio is under 65% then keep repairing
+                  if(creep.memory.state == 'repairing' && creep.carry.energy != creep.carryCapacity && calcRatio(creep.memory.currentTarget) <= 0.65){
+                    lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy ' + pct(calcRatio(creep.memory.currentTarget)) + '.');
                     fixPrioritizedStructure(creep);
                   } else {
                     var t = targets[builder_index];
@@ -834,7 +850,7 @@ function processBuilders(builders) {
         previousCreepsTargetId = creep.memory.currentTarget.id;
       }
 
-      buildThings(creep, p_room, index);
+      buildThings(creep, index);
    }
   }
 }
@@ -928,7 +944,7 @@ function processHoarders(hoarders) {
       if(creep.room.name == p_room.name && i % 2 === 0 && creep.room.storage.store.energy > 100000 + creep.carryCapacity && HOARD_REMOTE === true) {
          hoardRCL(creep);
        } else {
-         hoard(creep, p_room, i % 2);
+         hoard(creep, i % 2);
       }
     }
   }
@@ -1306,6 +1322,9 @@ function storageReport(room) {
 
   if(typeof room.storage !== 'undefined'){
 
+    var lastRound = room.memory.lastRoundStoredEnergy;
+    var diff = room.storage.store.energy - lastRound;
+
     if(typeof room.memory.lastRoundStoredEnergy === 'undefined'){
       room.memory.lastRoundStoredEnergy = room.storage.store.energy;
       room.memory.lastRoundTicks = Game.time;
@@ -1314,10 +1333,6 @@ function storageReport(room) {
       room.memory.lastRountTicks = Game.time;
     }
 
-
-    var lastRound = room.memory.lastRoundStoredEnergy;
-    var diff = room.storage.store.energy - lastRound;
-
     if(diff === 0){
       upDown = 'stayed the same';
     } else if(diff > 0) {
@@ -1325,8 +1340,11 @@ function storageReport(room) {
     } else {
       upDown = 'gone down';
     }
-
+    if(diff === 0){
+      console.log('Storage Report: ' + nwc(room.storage.store.energy) + ' has ' + upDown);
+    } else {
     console.log('Storage Report: ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' by ' + nwc(Math.abs(diff)) + ' since the benchmark was set.');
+    }
   }
 }
 function structureReport(room, structureType){
@@ -1374,6 +1392,44 @@ function structureReport(room, structureType){
   console.log('Median hits per ' + structureType + ' is ' + nwc(median(hitsArray)));
 }
 
+function sweep(creep){
+  var drops = creep.room.find(FIND_DROPPED_ENERGY);
+
+  var closestDrop = null;
+  var distance = 0;
+  var shortestDistance = 50;
+
+  for(var index in drops){
+    var drop = drops[index];
+
+    distance = creep.pos.getRangeTo(drop);
+
+    if(distance < shortestDistance) {
+      shortestDistance = distance;
+      closestDrop = drop;
+    }
+  }
+  if(closestDrop === null){
+    lca(creep, 'waiting for someone to drop some energy.');
+  } else{
+    lca(creep, 'moving to ' + closestDrop.pos.x + ',' + closestDrop.pos.y + ' to pickup ' + closestDrop.energy + ' energy.');
+  creep.moveTo(closestDrop);
+  creep.pickup(closestDrop);
+  }
+
+}
+
+function processSweepers(sweepers, room){
+  if(sweepers.length > 0) {
+    log('[Sweepers] -----------------','creep');
+
+    for(var id in sweepers) {
+      var creep = Game.getObjectById(sweepers[id]);
+      sweep(creep);
+    }
+  }
+
+}
 function totalEnergy() {
   var tE = 0;
 
@@ -1408,7 +1464,7 @@ function upgrade(creep) {
 
   if(creep.memory.state == 'fill') {
     if(creep.carry.energy == creep.carryCapacity) {
-      if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity) {
+      if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity && !creep.memory.locked) {
         creep.memory.role = 'harvester';
         lca(creep, 'is now in \'harvester\' mode.');
       } else {
@@ -1425,15 +1481,34 @@ function upgrade(creep) {
       creep.memory.state = 'fill';
     }
   }
-
+  var usefulExtensions = getExtensionsWithEnergy(creep);
+  var extension = null;
+  
   if(creep.carry.energy === 0  || creep.memory.state == 'fill') {
-    var sources = creep.room.find(FIND_SOURCES);
-    lca(creep, 'is gathering energy.');
-    creep.moveTo(sources[0]);
-    creep.harvest(sources[0]);
-    pickupEnergy(creep);
+    if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD){
+      lca(creep, 'is getting energy from storage.');
+      creep.moveTo(creep.room.storage);
+      creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
+    } else if(usefulExtensions.length > 0){
+      for(var id in usefulExtensions){
+        extension = usefulExtensions[id];
+
+        if(extension.energy == extension.energyCapacity){
+          lca(creep,'is getting energy from an extension.');
+          creep.moveTo(extension);
+          extension.transferEnergy(creep);
+          break;
+        }
+      }
+    } else {
+      var sources = creep.room.find(FIND_SOURCES);
+      lca(creep, 'is gathering energy.');
+      creep.moveTo(sources[0]);
+      creep.harvest(sources[0]);
+      pickupEnergy(creep);
+    }
   } else {
-    if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity) {
+    if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity  && !creep.memory.locked) {
       lca(creep, 'spawn is low on energy changing to harvester mode.');
       creep.memory.role='harvester';
     } else {
@@ -1443,4 +1518,20 @@ function upgrade(creep) {
       creep.upgradeController(creep.room.controller);
     }
   }
+}
+
+function getExtensionsWithEnergy(creep) {
+  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
+                                  structureType: STRUCTURE_EXTENSION
+                                                            } });
+  var usefulExtensions = [];
+  var extension = null;
+
+  for(var id in extensions){
+    extension = extensions[id];
+    if(extension.energy == extension.energyCapacity){
+      usefulExtensions.push(extension);
+    }
+  }
+  return usefulExtensions;
 }

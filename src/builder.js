@@ -1,23 +1,12 @@
 function buildThings(creep, builder_index) {
-  var USE_STORAGE_THRESHOLD = 10000;
 
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
       return 0;
     }
 
-  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
-                                                          structureType: STRUCTURE_EXTENSION
-                                                            } });
-  var usefulExtensions = [];
-  var extension = null;
-
-  for(var id in extensions){
-    extension = extensions[id];
-    if(extension.energy == extension.energyCapacity){
-      usefulExtensions.push(extension);
-    }
-  }
+    var usefulExtensions = getExtensionsWithEnergy(creep);
+    var extension = null;
 
     if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
@@ -26,7 +15,7 @@ function buildThings(creep, builder_index) {
         creep.moveTo(creep.room.storage);
         creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
       } else if(usefulExtensions.length > 0) {
-        for(id in usefulExtensions){
+        for(var id in usefulExtensions){
           extension = usefulExtensions[id];
 
           if(extension.energy == extension.energyCapacity){
@@ -50,7 +39,7 @@ function buildThings(creep, builder_index) {
           creep.moveTo(Game.spawns.Spawn1);
         }
         else {
-            var targets = p_room.find(FIND_CONSTRUCTION_SITES);
+            var targets = p_room.find(FIND_MY_CONSTRUCTION_SITES);
             if(targets.length === 0) {
               // lca(creep, 'calling fixPrioritizedStructure', true);
               creep.memory.state = 'repairing';
@@ -59,8 +48,9 @@ function buildThings(creep, builder_index) {
             else {
                 // console.log('[DEBUG] Construction sites: ' + targets.length);
                 if(targets.length > 0) {
-                  if(creep.memory.state == 'repairing' && creep.carry.energy != creep.carryCapacity){
-                    lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy.');
+                  // If creep is repairing and is mid energy and target ratio is under 65% then keep repairing
+                  if(creep.memory.state == 'repairing' && creep.carry.energy != creep.carryCapacity && calcRatio(creep.memory.currentTarget) <= 0.65){
+                    lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy ' + pct(calcRatio(creep.memory.currentTarget)) + '.');
                     fixPrioritizedStructure(creep);
                   } else {
                     var t = targets[builder_index];
