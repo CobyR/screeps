@@ -1,8 +1,7 @@
 /*
  * Stayalive - code to keep breeding creeps
  */
-module.exports = function(p_room) {
-  var displayErr = require('displayError');
+function stayAlive() {
 
   var workers = 0;
   var harvesters = 0;
@@ -23,6 +22,7 @@ module.exports = function(p_room) {
   var MAX_HOARDERS = p_room.find(FIND_FLAGS, { filter: {color: COLOR_PURPLE}}).length;
 
   var explorerDestination = 'W20S29';
+  var results = OK;
 
   if(typeof p_room.memory.worker_counter === 'undefined') {
     p_room.memory.worker_counter = 0;
@@ -65,11 +65,11 @@ module.exports = function(p_room) {
   }
 
   if (workers >=8 && guards >= 4 && builders >= 2) {
-    MAX_EXPLORERS=p_room.find(FIND_FLAGS, { filter: {color: COLOR_ORANGE}}).length;;
+    MAX_EXPLORERS=p_room.find(FIND_FLAGS, { filter: {color: COLOR_ORANGE}}).length;
   }
 
   // report stats
-  console.log('There are currently ' +
+  console.log('CREEPS: ' +
               workers + ' of ' + MAX_WORKERS +  ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
               guards + ' of ' + MAX_GUARDS + ' guards, ' +
               builders + ' of ' + MAX_BUILDERS + ' builders, ' +
@@ -79,12 +79,18 @@ module.exports = function(p_room) {
   // spawn guards
   if(guards < MAX_GUARDS && workers >= MAX_WORKERS / 2 ) {
     if(p_room.energyAvailable >= 270){
-      var results = 0;
-        // spawn standard guard
+      results = OK;
+      // spawn standard guard
 
-        console.log('Spawning a new tough guard.');
-        results = Game.spawns.Spawn1.createCreep([TOUGH,ATTACK,ATTACK,ATTACK,ATTACK,MOVE,MOVE], 'G' + p_room.memory.guard_counter, { role: 'guard'});
-      if(results == ERR_NOT_ENOUGH_ENERGY){
+      console.log('Spawning a new tough guard.');
+      results = Game.spawns.Spawn1.createCreep([TOUGH,MOVE,
+                                                TOUGH,MOVE,
+                                                ATTACK,MOVE,
+                                                ATTACK,MOVE,
+                                                ATTACK,MOVE,
+                                                ATTACK,MOVE,
+                                                ATTACK,MOVE], 'G' + p_room.memory.guard_counter, { role: 'guard'});
+      if(results != OK ){
         console.log('Spawning a new guard, tough guard said ' + displayErr(results) + '.');
         results = Game.spawns.Spawn1.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + p_room.memory.guard_counter, { role: 'guard'});
       }
@@ -101,7 +107,7 @@ module.exports = function(p_room) {
   // spawn workers
   if(workers < MAX_WORKERS && (guards >= MAX_GUARDS || workers < 5)) {
     if(p_room.energyAvailable >= 250) {
-      var results = 0;
+      results = OK;
       console.log('Spawning a new mega worker.');
       results = Game.spawns.Spawn1.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + p_room.memory.worker_counter, { role: 'harvester', locked: false});
       console.log('system says: ' + displayErr(results));
@@ -120,7 +126,12 @@ module.exports = function(p_room) {
   // spawn hoarders
   if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS  && p_room.controller.level >= 4) {
     if(p_room.energyAvailable >= 550) {
-      var results = Game.spawns.Spawn1.createCreep( [MOVE, MOVE,CARRY, CARRY,CARRY,CARRY,CARRY,WORK,WORK, WORK,WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
+      results = Game.spawns.Spawn1.createCreep( [MOVE,MOVE,
+                                                 CARRY,CARRY,
+                                                 CARRY,CARRY,
+                                                 CARRY,WORK,
+                                                 WORK,WORK,
+                                                 WORK], 'H' + p_room.memory.hoarder_counter, { role: 'hoarder', locked: true});
       console.log('Spawning a new hoarder - ' + displayErr(results) +'.');
       if(results == OK || results == ERR_NAME_EXISTS) {
         p_room.memory.hoarder_counter +=1;
@@ -134,7 +145,7 @@ module.exports = function(p_room) {
   // spawn builders
   if(builders < MAX_BUILDERS && workers >= MAX_WORKERS && guards >= MAX_GUARDS) {
     if(p_room.energyAvailable >= 300){
-      var results = OK;
+      results = OK;
       console.log('Spawning a new mega builder.');
       results = Game.spawns.Spawn1.createCreep([WORK, WORK,
                                                 CARRY, CARRY,
@@ -157,7 +168,7 @@ module.exports = function(p_room) {
 
 
   // spawn explorers
-  if(typeof Game.spawns.Spawn1.memory.explorersEnabled === 'undefined' || Game.spawns.Spawn1.memory.explorersEnabled == false ) {
+  if(typeof Game.spawns.Spawn1.memory.explorersEnabled === 'undefined' || Game.spawns.Spawn1.memory.explorersEnabled === false ) {
     // not launching any explorers
   } else {
     if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
@@ -165,7 +176,7 @@ module.exports = function(p_room) {
         var explorerName = 'E' + p_room.memory.explorer_counter;
         console.log('Spawning a new explorer - ' + explorerName + '.');
 
-        var results = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,
+        results = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,
                                                       MOVE,ATTACK,
                                                       MOVE,ATTACK,
                                                       MOVE,ATTACK,
@@ -182,18 +193,4 @@ module.exports = function(p_room) {
       }
     }
   }
-
-  // var noticeMessage = '';
-
-  // for(var i in Memory.creeps) {
-  //   if(!Game.creeps[i]) {
-  //    var message = '[MAINTENANCE] deleting memory for ' + i;
-  //    console.log(message );
-  //    noticeMessage += message + '\n';
-  //    delete Memory.creeps[i];
-  //  }
-  //}
-  //if(noticeMessage.length > 0) {
-  //  Game.notify(noticeMessage);
-  //}
-};
+}

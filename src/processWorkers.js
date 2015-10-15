@@ -1,18 +1,17 @@
-module.exports = function(workers, p_room) {
-  var harvest = require('harvester');
-  var upgrade = require('upgrade');
+function processWorkers(workers, p_room) {
   var index = 0;
 
-  console.log('[Workers] -------------------');
+  log('[Workers] -------------------','creep');
 
   var sources = p_room.find(FIND_SOURCES);
+  var source = null;
 
   for(var id in workers) {
     var creep = Game.getObjectById(workers[id]);
     index ++;
 
     if(sources.length > 1){
-      if(index % 2 == 0){
+      if(index % 2){
         source = sources[0];
       } else {
         source = sources[1];
@@ -21,10 +20,10 @@ module.exports = function(workers, p_room) {
 
     switch(creep.memory.role) {
     case 'harvester':
-      harvest(creep, p_room, source);
+      harvest(creep, source);
       break;
     case 'upgrade':
-      upgrade(creep, p_room, source);
+      upgrade(creep, source);
       break;
     }
   }

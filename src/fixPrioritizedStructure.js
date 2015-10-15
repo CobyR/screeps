@@ -1,16 +1,4 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('builder.getPrioritizedStructure'); // -> 'a thing'
- */
-module.exports = function(creep) {
-  var displayError = require('displayError');
-  var calcRatio = require('calculateStructureHealthRatio');
-  var lca = require('logCreepAction');
-
-  var numberWithCommas = require('numberWithCommas');
+function fixPrioritizedStructure(creep) {
   var GAP_BEFORE_CHANGING_TARGET = 0.03; // aka 3 %
 
   var MIN_HITS = 1000;
@@ -52,7 +40,7 @@ module.exports = function(creep) {
 
   // Consider current target vs preferredTarget
   if(typeof creep.memory.currentTarget === 'undefined' ||
-     creep.memory.currentTarget == null) {
+     creep.memory.currentTarget === null) {
     // Creep had no currentTarget - set it.
     // lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
     creep.memory.currentTarget = preferredTarget;
@@ -66,24 +54,27 @@ module.exports = function(creep) {
 
     // console.log ('[DEBUG] currentTarget Ratio: ' + ctHitsRatio + ' preferredTarget Ratio: ' + ptHitsRatio)
     // Switch from currentTarget to preferredTarget if the folowing conditions are met:
-    // 1. first  clause is that pt ratio is lower than ct - GAP
-    // 2. second clause is that ct has at least MIN_HITS
-    // 3. third  clause is that pt has less than MIN_HITS
-    if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
-       ctHitsRatio >= MIN_HITS ||
-       (preferredTarget.hits <= MIN_HITS && ct.hits >= MIN_HITS) ||
-       ctHitsRatio == 1) {
-      if(ct == null){
-        lca(creep, 'changing focus to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
-      } else {
-        lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
-      }
-
+    if(ct.structureType == 'road' && ct.hits < ct.hitsMax){
+      lca(creep,'road repair from: ' + nwc(ct.hits) + ' to a maxHits of: ' + nwc(ct.hitsMax) + ' at '+ ct.pos.x + ',' + ct.pos.y + ' ratio: ' + (calcRatio(ct) * 100).toFixed(2) + '%.');
+    } else {
+      // 1. first  clause is that pt ratio is lower than ct - GAP
+      // 2. second clause is that ct has at least MIN_HITS
+      // 3. third  clause is that pt has less than MIN_HITS
+      if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
+         ctHitsRatio >= MIN_HITS ||
+         (preferredTarget.hits <= MIN_HITS && ct.hits >= MIN_HITS) ||
+         ctHitsRatio == 1) {
+         if(ct === null){
+           lca(creep, 'changing focus to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
+         } else {
+           lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
+         }
       creep.memory.currentTarget = preferredTarget;
+      }
     }
   }
 
-  if(typeof creep.memory.currentTarget ===  'undefined' || creep.memory.currentTarget == null){
+  if(typeof creep.memory.currentTarget ===  'undefined' || creep.memory.currentTarget === null){
     lca(creep, 'doesn\'t have a current target.');
   } else {
     var t = Game.getObjectById(creep.memory.currentTarget.id);
@@ -91,23 +82,25 @@ module.exports = function(creep) {
     // console.log('getObjectByID for ' + creep.memory.currentTarget.id + ' returned ' + t)
 
     if(t) {
-      lca(creep,
-        t.structureType + ' at ' +
+      if(t.structureType != 'road') {
+        lca(creep,
+          t.structureType + ' at ' +
           t.pos.x + ',' + t.pos.y + ' has ' +
-          numberWithCommas(t.hits) + ' of ' +
-          numberWithCommas(t.hitsMax) + ' hit ratio of: ' +
+          nwc(t.hits) + ' of ' +
+          nwc(t.hitsMax) + ' hit ratio of: ' +
           (calcRatio(t) * 100).toFixed(2) + '%');
+      }
       // Take Action
       // Move
       var results = creep.moveTo(t);
       if(results != OK) {
-        // lca(creep, 'call to MoveTo returned: ' + displayError(results));
+        // lca(creep, 'call to MoveTo returned: ' + displayErr(results));
       }
       // attempt repair target
       results = creep.repair(t);
-      if(results != OK && results != ERR_NOT_IN_RANGE) { lca(creep, 'call to repair returned: ' + displayError(results)); }
+      if(results != OK && results != ERR_NOT_IN_RANGE) { lca(creep, 'call to repair returned: ' + displayErr(results)); }
     } else {
       lca(creep, 'has a currentTarget that is ' + t);
     }
   }
-};
+}

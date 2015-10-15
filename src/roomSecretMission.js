@@ -1,7 +1,6 @@
 // used by explorer's is executed when room destination is reached.
 
-module.exports = function(creep) {
-  var lca = require('logCreepAction');
+function roomSecretMission(creep) {
 
   switch(creep.room.name){
   case 'W11S26':
@@ -28,6 +27,7 @@ module.exports = function(creep) {
       lca(creep, 'I am home.');
       break;
     }
+    break;
   default:
     creep.memory.mode = 'pillage';
     creep.memory.state = ' wreaking havoc';

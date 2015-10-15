@@ -1,21 +1,20 @@
-module.exports = function(creep, destRoomName) {
-  var lca = require('logCreepAction');
-  var displayErr = require('displayError');
-  var roomSecretMission = require('roomSecretMission');
-
+function moveToDestinationRoom(creep, destRoomName) {
   var dRoom = null;
   var cRoom = creep.room;
   var evalX = -1;
   var evalY = -1;
 
   var exitDir = cRoom.findExitTo(destRoomName || creep.memory.roomDestination);
+
+  var results = OK;
+
   if(typeof creep.memory.wait == 'undefined' || creep.room.name != creep.memory.roomBeforeThat){
     creep.memory.wait = 0;
   }
   if(creep.room.name != creep.memory.previousRoom) {
     lca(creep,'I changed rooms ------------------------->' + creep.room.name,true);
     if(creep.memory.wait == 2){
-      var results = creep.moveTo(25, 25);
+      results = creep.moveTo(25, 25);
     } else {
       lca(creep, 'incrementing wait by 1 from' + creep.memory.wait, true);
       creep.memory.wait ++;
@@ -51,11 +50,10 @@ module.exports = function(creep, destRoomName) {
   default:
     if(creep.room.name == creep.memory.roomDestination){
       lca(creep, 'destination reached, executing the secret mission!');
-      var results = roomSecretMission(creep);
+      results = roomSecretMission(creep);
     }
     lca(creep, 'an exit to reach ' + destRoomName + ' doesn\'t exist');
     return OK;
-    break;
   }
 
   // evalute movement
@@ -63,8 +61,9 @@ module.exports = function(creep, destRoomName) {
   var y = 0;
   var shortestDistance = 50;
   var closestExitPos = null;
+  var exitPosition = null;
 
-  for (i = 0; i < 50; i++) {
+  for (var i = 0; i < 50; i++) {
     if(evalX == -1){
       x = i;
       y = evalY;
@@ -73,8 +72,9 @@ module.exports = function(creep, destRoomName) {
       y = i;
     }
     var things = creep.room.lookAt(x,y);
+
     if(things[0].terrain == 'plain'){
-      var exitPosition = creep.room.getPositionAt(x, y);
+      exitPosition = creep.room.getPositionAt(x, y);
       //console.log(exitPosition);
       var distance = creep.pos.getRangeTo(exitPosition);
       if(distance < shortestDistance){
@@ -97,4 +97,4 @@ module.exports = function(creep, destRoomName) {
 
   }
   creep.memory.previousRoom = cRoom.name;
-};
+}

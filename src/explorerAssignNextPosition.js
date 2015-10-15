@@ -1,5 +1,4 @@
-module.exports = function (creep_ids) {
-  var lca = require('logCreepAction');
+function assignNextPosition(creep_ids) {
 
   console.log('assignNextPosition');
   var oldestCreep = Game.getObjectById(creep_ids[0]);
@@ -20,7 +19,7 @@ module.exports = function (creep_ids) {
   // check to see if any positions have been completed
   var positionToCheck = -1;
   if(typeof oldestCreep.memory.secretMissionStepCompleted == 'undefined' ||
-     oldestCreep.memory.secretMissionStepCompleted == null) {
+     oldestCreep.memory.secretMissionStepCompleted === null) {
      positionToCheck = 0;
   } else {
     positionToCheck = oldestCreep.memory.secretMissionStepCompleted + 1;
@@ -35,7 +34,7 @@ module.exports = function (creep_ids) {
     // if it is not the last position then set their next position to the next
     //   element in the array
 
-    for(id in creep_ids){
+    for(var id in creep_ids){
       var creep = Game.getObjectById(creep_ids[id]);
 
       creep.memory.secretMissionStepCompleted = positionToCheck;
@@ -52,4 +51,4 @@ module.exports = function (creep_ids) {
   } else {
     lca(oldestCreep, 'unexpected code branch');
   }
-};
+}

@@ -1,11 +1,7 @@
-module.exports = function (creep, p_room, builder_index) {
-  var lca = require('logCreepAction');
-
-  var fixPrioritizedStructure = require('builderGetPrioritizedStructure');
-
+function buildThings(creep, builder_index) {
   var USE_STORAGE_THRESHOLD = 10000;
 
-    if(creep.spawning == true) {
+    if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
       return 0;
     }
@@ -14,23 +10,24 @@ module.exports = function (creep, p_room, builder_index) {
                                                           structureType: STRUCTURE_EXTENSION
                                                             } });
   var usefulExtensions = [];
+  var extension = null;
 
   for(var id in extensions){
-    var extension = extensions[id];
+    extension = extensions[id];
     if(extension.energy == extension.energyCapacity){
       usefulExtensions.push(extension);
     }
   }
 
-    if(creep.carry.energy == 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
+    if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
       if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD) {
         lca( creep, 'is getting energy from storage.');
         creep.moveTo(creep.room.storage);
         creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
       } else if(usefulExtensions.length > 0) {
-        for(var id in usefulExtensions){
-          var extension = usefulExtensions[id];
+        for(id in usefulExtensions){
+          extension = usefulExtensions[id];
 
           if(extension.energy == extension.energyCapacity){
             lca(creep, 'is getting energy from an extension.');
@@ -39,7 +36,7 @@ module.exports = function (creep, p_room, builder_index) {
             break;
           }
         }
-      } else if(ALLOW_SPAWN_USE == true) {
+      } else if(ALLOW_SPAWN_USE === true) {
         lca( creep, 'is getting energy from spawn.');
         creep.moveTo(Game.spawns.Spawn1);
         Game.spawns.Spawn1.transferEnergy(creep);
@@ -48,13 +45,13 @@ module.exports = function (creep, p_room, builder_index) {
       }
     }
     else {
-        if(creep.carry.energy == 0) {
+        if(creep.carry.energy === 0) {
           lca( creep, 'is traveling to spawn for energy.');
           creep.moveTo(Game.spawns.Spawn1);
         }
         else {
             var targets = p_room.find(FIND_CONSTRUCTION_SITES);
-            if(targets.length == 0) {
+            if(targets.length === 0) {
               // lca(creep, 'calling fixPrioritizedStructure', true);
               creep.memory.state = 'repairing';
               fixPrioritizedStructure(creep);
@@ -71,6 +68,7 @@ module.exports = function (creep, p_room, builder_index) {
                     if(t){
                       lca(creep, 'found a ' + t.structureType + ' to construct at ' + t.pos.x + ',' + t.pos.y + '.');
                       creep.moveTo(t);
+                      pickupEnergy(creep);
                       creep.build(t);
                       creep.memory.currentTarget = null; // this causes them to forget what they were working on before
                     } else {

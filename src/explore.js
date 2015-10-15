@@ -1,10 +1,8 @@
-module.exports = function(creep, p_room) {
-  var lca = require('logCreepAction');
-  var displayErr = require('displayError');
-  var moveToDest = require('findPathToExit');
+function explore(creep) {
   var results = null;
+  var target = null;
 
-  if(creep.spawning == true) {
+  if(creep.spawning) {
     lca(creep, 'is still spawning.');
     return OK;
   }
@@ -24,8 +22,8 @@ module.exports = function(creep, p_room) {
       // lca(creep, 'hostile targets present: ' + hostileTargets.length,true);
       if(hostileTargets && hostileTargets.length > 1){
          lca(creep, ' pillaging ' + hostileTargets.length + ' hostile structures in ' + creep.room.name + '.');
-        for(id in hostileTargets) {
-          var target = hostileTargets[id];
+        for(var x in hostileTargets) {
+          target = hostileTargets[x];
           if(target.structureType != 'controller') {
             creep.moveTo(target);
             creep.attack(target);
@@ -33,9 +31,10 @@ module.exports = function(creep, p_room) {
           }
         }
       } else {
-        targets = creep.room.find(FIND_STRUCTURES);
-        for(id in targets) {
-          var target = targets[id];
+        var targets = creep.room.find(FIND_STRUCTURES);
+
+        for(var y in targets) {
+          target = targets[y];
           if(target.structureType != 'controller') {
             lca(creep, ' pillaging a ' + target.structureType + ' at ' + target.pos.x + ',' + target.pos.y + ' of '+ targets.length + ' standard structures in ' + creep.room.name + '.');
             creep.moveTo(target);
@@ -51,11 +50,11 @@ module.exports = function(creep, p_room) {
       lca(creep,'is in room mode, but has no roomDestination');
     } else {
       lca(creep, 'is in room mode in room: ' + creep.pos.roomName + ' heading to ' + creep.memory.roomDestination + '.');
-      results = moveToDest(creep, creep.memory.roomDestination);
+      results = moveToDestinationRoom(creep, creep.memory.roomDestination);
     }
     break;
   case 'pos':
-    if(typeof creep.memory.posDestination === 'undefined' || creep.memory.posDestination == null) {
+    if(typeof creep.memory.posDestination === 'undefined' || creep.memory.posDestination === null) {
       lca(creep,'is in pos mode, but has no posDestination');
     } else {
       // position is defined - handle movement of creep
@@ -78,13 +77,13 @@ module.exports = function(creep, p_room) {
         if(creep.pos.x == 49) {
           creep.move(LEFT);
         }
-        if(creep.pos.x == 0) {
+        if(creep.pos.x === 0) {
           creep.move(RIGHT);
         }
         if(creep.pos.y == 49) {
           creep.move(TOP);
         }
-        if(creep.pos.y == 0) {
+        if(creep.pos.y === 0) {
           creep.move(BOTTOM);
         }
         creep.memory.posDestination = null;
@@ -94,20 +93,20 @@ module.exports = function(creep, p_room) {
     break;
   case 'target':
     // Check for appropriate destination
-    if(typeof creep.memory.targetDestination === 'undefined' || creep.memory.targetDestination == null) {
+    if(typeof creep.memory.targetDestination === 'undefined' || creep.memory.targetDestination === null) {
       console.log(creep.name + 'is in target mode, but has no targetDestination');
     } else {
       // targetDestination is defined
-      var target = creep.memory.targetDestination;
+      target = creep.memory.targetDestination;
       results = creep.moveTo(Game.structures[target.id]);
-      if(results != OK) { console.log(creep.name + ' call to moveTo returned: ' + displayError(results)); }
+      if(results != OK) { console.log(creep.name + ' call to moveTo returned: ' + displayErr(results)); }
     }
     break;
   case 'controller':
     creep.moveTo(creep.room.controller);
     results = creep.claimController(creep.room.controller);
     if(results != OK) {
-      console.log(creep.name + ' call to claimController returned: ' + displayError(results));
+      console.log(creep.name + ' call to claimController returned: ' + displayErr(results));
     }
     break;
   default:

@@ -1,8 +1,5 @@
-module.exports = function (creep, p_room) {
-  var lca = require('logCreepAction');
-  var pickup = require('pickupEnergy');
-
-  if(creep.spawning == true) {
+function upgrade(creep) {
+  if(creep.spawning === true) {
     lca(creep,'is still spawning.');
     return 0;
   }
@@ -13,7 +10,7 @@ module.exports = function (creep, p_room) {
         creep.memory.role = 'harvester';
         lca(creep, 'is now in \'harvester\' mode.');
       } else {
-        if(typeof creep.memory.locked === 'undefined' || creep.memory.locked == false) {
+        if(typeof creep.memory.locked === 'undefined' || creep.memory.locked === false) {
           creep.memory.state = 'upgrade';
           lca(creep, 'is now in \'upgrade\' mode.');
         } else {
@@ -22,17 +19,17 @@ module.exports = function (creep, p_room) {
       }
     }
   } else {
-    if(creep.carry.energy == 0) {
+    if(creep.carry.energy === 0) {
       creep.memory.state = 'fill';
     }
   }
 
-  if(creep.carry.energy == 0  || creep.memory.state == 'fill') {
+  if(creep.carry.energy === 0  || creep.memory.state == 'fill') {
     var sources = creep.room.find(FIND_SOURCES);
     lca(creep, 'is gathering energy.');
     creep.moveTo(sources[0]);
     creep.harvest(sources[0]);
-    pickup(creep);
+    pickupEnergy(creep);
   } else {
     if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity) {
       lca(creep, 'spawn is low on energy changing to harvester mode.');
@@ -40,8 +37,8 @@ module.exports = function (creep, p_room) {
     } else {
       lca(creep, 'is upgrading controller.');
       creep.moveTo(creep.room.controller);
-      pickup(creep);
+      pickupEnergy(creep);
       creep.upgradeController(creep.room.controller);
     }
   }
-};
+}

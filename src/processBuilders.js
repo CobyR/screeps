@@ -1,8 +1,8 @@
-module.exports = function(builders, p_room) {
-  var buildThings = require('builder');
-  var lca = require('logCreepAction');
+function processBuilders(builders) {
+
   if(builders.length > 0) {
-    console.log('[Builders] -------------------');
+    log('[Builders] -------------------','creep');
+
     var previousCreepsTargetId = null;
     var index = -1;
 
@@ -17,7 +17,7 @@ module.exports = function(builders, p_room) {
       if(typeof creep.memory.currentTarget === 'undefined') {
         creep.memory.currentTarget = null;
       }
-      if(creep.memory.currentTarget == null || creep.memory.currentTarget.id == previousCreepsTargetId) {
+      if(creep.memory.currentTarget === null || creep.memory.currentTarget.id == previousCreepsTargetId) {
         // lca(creep, 'current target is being cleared, someone is on it already', true)
         creep.memory.currentTarget = null;
       } else {

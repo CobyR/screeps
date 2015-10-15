@@ -14,15 +14,61 @@
     "globalstrict": true,
     "strict": true,
     "predef": [
-      "global", "Game", "Memory", "console", "_", "performance", "module",
+        "global", "Game", "Memory", "console", "_", "performance", "module",
+        "RoomPosition",
 
-      "FIND_SOURCES", "FIND_MY_SPAWNS", "FIND_CONSTRUCTION_SITES", "FIND_DROPPED_ENERGY",
-      "FIND_MY_STRUCTURES", "FIND_FLAGS", "FIND_MY_CREEPS",
+        "FIND_SOURCES",
+        "FIND_MY_SPAWNS",
+        "FIND_CONSTRUCTION_SITES",
+        "FIND_DROPPED_ENERGY",
+        "FIND_MY_STRUCTURES",
+        "FIND_FLAGS",
+        "FIND_MY_CREEPS",
+        "FIND_HOSTILE_CREEPS",
+        "FIND_HOSTILE_STRUCTURES",
+        "FIND_STRUCTURES",
+        "FIND_MY_CONSTRUCTION_SITES",
 
-      "STRUCTURE_CONTROLLER", "STRUCTURE_EXTENSION", "STRUCTURE_STORAGE", "STRUCTURE_LINK",
+        "ALLOW_SPAWN_USE",
 
-      "WORK", "CARRY", "MOVE",
-      "OK", "ERR_NOT_FOUND", "ERR_INVALID_ARGS", "ERR_TIRED"
+        "STRUCTURE_CONTROLLER",
+        "STRUCTURE_EXTENSION",
+        "STRUCTURE_STORAGE",
+        "STRUCTURE_LINK",
+        "STRUCTURE_ROAD",
+        "STRUCTURE_RAMPART",
+
+        "WORK",
+        "CARRY",
+        "MOVE",
+        "ATTACK",
+        "HEAL",
+        "TOUGH",
+
+        "OK",
+        "ERR_NOT_FOUND",
+        "ERR_INVALID_ARGS",
+        "ERR_TIRED",
+        "ERR_NAME_EXISTS",
+        "ERR_BUSY",
+        "ERR_NOT_ENOUGH_ENERGY",
+        "ERR_NOT_IN_RANGE",
+        "ERR_NO_PATH",
+
+        "COLOR_RED",
+        "COLOR_ORANGE",
+        "COLOR_YELLOW",
+        "COLOR_BROWN",
+        "COLOR_PURPLE",
+
+        "TOP",
+        "TOP_RIGHT",
+        "RIGHT",
+        "BOTTOM_RIGHT",
+        "BOTTOM",
+        "BOTTOM_LEFT",
+        "LEFT",
+        "TOP_LEFT"
     ]
   }
 }

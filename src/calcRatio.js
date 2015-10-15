@@ -1,9 +1,9 @@
-module.exports = function(target){
+function calcRatio(target){
   var RAMPART_HITS = 500000;
   var WALL_HITS = 1000000;
   var ratio = 0;
 
-  if(target == null){
+  if(target === null){
     return 1;
   }
 
@@ -20,4 +20,4 @@ module.exports = function(target){
   }
 
   return ratio;
-};
+}

@@ -1,16 +1,13 @@
-module.exports = function(creep, p_room, source_index) {
-  var lca = require('logCreepAction');
-  var nwc = require('numberWithCommas');
-  var moveToDest = require('findPathToExit');
+function hoard(creep, source_index) {
 
   var busy = 0;
 
-  if(creep.spawning == true) {
+  if(creep.spawning === true) {
     lca(creep, 'is still spawning.');
     return 0;
   }
 
-  if(creep.carry.energy == 0 || creep.memory.state == 'gathering') {
+  if(creep.carry.energy === 0 || creep.memory.state == 'gathering') {
     // if(creep.room.name == 'W11S25') {
     //  var results = moveToDest(creep,'W11S26');
     // } else {
@@ -31,7 +28,7 @@ module.exports = function(creep, p_room, source_index) {
       creep.moveTo(creep.room.storage);
       creep.transferEnergy(creep.room.storage);
     } else {
-      results = moveToDest(creep, p_room.name);
+      moveToDestinationRoom(creep, p_room.name);
     }
   }
-};
+}

@@ -1,14 +1,11 @@
-module.exports = function(explorers) {
-  var explore = require('explore');
-  var assignNextPosition = require('explorerAssignNextPosition');
-  var lca = require('logCreepAction');
-
+function processExplorers(explorers, report) {
   if(explorers.length > 0) {
-    console.log('[Explorers] ------------------');
+    log('[Explorers] ------------------','creep');
     var poss = [];
+    var creep = null;
 
     for(var id in explorers) {
-      var creep = Game.getObjectById(explorers[id]);
+      creep = Game.getObjectById(explorers[id]);
       // split explorers into groups by their mode of operation
 
       switch(creep.memory.mode){
@@ -27,8 +24,8 @@ module.exports = function(explorers) {
     for(id in poss) {
       creep = Game.getObjectById(poss[id]);
       // lca(creep, 'part of poss and my destination is ' + creep.memory.posDestination.x + ',' + creep.memory.posDestination.y,true);
-      if(commonDestination == '') {
-         lca(creep, 'setting common destination',true);
+      if(commonDestination === '') {
+        lca(creep, 'setting common destination', report, true);
         commonDestination = creep.memory.posDestination;
         cdCreeps.push(creep.id);
       } else {
@@ -43,15 +40,14 @@ module.exports = function(explorers) {
       // There is more than one creep with a commonDestination
       for(id in cdCreeps) {
         creep = Game.getObjectById(cdCreeps[id]);
-        lca(creep, 'evaluating for goal success');
+        lca(creep, 'evaluating for goal success', report);
 
         if(creep.pos.x == commonDestination.x && creep.pos.y == commonDestination.y) {
-          lca(creep, '   gaol == true');
+          lca(creep, '   goal == true', report);
           goal = true;
         } else {
-          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y);
+          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y, report);
         }
-
       }
 
       if(goal) {
@@ -68,4 +64,4 @@ module.exports = function(explorers) {
       explore(creep);
     }
   }
-};
+}
