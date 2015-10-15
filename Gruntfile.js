@@ -29,7 +29,7 @@ module.exports = function(grunt) {
       },
 
       jshint: {
-        all: ['test/main.js'],
+        all: ['dist/main.js'],
         options: grunt.file.readJSON('package.json').jshintConfig
       },
 
