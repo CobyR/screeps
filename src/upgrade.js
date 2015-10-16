@@ -4,9 +4,11 @@ function upgrade(creep) {
     return 0;
   }
 
+  var spawn = creep.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_SPAWN}})[0];
+
   if(creep.memory.state == 'fill') {
     if(creep.carry.energy == creep.carryCapacity) {
-      if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity && !creep.memory.locked) {
+      if(spawn.energy < spawn.energyCapacity && !creep.memory.locked) {
         creep.memory.role = 'harvester';
         lca(creep, 'is now in \'harvester\' mode.');
       } else {
@@ -25,7 +27,7 @@ function upgrade(creep) {
   }
   var usefulExtensions = getExtensionsWithEnergy(creep);
   var extension = null;
-  
+
   if(creep.carry.energy === 0  || creep.memory.state == 'fill') {
     if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD){
       lca(creep, 'is getting energy from storage.');
@@ -50,7 +52,7 @@ function upgrade(creep) {
       pickupEnergy(creep);
     }
   } else {
-    if(Game.spawns.Spawn1.energy < Game.spawns.Spawn1.energyCapacity  && !creep.memory.locked) {
+    if(spawn.energy < spawn.energyCapacity  && !creep.memory.locked) {
       lca(creep, 'spawn is low on energy changing to harvester mode.');
       creep.memory.role='harvester';
     } else {

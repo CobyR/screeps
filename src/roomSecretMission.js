@@ -28,8 +28,15 @@ function roomSecretMission(creep) {
       break;
     }
     break;
+  case 'W18S29':
+    switch(creep.memory.role){
+    case 'explorer':
+      creep.memory.mode='build';
+      creep.memory.state='fill';
+    }
+    break;
   default:
     creep.memory.mode = 'pillage';
-    creep.memory.state = ' wreaking havoc';
+    creep.memory.state = 'destroying';
   }
 }

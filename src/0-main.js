@@ -16,7 +16,7 @@ module.exports.loop = function () {
 
   console.log('===== Tick =====');
 
-  stayAlive();
+  stayAlive(Game.spawns.Spawn1, Game.rooms.W19S29);
 
   var explorers = [];
   var builders = [];
@@ -97,6 +97,10 @@ module.exports.loop = function () {
     if(noticeMessage.length > 0) {
       Game.notify(noticeMessage);
     }
+  }
+
+  if(Game.rooms.W18S29){
+    stayAlive(Game.spawns.Spawn2, Game.rooms.W18S29);
   }
 
   console.log('all scripts completed ' + nwc(Game.time));

@@ -8,6 +8,42 @@ function explore(creep) {
   }
 
   switch(creep.memory.mode) {
+  case 'build':
+    if(creep.carry.energy === 0){
+      creep.memory.state = 'fill';
+    }
+    switch(creep.memory.state){
+    case 'fill':
+      if(creep.carry.energy < creep.carryCapacity){
+        var sources = creep.room.find(FIND_SOURCES);
+        lca(creep, 'mining energy.');
+        creep.moveTo(sources[0]);
+        creep.harvest(sources[0]);
+
+      } else {
+        creep.memory.state = 'build';
+      }
+      break;
+    case 'build':
+      if(creep.carry.energy === 0) {
+        creep.memory.state = 'fill';
+      } else {
+        var sites = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
+
+        if(sites.length > 0){
+          lca(creep, 'building site');
+          creep.moveTo(sites[0]);
+          creep.build(sites[0]);
+        } else {
+          lca(creep, 'upgrading controller');
+          creep.moveTo(creep.room.controller);
+          creep.upgradeController(creep.room.controller);
+        }
+        break;
+      }
+      break;
+    }
+    break;
   case 'pillage':
     // lca(creep, 'pillageing in ' + creep.room.name + '.',true);
     var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);

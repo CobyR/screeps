@@ -1,4 +1,5 @@
 function buildThings(creep, builder_index) {
+  var ALLOW_SPAWN_USE = true;
 
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
@@ -7,6 +8,12 @@ function buildThings(creep, builder_index) {
 
     var usefulExtensions = getExtensionsWithEnergy(creep);
     var extension = null;
+  var spawn = creep.room.find(FIND_MY_STRUCTURES,{filter: {structureType: STRUCTURE_SPAWN}})[0];
+
+  if(typeof spawn === 'undefined'){
+    lca(creep, 'no spawn available in this room.');
+    return OK;
+  }
 
     if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
@@ -27,8 +34,8 @@ function buildThings(creep, builder_index) {
         }
       } else if(ALLOW_SPAWN_USE === true) {
         lca( creep, 'is getting energy from spawn.');
-        creep.moveTo(Game.spawns.Spawn1);
-        Game.spawns.Spawn1.transferEnergy(creep);
+        creep.moveTo(spawn);
+        spawn.transferEnergy(creep);
       } else {
         lca(creep, 'waiting for energy in extensions or storage.');
       }
@@ -36,10 +43,10 @@ function buildThings(creep, builder_index) {
     else {
         if(creep.carry.energy === 0) {
           lca( creep, 'is traveling to spawn for energy.');
-          creep.moveTo(Game.spawns.Spawn1);
+          creep.moveTo(spawn);
         }
         else {
-            var targets = p_room.find(FIND_MY_CONSTRUCTION_SITES);
+            var targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
             if(targets.length === 0) {
               // lca(creep, 'calling fixPrioritizedStructure', true);
               creep.memory.state = 'repairing';

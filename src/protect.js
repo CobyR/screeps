@@ -17,7 +17,7 @@ function protect(creep) {
     // There are no hostiles, move to a flag.
     if(typeof creep.memory.destination === 'undefined' ||
        creep.memory.destination === null) {
-      targets = p_room.find(FIND_FLAGS, { filter: { color: COLOR_RED}});
+      targets = creep.room.find(FIND_FLAGS, { filter: { color: COLOR_RED}});
       //lca(creep,'found ' + targets.length + ' flags', true);
       for(var id in targets) {
         var target = targets[id];
