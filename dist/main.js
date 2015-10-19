@@ -1016,7 +1016,7 @@ function processWorkers(workers, p_room) {
     if(creep.room.name == p_room.name){
       sources = p_room.find(FIND_SOURCES);
 
-      lca(creep, 'is in primary room it has ' + sources.length + ' source(s).' ,true);
+      // lca(creep, 'is in primary room it has ' + sources.length + ' source(s).' ,true);
       if(sources.length > 1){
         if(index % 2){
           source = sources[0];
