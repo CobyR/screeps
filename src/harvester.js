@@ -1,19 +1,14 @@
 function harvest(creep, source) {
   var busy = 0;
   var STORAGE_LIMIT = 200000;
-  if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 500000) {
-    // forget harvesting I'm just going to upgrade
-    creep.memory.role = 'upgrade';
-    creep.memory.state = 'fill';
-    upgrade(creep);
-    return OK;
-  }
+  //if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 500000) {
+  //  // forget harvesting I'm just going to upgrade
+  //  creep.memory.role = 'upgrade';
+  //  creep.memory.state = 'fill';
+  //  upgrade(creep);
+  //  return OK;
+  //}
   var spawn = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN}})[0];
-
-  if(creep.spawning === true) {
-    lca(creep, 'is still spawning.');
-    return 0;
-  }
   var drops = creep.room.find(FIND_DROPPED_ENERGY);
   var targets = null;
 
@@ -32,14 +27,14 @@ function harvest(creep, source) {
   } else {
     creep.memory.state = 'transferring';
     if(spawn.energy == spawn.energyCapacity) {
-      // lca(creep, 'observed that the spawn energy level is at capacity.', true);
-      // lca(creep, 'has ' + creep.carry.energy + ' energy.',true);
+      lca(creep, 'observed that the spawn energy level is at capacity.', true);
+      lca(creep, 'has ' + creep.carry.energy + ' energy.',true);
       if(creep.carry.energy > 0) {
         targets = creep.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
-        //console.log(creep.name + ' says there are ' + targets.length + ' structures, looking for STRUCTURE_EXTENSION');
+        lca(creep,'there are ' + targets.length + ' structures, looking for STRUCTURE_EXTENSION',true);
         for(var index in targets) {
           var target = targets[index];
-          //console.log(creep.name + ' is evaluating ' + index + ' - structure type is: ' + target.structureType);
+          lca(creep,'is evaluating ' + index + ' - structure type is: ' + target.structureType,true);
           if(busy === 0) {
             if(target.energy < target.energyCapacity) {
               lca(creep, 'is taking energy to a (' + target.structureType + ' - ' + target.pos.x +',' + target.pos.y + ' it is at ' + target.energy + ' of ' + target.energyCapacity + ').');
