@@ -28,7 +28,7 @@ function upgrade(creep) {
   var usefulExtensions = getExtensionsWithEnergy(creep);
   var extension = null;
 
-  if(creep.carry.energy === 0  || creep.memory.state == 'fill') {
+  if(creep.carry.energy === 0  || (creep.memory.state == 'fill' && creep.carry.energy < creep.carryCapacity)) {
     if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD){
       lca(creep, 'is getting energy from storage.');
       creep.moveTo(creep.room.storage);
