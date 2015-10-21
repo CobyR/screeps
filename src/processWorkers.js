@@ -74,6 +74,10 @@ function spawnWorker(spawn, room, current, MAX){
       spawnLevel = l;
       break;
     }
+    if(results == ERR_NAME_EXISTS){
+      log('Incrementing worker_counter for ' + room.name + ' from ' + room.memory.worker_counter + ' by 1 in check.', 'spawn');
+      room.memory.worker_counter ++;
+    }
   }
 
   if(current < MAX) {
@@ -82,8 +86,13 @@ function spawnWorker(spawn, room, current, MAX){
                                 'W' + spawnLevel +
                                 '-' + room.memory.worker_counter,
                                 { role: 'upgrade', locked: false});
-    if(results == ERR_NOT_ENOUGH_ENERGY) {
-      log('Not enough energy to spawn level ' + spawnLevel + ' worker, waiting.');
+    if(results == OK){
+      room.memory.worker_counter ++;
+    } else if(results == ERR_NAME_EXISTS){
+      log('Incrementing worker_counter for ' + room.name + ' from ' + room.memory.worker_counter + ' by 1 in create.','spawn');
+      room.memory.worker_counter ++;
+    } else {
+      log('Spawning returned: ' + displayErr(results), 'spawn');
     }
   }
 }
