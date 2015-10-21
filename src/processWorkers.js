@@ -50,13 +50,17 @@ function processWorkers(workers, p_room) {
       }
     }
 
-    switch(creep.memory.role) {
-    case 'harvester':
-      harvest(creep, source);
-      break;
-    case 'upgrade':
-      upgrade(creep, source);
-      break;
+    if(!creep.spawning){
+      switch(creep.memory.role) {
+      case 'harvester':
+        harvest(creep, source);
+        break;
+      case 'upgrade':
+        upgrade(creep, source);
+        break;
+      }
+    } else {
+      lca(creep, 'is still spawning.');
     }
   }
 }
@@ -84,7 +88,7 @@ function spawnWorker(spawn, room, current, MAX){
     log('Attempting to spawn a level ' + spawnLevel + ' worker.');
     results = spawn.createCreep(WORKER[spawnLevel],
                                 'W' + spawnLevel +
-                                '-' + room.memory.worker_counter,
+                                '_' + room.memory.worker_counter,
                                 { role: 'upgrade', locked: false});
     if(results == OK){
       room.memory.worker_counter ++;
