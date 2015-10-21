@@ -13,8 +13,9 @@ var USE_STORAGE_THRESHOLD = 10000;
 
 
 module.exports.loop = function () {
+  var startCpu = Game.getUsedCpu();
 
-  console.log('===== Tick =====');
+  console.log('===== Tick ===== ');
 
   stayAlive(Game.spawns.Spawn1, Game.rooms.W19S29);
 
@@ -102,8 +103,9 @@ module.exports.loop = function () {
   if(Game.rooms.W18S29){
     stayAlive(Game.spawns.Spawn2, Game.rooms.W18S29);
   }
+  var endCpu = Game.getUsedCpu();
 
-  console.log('all scripts completed ' + nwc(Game.time));
+  console.log('all scripts completed ' + nwc(endCpu));
 }
 
 

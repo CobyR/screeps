@@ -12,6 +12,8 @@ function stayAlive(spawn, room) {
   var healers = 0;
   var explorers = 0;
   var hoarders = 0;
+  var sweepers = 0;
+  var unknowns = 0;
 
   var MAX_WORKERS = room.find(FIND_FLAGS, { filter: {color: COLOR_YELLOW}}).length;
   var MAX_GUARDS = room.find(FIND_FLAGS, { filter: {color: COLOR_RED}}).length;
@@ -20,6 +22,7 @@ function stayAlive(spawn, room) {
   var MAX_HEALERS = 0;
   var MAX_EXPLORERS = 0;
   var MAX_HOARDERS = room.find(FIND_FLAGS, { filter: {color: COLOR_PURPLE}}).length;
+  var MAX_SWEEPERS = room.find(FIND_FLAGS, { filter: {color: COLOR_GREEN}}).length;
 
   var explorerDestination = 'W18S29';
   var results = OK;
@@ -39,25 +42,38 @@ function stayAlive(spawn, room) {
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
     if(creep.room.name == room.name){
-      if(creep.memory.role == 'harvester') {
-        harvesters +=1;
-        workers += 1;
-      } else if(creep.memory.role == 'upgrade') {
-        upgraders += 1;
-        workers += 1 ;
-      } else if(creep.memory.role == 'guard') {
-        guards += 1;
-      } else if(creep.memory.role == 'builder') {
-        builders += 1;
-      } else if(creep.memory.role == 'explorer') {
-        explorers += 1;
-      } else if(creep.memory.role == 'hoarder') {
-        hoarders += 1;
+      switch(creep.memory.role){
+      case 'harvester':
+        harvesters ++;
+        workers ++;
+        break;
+      case 'upgrade':
+        upgraders ++;
+        workers ++;
+        break;
+      case 'guard':
+        guards ++;
+        break;
+      case 'builder':
+        builders ++;
+        break;
+      case 'explorer':
+        explorers ++;
+        break;
+      case 'hoarder':
+        hoarders ++;
+        break;
+      case 'sweeper':
+        sweepers ++;
+        break;
+      default:
+        unknowns ++;
+        break;
       }
     }
   }
 
-  // calculate MAX #'s
+  // Tweak MAX Numbers based on circumstance
   if(workers < 4 ) {
     MAX_WORKERS = 4;
     MAX_BUILDERS = 0;
@@ -70,13 +86,35 @@ function stayAlive(spawn, room) {
     MAX_EXPLORERS=room.find(FIND_FLAGS, { filter: {color: COLOR_ORANGE}}).length;
   }
 
+  if(typeof room.storage !== 'undefined'){
+    var storedEnergy = room.storage.store.energy;
+
+    if(MAX_SWEEPERS === 0){
+      switch(true) {
+      case ( storedEnergy < 250000):
+        MAX_SWEEPERS = 0;
+        break;
+      case( storedEnergy < 500000):
+        MAX_SWEEPERS = 1;
+        break;
+      case (storedEnergy < 750000):
+        MAX_SWEEPERS = 2;
+        break;
+      case( storedEnergy < 1000000):
+        MAX_SWEEPERS = 3;
+      }
+    }
+  }
+
   // report stats
   console.log('CREEPS: ' +
               workers + ' of ' + MAX_WORKERS +  ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
               guards + ' of ' + MAX_GUARDS + ' guards, ' +
               builders + ' of ' + MAX_BUILDERS + ' builders, ' +
-              explorers + ' of ' + MAX_EXPLORERS + ' explorers, and ' +
-              hoarders + ' of ' + MAX_HOARDERS + ' hoarders.');
+              explorers + ' of ' + MAX_EXPLORERS + ' explorers, ' +
+              hoarders + ' of ' + MAX_HOARDERS + ' hoarders, ' +
+              sweepers + ' of ' + MAX_SWEEPERS + ' sweepers, and ' +
+              unknowns + ' unknown creeps.');
 
   // spawn guards
   if(guards < MAX_GUARDS && workers >= MAX_WORKERS / 2 ) {
@@ -107,22 +145,8 @@ function stayAlive(spawn, room) {
 
 
   // spawn workers
-  if(workers < MAX_WORKERS && (guards >= MAX_GUARDS || workers < 5)) {
-    if(room.energyAvailable >= 250) {
-      results = OK;
-      console.log('Spawning a new mega worker.');
-      results = spawn.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + room.memory.worker_counter, { role: 'harvester', locked: false});
-      console.log('system says: ' + displayErr(results));
-      if(results == ERR_NOT_ENOUGH_ENERGY){
-        console.log('Spawning a new worker - mega worker said: ' + displayErr(results) +'.');
-        results = spawn.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + room.memory.worker_counter, { role: 'harvester', locked: false});
-      }
-      if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.worker_counter +=1;
-      }
-    } else {
-      console.log('I wanted to spawn a worker - energy levels at ' + spawn.energy + ' of required 250.');
-    }
+  if(guards >= MAX_GUARDS || workers < 5) {
+    spawnWorker(spawn, room, workers, MAX_WORKERS);
   }
 
   // spawn hoarders
@@ -168,6 +192,8 @@ function stayAlive(spawn, room) {
     }
   }
 
+  // spawn sweepers
+  spawnSweepers(spawn, room, sweepers, MAX_SWEEPERS);
 
   // spawn explorers
   if(typeof spawn.memory.explorersEnabled === 'undefined' || spawn.memory.explorersEnabled === false ) {

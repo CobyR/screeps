@@ -1,9 +1,4 @@
 function protect(creep) {
-  if(creep.spawning === true) {
-    lca(creep, 'is still spawning.');
-    return 0;
-  }
-
   var targets = creep.room.find(FIND_HOSTILE_CREEPS);
   var dest = null;
   var results = OK;
@@ -22,7 +17,7 @@ function protect(creep) {
       for(var id in targets) {
         var target = targets[id];
 
-        // lca(creep, id + ':' + target.name , true);
+        lca(creep, id + ':' + target.name , true);
 
         var t = target;
 

@@ -4,7 +4,12 @@ function processGuards(guards) {
 
     for(var id in guards) {
       var creep = Game.getObjectById(guards[id]);
-      protect(creep);
+      if(creep.spawning) {
+        lca(creep, 'is spawning.');
+        return OK;
+      } else {
+        protect(creep);
+      }
     }
   }
 }

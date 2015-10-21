@@ -1,4 +1,4 @@
-function processExplorers(explorers, report) {
+function processExplorers(explorers, room) {
   if(explorers.length > 0) {
     log('[Explorers] ------------------','creep');
     var poss = [];
@@ -14,6 +14,7 @@ function processExplorers(explorers, report) {
         break;
       default:
         explore(creep);
+        return OK;
       }
     }
 
@@ -25,7 +26,7 @@ function processExplorers(explorers, report) {
       creep = Game.getObjectById(poss[id]);
       // lca(creep, 'part of poss and my destination is ' + creep.memory.posDestination.x + ',' + creep.memory.posDestination.y,true);
       if(commonDestination === '') {
-        lca(creep, 'setting common destination', report, true);
+        lca(creep, 'setting common destination', true);
         commonDestination = creep.memory.posDestination;
         cdCreeps.push(creep.id);
       } else {
@@ -40,13 +41,13 @@ function processExplorers(explorers, report) {
       // There is more than one creep with a commonDestination
       for(id in cdCreeps) {
         creep = Game.getObjectById(cdCreeps[id]);
-        lca(creep, 'evaluating for goal success', report);
+        lca(creep, 'evaluating for goal success');
 
         if(creep.pos.x == commonDestination.x && creep.pos.y == commonDestination.y) {
-          lca(creep, '   goal == true', report);
+          lca(creep, '   goal == true', true);
           goal = true;
         } else {
-          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y, report);
+          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y, true);
         }
       }
 
@@ -54,7 +55,7 @@ function processExplorers(explorers, report) {
         assignNextPosition(cdCreeps);
       }
     } else {
-      console.log('another unexepected code branch in processExplorers');
+      log('another unexepected code branch in processExplorers','creep');
     }
 
     // let all position based creeps do their thing

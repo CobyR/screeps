@@ -13,8 +13,9 @@ var USE_STORAGE_THRESHOLD = 10000;
 
 
 module.exports.loop = function () {
+  var startCpu = Game.getUsedCpu();
 
-  console.log('===== Tick =====');
+  console.log('===== Tick ===== ');
 
   stayAlive(Game.spawns.Spawn1, Game.rooms.W19S29);
 
@@ -102,8 +103,9 @@ module.exports.loop = function () {
   if(Game.rooms.W18S29){
     stayAlive(Game.spawns.Spawn2, Game.rooms.W18S29);
   }
+  var endCpu = Game.getUsedCpu();
 
-  console.log('all scripts completed ' + nwc(Game.time));
+  console.log('all scripts completed ' + nwc(endCpu));
 }
 
 
@@ -123,7 +125,7 @@ function buildThings(creep, builder_index) {
 
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
-      return 0;
+      return ERR_BUSY;
     }
 
     var usefulExtensions = getExtensionsWithEnergy(creep);
@@ -602,12 +604,19 @@ function fixPrioritizedStructure(creep) {
   }
 }
 
+function guardDuty(creep) {
+}
 function harvest(creep, source) {
   var busy = 0;
   var STORAGE_LIMIT = 200000;
-
+  if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 500000) {
+    // forget harvesting I'm just going to upgrade
+    creep.memory.role = 'upgrade';
+    creep.memory.state = 'fill';
+    upgrade(creep);
+    return OK;
+  }
   var spawn = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN}})[0];
-
 
   if(creep.spawning === true) {
     lca(creep, 'is still spawning.');
@@ -734,11 +743,20 @@ function log(message, classification){
 }
 
 function lca(creep, message, debug) {
-     if(creepReports() && debug) {
-        console.log('  [DEBUG] ' + creep.name + '|' + creep.memory.role + ' ' + message);
-     } else if(creepReports()) {
-        console.log('  ' + creep.name + '|' + creep.memory.role + ' (' + creep.memory.state + '|' + creep.ticksToLive + '|' + creep.room.name + ') ' + message);
-     }
+  var DEBUG = false;
+
+  if(creepReports() && debug) {
+    if(DEBUG){
+      console.log('  [DEBUG] ' + creep.name + '|' + creep.memory.role + ' ' + message);
+    } else {
+      // swallow message - debugging is turned off
+    }
+
+  } else if(creepReports()) {
+    console.log('  ' + creep.name + '|' + creep.memory.role + ' (' + creep.memory.state + '|' + creep.ticksToLive + '|' + creep.room.name + ') ' + message);
+  } else {
+    // swallow message creepReports are turned off
+  }
 }
 function median(values) {
 
@@ -904,7 +922,7 @@ function processBuilders(builders) {
    }
   }
 }
-function processExplorers(explorers, report) {
+function processExplorers(explorers, room) {
   if(explorers.length > 0) {
     log('[Explorers] ------------------','creep');
     var poss = [];
@@ -920,6 +938,7 @@ function processExplorers(explorers, report) {
         break;
       default:
         explore(creep);
+        return OK;
       }
     }
 
@@ -931,7 +950,7 @@ function processExplorers(explorers, report) {
       creep = Game.getObjectById(poss[id]);
       // lca(creep, 'part of poss and my destination is ' + creep.memory.posDestination.x + ',' + creep.memory.posDestination.y,true);
       if(commonDestination === '') {
-        lca(creep, 'setting common destination', report, true);
+        lca(creep, 'setting common destination', true);
         commonDestination = creep.memory.posDestination;
         cdCreeps.push(creep.id);
       } else {
@@ -946,13 +965,13 @@ function processExplorers(explorers, report) {
       // There is more than one creep with a commonDestination
       for(id in cdCreeps) {
         creep = Game.getObjectById(cdCreeps[id]);
-        lca(creep, 'evaluating for goal success', report);
+        lca(creep, 'evaluating for goal success');
 
         if(creep.pos.x == commonDestination.x && creep.pos.y == commonDestination.y) {
-          lca(creep, '   goal == true', report);
+          lca(creep, '   goal == true', true);
           goal = true;
         } else {
-          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y, report);
+          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y, true);
         }
       }
 
@@ -960,7 +979,7 @@ function processExplorers(explorers, report) {
         assignNextPosition(cdCreeps);
       }
     } else {
-      console.log('another unexepected code branch in processExplorers');
+      log('another unexepected code branch in processExplorers','creep');
     }
 
     // let all position based creeps do their thing
@@ -977,7 +996,12 @@ function processGuards(guards) {
 
     for(var id in guards) {
       var creep = Game.getObjectById(guards[id]);
-      protect(creep);
+      if(creep.spawning) {
+        lca(creep, 'is spawning.');
+        return OK;
+      } else {
+        protect(creep);
+      }
     }
   }
 }
@@ -999,6 +1023,22 @@ function processHoarders(hoarders) {
     }
   }
 }
+
+var WORKER = [];
+var worker1 = [MOVE, WORK, CARRY, CARRY];
+var worker2 = [MOVE, MOVE, WORK, CARRY, CARRY];
+var worker3 = [MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK];
+var worker4 = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK];
+var worker5 = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK];
+ var worker6 = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK];
+
+WORKER.push(worker1);
+WORKER.push(worker1);
+WORKER.push(worker2);
+WORKER.push(worker3);
+WORKER.push(worker4);
+WORKER.push(worker5);
+WORKER.push(worker6);
 
 function processWorkers(workers, p_room) {
   var index = 0;
@@ -1046,12 +1086,34 @@ function processWorkers(workers, p_room) {
     }
   }
 }
-function protect(creep) {
-  if(creep.spawning === true) {
-    lca(creep, 'is still spawning.');
-    return 0;
+
+function spawnWorker(spawn, room, current, MAX){
+  var results = OK;
+  var spawnLevel = room.controller.level;
+
+  for(var l = spawnLevel; l >= 1; l--){
+    results = spawn.canCreateCreep(WORKER[l],
+                                'W' + l +
+                                '_' + room.memory.worker_counter,
+                                { role: 'harvest', locked: false});
+    if(results == OK){
+      spawnLevel = l;
+      break;
+    }
   }
 
+  if(current < MAX) {
+    log('Attempting to spawn a level ' + spawnLevel + ' worker.');
+    results = spawn.createCreep(WORKER[spawnLevel],
+                                'W' + spawnLevel +
+                                '-' + room.memory.worker_counter,
+                                { role: 'upgrade', locked: false});
+    if(results == ERR_NOT_ENOUGH_ENERGY) {
+      log('Not enough energy to spawn level ' + spawnLevel + ' worker, waiting.');
+    }
+  }
+}
+function protect(creep) {
   var targets = creep.room.find(FIND_HOSTILE_CREEPS);
   var dest = null;
   var results = OK;
@@ -1070,7 +1132,7 @@ function protect(creep) {
       for(var id in targets) {
         var target = targets[id];
 
-        // lca(creep, id + ':' + target.name , true);
+        lca(creep, id + ':' + target.name , true);
 
         var t = target;
 
@@ -1208,6 +1270,8 @@ function stayAlive(spawn, room) {
   var healers = 0;
   var explorers = 0;
   var hoarders = 0;
+  var sweepers = 0;
+  var unknowns = 0;
 
   var MAX_WORKERS = room.find(FIND_FLAGS, { filter: {color: COLOR_YELLOW}}).length;
   var MAX_GUARDS = room.find(FIND_FLAGS, { filter: {color: COLOR_RED}}).length;
@@ -1216,6 +1280,7 @@ function stayAlive(spawn, room) {
   var MAX_HEALERS = 0;
   var MAX_EXPLORERS = 0;
   var MAX_HOARDERS = room.find(FIND_FLAGS, { filter: {color: COLOR_PURPLE}}).length;
+  var MAX_SWEEPERS = room.find(FIND_FLAGS, { filter: {color: COLOR_GREEN}}).length;
 
   var explorerDestination = 'W18S29';
   var results = OK;
@@ -1235,25 +1300,38 @@ function stayAlive(spawn, room) {
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
     if(creep.room.name == room.name){
-      if(creep.memory.role == 'harvester') {
-        harvesters +=1;
-        workers += 1;
-      } else if(creep.memory.role == 'upgrade') {
-        upgraders += 1;
-        workers += 1 ;
-      } else if(creep.memory.role == 'guard') {
-        guards += 1;
-      } else if(creep.memory.role == 'builder') {
-        builders += 1;
-      } else if(creep.memory.role == 'explorer') {
-        explorers += 1;
-      } else if(creep.memory.role == 'hoarder') {
-        hoarders += 1;
+      switch(creep.memory.role){
+      case 'harvester':
+        harvesters ++;
+        workers ++;
+        break;
+      case 'upgrade':
+        upgraders ++;
+        workers ++;
+        break;
+      case 'guard':
+        guards ++;
+        break;
+      case 'builder':
+        builders ++;
+        break;
+      case 'explorer':
+        explorers ++;
+        break;
+      case 'hoarder':
+        hoarders ++;
+        break;
+      case 'sweeper':
+        sweepers ++;
+        break;
+      default:
+        unknowns ++;
+        break;
       }
     }
   }
 
-  // calculate MAX #'s
+  // Tweak MAX Numbers based on circumstance
   if(workers < 4 ) {
     MAX_WORKERS = 4;
     MAX_BUILDERS = 0;
@@ -1266,13 +1344,35 @@ function stayAlive(spawn, room) {
     MAX_EXPLORERS=room.find(FIND_FLAGS, { filter: {color: COLOR_ORANGE}}).length;
   }
 
+  if(typeof room.storage !== 'undefined'){
+    var storedEnergy = room.storage.store.energy;
+
+    if(MAX_SWEEPERS === 0){
+      switch(true) {
+      case ( storedEnergy < 250000):
+        MAX_SWEEPERS = 0;
+        break;
+      case( storedEnergy < 500000):
+        MAX_SWEEPERS = 1;
+        break;
+      case (storedEnergy < 750000):
+        MAX_SWEEPERS = 2;
+        break;
+      case( storedEnergy < 1000000):
+        MAX_SWEEPERS = 3;
+      }
+    }
+  }
+
   // report stats
   console.log('CREEPS: ' +
               workers + ' of ' + MAX_WORKERS +  ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
               guards + ' of ' + MAX_GUARDS + ' guards, ' +
               builders + ' of ' + MAX_BUILDERS + ' builders, ' +
-              explorers + ' of ' + MAX_EXPLORERS + ' explorers, and ' +
-              hoarders + ' of ' + MAX_HOARDERS + ' hoarders.');
+              explorers + ' of ' + MAX_EXPLORERS + ' explorers, ' +
+              hoarders + ' of ' + MAX_HOARDERS + ' hoarders, ' +
+              sweepers + ' of ' + MAX_SWEEPERS + ' sweepers, and ' +
+              unknowns + ' unknown creeps.');
 
   // spawn guards
   if(guards < MAX_GUARDS && workers >= MAX_WORKERS / 2 ) {
@@ -1303,22 +1403,8 @@ function stayAlive(spawn, room) {
 
 
   // spawn workers
-  if(workers < MAX_WORKERS && (guards >= MAX_GUARDS || workers < 5)) {
-    if(room.energyAvailable >= 250) {
-      results = OK;
-      console.log('Spawning a new mega worker.');
-      results = spawn.createCreep( [MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,WORK,WORK], 'W' + room.memory.worker_counter, { role: 'harvester', locked: false});
-      console.log('system says: ' + displayErr(results));
-      if(results == ERR_NOT_ENOUGH_ENERGY){
-        console.log('Spawning a new worker - mega worker said: ' + displayErr(results) +'.');
-        results = spawn.createCreep( [MOVE, CARRY, CARRY,WORK], 'w' + room.memory.worker_counter, { role: 'harvester', locked: false});
-      }
-      if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.worker_counter +=1;
-      }
-    } else {
-      console.log('I wanted to spawn a worker - energy levels at ' + spawn.energy + ' of required 250.');
-    }
+  if(guards >= MAX_GUARDS || workers < 5) {
+    spawnWorker(spawn, room, workers, MAX_WORKERS);
   }
 
   // spawn hoarders
@@ -1364,6 +1450,8 @@ function stayAlive(spawn, room) {
     }
   }
 
+  // spawn sweepers
+  spawnSweepers(spawn, room, sweepers, MAX_SWEEPERS);
 
   // spawn explorers
   if(typeof spawn.memory.explorersEnabled === 'undefined' || spawn.memory.explorersEnabled === false ) {
@@ -1471,29 +1559,59 @@ function structureReport(room, structureType){
   console.log('Median hits per ' + structureType + ' is ' + nwc(median(hitsArray)));
 }
 
-function sweep(creep){
-  var drops = creep.room.find(FIND_DROPPED_ENERGY);
-
-  var closestDrop = null;
-  var distance = 0;
-  var shortestDistance = 50;
-
-  for(var index in drops){
-    var drop = drops[index];
-
-    distance = creep.pos.getRangeTo(drop);
-
-    if(distance < shortestDistance) {
-      shortestDistance = distance;
-      closestDrop = drop;
-    }
+function sweep(creep, room){
+  if(typeof creep.memory.state === 'undefined'){
+    creep.memory.state = creep.memory.mode;
   }
-  if(closestDrop === null){
-    lca(creep, 'waiting for someone to drop some energy.');
-  } else{
-    lca(creep, 'moving to ' + closestDrop.pos.x + ',' + closestDrop.pos.y + ' to pickup ' + closestDrop.energy + ' energy.');
-  creep.moveTo(closestDrop);
-  creep.pickup(closestDrop);
+
+  switch(creep.memory.state){
+  case 'cleanup':
+    var drops = creep.room.find(FIND_DROPPED_ENERGY);
+
+    var closestDrop = null;
+    var distance = 0;
+    var shortestDistance = 50;
+
+    for(var index in drops){
+      var drop = drops[index];
+
+      distance = creep.pos.getRangeTo(drop);
+
+      if(distance < shortestDistance) {
+        shortestDistance = distance;
+        closestDrop = drop;
+      }
+    }
+
+    if(closestDrop === null){
+      lca(creep, 'no drops switching to fillGet.');
+      creep.memory.state = 'fillGet';
+    } else{
+      if(creep.carry.energy == creep.carryCapacity) {
+        creep.memory.state = 'fillGet';
+      } else {
+        lca(creep, 'moving to ' + closestDrop.pos.x + ',' + closestDrop.pos.y + ' to pickup ' + closestDrop.energy + ' energy.');
+        creep.moveTo(closestDrop);
+        creep.pickup(closestDrop);
+      }
+    }
+    break;
+  case 'fillGet':
+    if(creep.carry.energy < creep.carryCapacity){
+      lca(creep, 'moving to Storage to get energy, currently at: ' + creep.carry.energy + '.');
+      creep.moveTo(room.storage);
+      room.storage.transferEnergy(creep);
+    } else {
+      // figure out which extension to move to
+      creep.memory.state = 'fillPut';
+      sweep(creep, room);
+    }
+    break;
+  case 'fillPut':
+    fillPut(creep, room);
+    break;
+  default:
+    creep.memory.state = 'cleanup';
   }
 
 }
@@ -1504,10 +1622,102 @@ function processSweepers(sweepers, room){
 
     for(var id in sweepers) {
       var creep = Game.getObjectById(sweepers[id]);
-      sweep(creep);
+      sweep(creep, room);
     }
   }
 
+}
+
+function spawnSweepers(spawn, room, sweepers, MAX) {
+  if(sweepers < MAX) {
+    var results = spawn.createCreep([MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY,
+                                     MOVE, CARRY],
+                                    'S' + room.memory.sweeper_counter,
+                                    {role: 'sweeper', state: 'cleanup'});
+    switch(results){
+    case OK:
+      room.memory.sweeper_counter ++;
+      log('Spawning a new sweeper succeeded.');
+      break;
+    case ERR_NAME_EXISTS:
+      room.memory.sweeper_counter ++;
+      break;
+    default:
+      log('Spawning a new sweeper failed: ' + displayErr(results) + '.');
+    }
+  }
+}
+
+function fillPut(creep,room){
+  var results =  fillStructure(creep,room, STRUCTURE_SPAWN);
+
+  if(results != OK  && results != ERR_NOT_ENOUGH_ENERGY) {
+    results = fillStructure(creep,room, STRUCTURE_EXTENSION);
+  }
+
+  if(results != OK && results != ERR_NOT_ENOUGH_ENERGY){
+    results = fillStructure(creep,room, STRUCTURE_LINK);
+  }
+
+  if(results != OK) {
+    creep.memory.state = 'cleanup';
+    lca(creep, 'nothing needs energy (' + displayErr(results) + '), going to cleanup.');
+  }
+}
+
+function fillStructure(creep, room, structure){
+  if(creep.carry.energy > 0){
+    var structures = room.find(FIND_MY_STRUCTURES,
+    { filter: { structureType: structure}});
+
+    var usefulStructures = [];
+    structure = null;
+
+    for(var id in structures){
+      structure = structures[id];
+
+      if(structure.energy < structure.energyCapacity){
+        usefulStructures.push(structure);
+      }
+    }
+
+    var distance = 0;
+    var closestStructure = null;
+    var shortestDistance = 50;
+
+    for(id in usefulStructures){
+      structure = usefulStructures[id];
+
+      distance = creep.pos.getRangeTo(structure);
+
+      if(distance < shortestDistance){
+        shortestDistance = distance;
+        closestStructure = structure;
+      }
+    }
+
+    if(closestStructure === null){
+      return -7; // ERR_INVALID_TARGET;
+    } else {
+      lca(creep, 'moving to Extension at ' +
+          closestStructure.pos.x + ',' +
+          closestStructure.pos.y + ' with ' +
+          closestStructure.energy + '.');
+      creep.moveTo(closestStructure);
+      creep.transferEnergy(closestStructure);
+      return OK;
+      }
+  } else {
+    return ERR_NOT_ENOUGH_ENERGY;
+  }
 }
 function totalEnergy() {
   var tE = 0;

@@ -3,7 +3,7 @@ function buildThings(creep, builder_index) {
 
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
-      return 0;
+      return ERR_BUSY;
     }
 
     var usefulExtensions = getExtensionsWithEnergy(creep);

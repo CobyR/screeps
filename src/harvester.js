@@ -1,9 +1,14 @@
 function harvest(creep, source) {
   var busy = 0;
   var STORAGE_LIMIT = 200000;
-
+  if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy > 500000) {
+    // forget harvesting I'm just going to upgrade
+    creep.memory.role = 'upgrade';
+    creep.memory.state = 'fill';
+    upgrade(creep);
+    return OK;
+  }
   var spawn = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN}})[0];
-
 
   if(creep.spawning === true) {
     lca(creep, 'is still spawning.');
