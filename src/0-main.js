@@ -113,8 +113,41 @@ function helloWorld() {
   console.log('HELLO WORLD!');
 }
 
-function creepReports(){
-    return p_room.find(FIND_FLAGS, { filter: { name: 'CR'}}).length;
+function flagReports(name){
+  var rptFlags = p_room.find(FIND_FLAGS, { filter: { name: name}});
+  var reports = [];
+  // console.log('flagReports: ' + name + ' - ' + rptFlags + ' -  ' + rptFlags.length + '.');
+
+  for(var i in rptFlags){
+    var check = rptFlags[i];
+    // console.log('  ' + check.color);
+
+    switch(check.color){
+    case COLOR_WHITE:
+      reports.push('global');
+      break;
+    case COLOR_YELLOW:
+      reports.push('worker');
+      break;
+    case COLOR_PURPLE:
+      reports.push('hoarder');
+      break;
+    case COLOR_RED:
+      reports.push('guard');
+      break;
+    case COLOR_BROWN:
+      reports.push('builder');
+      break;
+    case COLOR_ORANGE:
+      reports.push('explorer');
+      break;
+    case COLOR_GREEN:
+      reports.push('sweeper');
+      break;
+    }
+  }
+  // console.log('     ' + reports.length + ' first ' + reports[0]);
+  return reports;
 }
 
 function structureReports(){

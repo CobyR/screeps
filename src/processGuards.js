@@ -9,6 +9,7 @@ function processGuards(guards) {
         return OK;
       } else {
         guardDuty(creep);
+        lca(creep, 'is doing guard things.');
       }
     }
   }

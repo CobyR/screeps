@@ -1,11 +1,15 @@
 function log(message, classification){
+  var reportFor = flagReports('CR');
+
+  var creepReport = (reportFor.indexOf('global') > -1 );
+
   switch(classification){
   case 'creep':
-    if(creepReports()){
-      console.log(message);
+    if(creepReport){
+      console.log('[creep] ' + message);
     }
     break;
   default:
-    console.log(message);
+    console.log('[' + classification + '] ' + message);
   }
 }
