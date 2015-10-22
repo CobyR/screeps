@@ -105,21 +105,3 @@ function setGuardAssignment(creep){
   creep.memory.state = 'roaming';
   lca(creep,'is roaming since no flags in this room need guards.');
 }
-
-function findNearestEnemy(creep, enemies){
-  var shortestDistance = 50;
-  var distance = 0;
-  var closestHostile = null;
-
-  for(var i in enemies){
-    var hostile = enemies[i];
-
-    distance = creep.pos.getRangeTo(hostile);
-
-    if(distance < shortestDistance){
-      shortestDistance = distance;
-      closestHostile = hostile;
-    }
-  }
-  return closestHostile;
-}

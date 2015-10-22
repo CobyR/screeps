@@ -1,6 +1,7 @@
 function buildThings(creep, builder_index) {
   var ALLOW_SPAWN_USE = true;
-
+  var t = null;
+  
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
       return ERR_BUSY;
@@ -17,21 +18,11 @@ function buildThings(creep, builder_index) {
 
     if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
-      if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD) {
-        lca( creep, 'is getting energy from storage.');
-        creep.moveTo(creep.room.storage);
-        creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
-      } else if(usefulExtensions.length > 0) {
-        for(var id in usefulExtensions){
-          extension = usefulExtensions[id];
-
-          if(extension.energy == extension.energyCapacity){
-            lca(creep, 'is getting energy from an extension.');
-            creep.moveTo(extension);
-            extension.transferEnergy(creep);
-            break;
-          }
-        }
+      t = findNearestEnergy(creep);
+      if(t){
+        lca(creep, 'is getting energy from '+ t.structureType + ' at ' + t.pos.x + ',' + t.pos.y +'.');
+        creep.moveTo(t);
+        t.transferEnergy(creep);
       } else if(ALLOW_SPAWN_USE === true) {
         lca( creep, 'is getting energy from spawn.');
         creep.moveTo(spawn);
@@ -60,7 +51,12 @@ function buildThings(creep, builder_index) {
                     lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy ' + pct(calcRatio(creep.memory.currentTarget)) + '.');
                     fixPrioritizedStructure(creep);
                   } else {
-                    var t = targets[builder_index];
+                    t = null;
+                    if(builder_index > targets.length){
+                      t =  findNearestConstructionSite(creep);
+                    } else {
+                      t = targets[builder_index];
+                    }
                     creep.memory.state = 'constructing';
                     if(t){
                       lca(creep, 'found a ' + t.structureType + ' to construct at ' + t.pos.x + ',' + t.pos.y + '.');
