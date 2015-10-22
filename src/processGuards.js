@@ -8,7 +8,7 @@ function processGuards(guards) {
         lca(creep, 'is spawning.');
         return OK;
       } else {
-        protect(creep);
+        guardDuty(creep);
       }
     }
   }
