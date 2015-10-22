@@ -61,7 +61,7 @@ function findNearestEnergy(creep){
   }
 
   if(storage){
-    if(storage.store.energy > 500000){
+    if(storage.store.energy > USE_STORAGE_THRESHOLD){
        distance = creep.pos.getRangeTo(storage);
       if(distance < shortestDistance){
         closestEnergy = storage;
