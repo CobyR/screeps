@@ -9,7 +9,8 @@ if(isSimulation){
   p_room = Game.rooms.W19S29;
 }
 
-var USE_STORAGE_THRESHOLD = 10000;
+var USE_STORAGE_THRESHOLD = 500000;
+var ALLOW_SPAWN_USE = p_room.find(FIND_FLAGS, { filter: { name: 'USE_SPAWN', color: COLOR_WHITE}}).length;
 
 
 module.exports.loop = function () {

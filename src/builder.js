@@ -1,7 +1,6 @@
 function buildThings(creep, builder_index) {
-  var ALLOW_SPAWN_USE = true;
   var t = null;
-  
+
     if(creep.spawning === true) {
       lca(creep, 'is still spawning.');
       return ERR_BUSY;
