@@ -63,7 +63,11 @@ function guardDuty(creep) {
     // This is an offensive posture when guards are out and about
     break;
   default:
-    lca(creep, 'WTF? my state is: ' + creep.memory.state + ' and there is no case for that...');
+    if(typeof creep.memory.state === 'undefined'){
+      creep.memory.state = 'traveling';
+    } else {
+      lca(creep, 'WTF? my state is: ' + creep.memory.state + ' and there is no case for that...');
+    }
   }
 }
 
