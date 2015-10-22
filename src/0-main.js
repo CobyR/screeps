@@ -10,11 +10,12 @@ if(isSimulation){
 }
 
 var USE_STORAGE_THRESHOLD = 500000;
-var ALLOW_SPAWN_USE = p_room.find(FIND_FLAGS, { filter: { name: 'USE_SPAWN', color: COLOR_WHITE}}).length;
+var ALLOW_SPAWN_USE = null;
 
 
 module.exports.loop = function () {
   var startCpu = Game.getUsedCpu();
+  ALLOW_SPAWN_USE = p_room.find(FIND_FLAGS, { filter: { name: 'USE_SPAWN', color: COLOR_WHITE}}).length;
 
   console.log('===== Tick ===== ');
 
