@@ -50,12 +50,7 @@ function buildThings(creep, builder_index) {
                     lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy ' + pct(calcRatio(creep.memory.currentTarget)) + '.');
                     fixPrioritizedStructure(creep);
                   } else {
-                    t = null;
-                    if(builder_index > targets.length){
-                      t =  findNearestConstructionSite(creep);
-                    } else {
-                      t = targets[builder_index];
-                    }
+                    t =  findNearestConstructionSite(creep);
                     creep.memory.state = 'constructing';
                     if(t){
                       lca(creep, 'found a ' + t.structureType + ' to construct at ' + t.pos.x + ',' + t.pos.y + '.');
