@@ -15,6 +15,10 @@ function hoard(creep, source_index) {
 
       creep.moveTo(creep.room.storage);
       creep.transferEnergy(creep.room.storage);
+
+      if(creep.carry.energy === 0 ){
+        creep.memory.state = 'gathering';
+      }
     }
     break;
   case 'gathering':
@@ -22,7 +26,7 @@ function hoard(creep, source_index) {
 
     lca(creep, 'is gathering energy ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
 
-    console.log('source_index: ' + source_index + ' sources.length: ' + sources.length);
+    //console.log('source_index: ' + source_index + ' sources.length: ' + sources.length);
 
     if(source_index >= sources.length){
       source_index = sources.length -1;
@@ -36,6 +40,6 @@ function hoard(creep, source_index) {
     }
     break;
   default:
-    creep.memory.state='gathering';
+    creep.memory.state = 'gathering';
   }
 }
