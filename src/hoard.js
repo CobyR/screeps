@@ -32,6 +32,10 @@ function hoard(creep, source_index) {
       source_index = sources.length -1;
     }
 
+    if(sources[source_index].energy === 0 ){
+      source_index = (source_index == 1) ? 0 : 1;
+    }
+
     creep.moveTo(sources[source_index]);
     creep.harvest(sources[source_index]);
 
