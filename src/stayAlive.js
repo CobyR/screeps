@@ -107,7 +107,7 @@ function stayAlive(spawn, room) {
   }
 
   // report stats
-  console.log('CREEPS: ' +
+  console.log('CREEPS ' + room.name + ': ' +
               workers + ' of ' + MAX_WORKERS +  ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
               guards + ' of ' + MAX_GUARDS + ' guards, ' +
               builders + ' of ' + MAX_BUILDERS + ' builders, ' +

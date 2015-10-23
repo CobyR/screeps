@@ -21,7 +21,10 @@ module.exports.loop = function () {
 
   console.log('===== Tick ===== ');
 
-  stayAlive(Game.spawns.Spawn1, Game.rooms.W19S29);
+  stayAlive(Game.spawns.Spawn1, p_room);
+  if(room2){
+    stayAlive(Game.spawns.Spawn2, room2);
+  }
 
   var explorers = [];
   var builders = [];
@@ -105,9 +108,6 @@ module.exports.loop = function () {
     }
   }
 
-  if(Game.rooms.W18S29){
-    stayAlive(Game.spawns.Spawn2, Game.rooms.W18S29);
-  }
   var endCpu = Game.getUsedCpu();
 
   console.log('all scripts completed ' + nwc(endCpu));
