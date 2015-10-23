@@ -15,14 +15,14 @@ function stayAlive(spawn, room) {
   var sweepers = 0;
   var unknowns = 0;
 
-  var MAX_WORKERS = room.find(FIND_FLAGS, { filter: {color: COLOR_YELLOW}}).length;
-  var MAX_GUARDS = room.find(FIND_FLAGS, { filter: {color: COLOR_RED}}).length;
-  var MAX_BUILDERS = room.find(FIND_FLAGS, { filter: { color: COLOR_BROWN}}).length;
-  var MAX_WARRIORS = 0;
-  var MAX_HEALERS = 0;
-  var MAX_EXPLORERS = 0;
-  var MAX_HOARDERS = room.find(FIND_FLAGS, { filter: {color: COLOR_PURPLE}}).length;
-  var MAX_SWEEPERS = room.find(FIND_FLAGS, { filter: {color: COLOR_GREEN}}).length;
+  var MAX_WORKERS =   getMaxCreeps(room, COLOR_YELLOW, 'w');
+  var MAX_GUARDS =    getMaxCreeps(room, COLOR_RED,    'g');
+  var MAX_WARRIORS =  getMaxCreeps(room, COLOR_RED,    'w');
+  var MAX_BUILDERS =  getMaxCreeps(room, COLOR_BROWN,  'b');
+  var MAX_HEALERS =   getMaxCreeps(room, COLOR_BLUE,   'h');
+  var MAX_EXPLORERS = getMaxCreeps(room, COLOR_ORANGE, 'e');
+  var MAX_HOARDERS =  getMaxCreeps(room, COLOR_PURPLE, 'h');
+  var MAX_SWEEPERS =  getMaxCreeps(room, COLOR_GREEN,  's');
 
   var explorerDestination = 'W18S29';
   var results = OK;
@@ -225,4 +225,19 @@ function stayAlive(spawn, room) {
       }
     }
   }
+}
+
+function getMaxCreeps(room, color, character){
+  var maxCreeps = 0;
+  var flags = null;
+
+  flags = room.find(FIND_FLAGS, { filter: {color: color}});
+  for(var i in flags){
+    var flag = flags[i];
+
+    if(flag.name.charAt(0) == character){
+      maxCreeps ++;
+    }
+  }
+  return maxCreeps;
 }
