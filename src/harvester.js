@@ -30,28 +30,17 @@ function harvest(creep, source) {
       lca(creep, 'observed that the spawn energy level is at capacity.', true);
       lca(creep, 'has ' + creep.carry.energy + ' energy.',true);
       if(creep.carry.energy > 0) {
-        targets = creep.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
-        lca(creep,'there are ' + targets.length + ' structures, looking for STRUCTURE_EXTENSION',true);
-        for(var index in targets) {
-          var target = targets[index];
-          lca(creep,'is evaluating ' + index + ' - structure type is: ' + target.structureType,true);
-          if(busy === 0) {
-            if(target.energy < target.energyCapacity) {
-              lca(creep, 'is taking energy to a (' + target.structureType + ' - ' + target.pos.x +',' + target.pos.y + ' it is at ' + target.energy + ' of ' + target.energyCapacity + ').');
-              creep.moveTo(target);
-              creep.transferEnergy(target);
-              busy = 1;
-            }
-          } else if(target.structureType == STRUCTURE_STORAGE && busy === 0) {
-            if(target.energy < STORAGE_LIMIT) {
-              lca(creep, 'is taking energy to storage (' + target.energy + ' of ' + STORAGE_LIMIT + ' max: ' + target.energyCapacity + ').');
-              creep.moveTo(creep.room.storage);
-              creep.transferEnergy(creep.room.storage);
-              busy = 1;
-            }
-          }
+        var target = findNearestEnergyNeed(creep);
+        if(target !== null){
+          lca(creep, 'is taking energy to a (' + target.structureType + ' - ' + target.pos.x +',' + target.pos.y + ' it is at ' + target.energy + ' of ' + target.energyCapacity + ').');
+          creep.moveTo(target);
+          creep.transferEnergy(target);
+          busy = 1;
+        } else {
+          lca(creep, 'all extensions and spawn are full.');
         }
       }
+
       if(busy === 0 && (typeof creep.memory.locked === 'undefined' || creep.memory.locked === false)) {
         creep.memory.role = 'upgrade';
         console.log(creep.name + ' is now in \'upgrade\' mode.');
