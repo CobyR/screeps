@@ -12,7 +12,7 @@ function storageReport(room) {
     var diff = room.storage.store.energy - lastRound;
 
     if(Game.time % 100 === 0){
-      if(lastRound != room.memory.lastRoundStoredEnergy){
+      if(diff !== 0){
         room.memory.lastRoundTicks = Game.time;
       }
       room.memory.lastRoundStoredEnergy = room.storage.store.energy;
