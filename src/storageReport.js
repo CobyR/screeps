@@ -3,15 +3,19 @@ function storageReport(room) {
 
   if(typeof room.storage !== 'undefined'){
 
-    var lastRound = room.memory.lastRoundStoredEnergy;
-    var diff = room.storage.store.energy - lastRound;
-
     if(typeof room.memory.lastRoundStoredEnergy === 'undefined'){
       room.memory.lastRoundStoredEnergy = room.storage.store.energy;
       room.memory.lastRoundTicks = Game.time;
-    } else {
+    }
+
+    var lastRound = room.memory.lastRoundStoredEnergy;
+    var diff = room.storage.store.energy - lastRound;
+
+    if(Game.time % 100 === 0){
+      if(lastRound != room.memory.lastRoundStoredEnergy){
+        room.memory.lastRoundTicks = Game.time;
+      }
       room.memory.lastRoundStoredEnergy = room.storage.store.energy;
-      room.memory.lastRountTicks = Game.time;
     }
 
     if(diff === 0){
@@ -22,9 +26,9 @@ function storageReport(room) {
       upDown = 'gone down';
     }
     if(diff === 0){
-      console.log('Storage Report: ' + nwc(room.storage.store.energy) + ' has ' + upDown);
+      log('Storage Report for ' + room.name + ': ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' for the last ' + (Game.time - room.memory.lastRoundTicks) + ' ticks.');
     } else {
-    console.log('Storage Report: ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' by ' + nwc(Math.abs(diff)) + ' since the benchmark was set.');
+      log('Storage Report for ' + room.name + ': ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' by ' + nwc(Math.abs(diff)) + ' since the benchmark was set ' + (Game.time - room.memory.lastRoundTicks) + ' ticks ago.');
     }
   }
 }
