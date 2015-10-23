@@ -21,7 +21,7 @@ function guardDuty(creep) {
           lca(creep, 'has reached the guardFrom location.', true);
         } else {
           lca(creep, 'needs to move to guard from location.', true);
-          results = creep.moveTo(gf.x, gf.y);
+          results = creep.moveTo(new RoomPosition(gf.x, gf.y, gf.roomName));
           if(results != OK && results != ERR_TIRED){
             lca(creep, 'err while moving to gf ' + displayErr(results));
           }
