@@ -129,7 +129,8 @@ function flagReports(name){
       reports.push('global');
       break;
     case COLOR_YELLOW:
-      reports.push('worker');
+      reports.push('harvester');
+      reports.push('upgrade');
       break;
     case COLOR_PURPLE:
       reports.push('hoarder');
