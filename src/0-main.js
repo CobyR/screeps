@@ -2,11 +2,13 @@
 
 var isSimulation = (Game.rooms.sim !== undefined);
 var p_room = null;
+var room2 = null;
 
 if(isSimulation){
   p_room = Game.rooms.sim;
 } else {
   p_room = Game.rooms.W19S29;
+  room2 = Game.rooms.W18S29;
 }
 
 var USE_STORAGE_THRESHOLD = 500000;
@@ -73,6 +75,7 @@ module.exports.loop = function () {
   // REPORTINGS
 
   storageReport(p_room);
+  storageReport(room2);
   console.log(' Energy: ' + nwc(p_room.energyAvailable) + ' of ' + nwc(p_room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy()));
   var rptController = p_room.controller;
 
