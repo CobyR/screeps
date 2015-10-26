@@ -7,8 +7,8 @@ var room2 = null;
 if(isSimulation){
   p_room = Game.rooms.sim;
 } else {
-  p_room = Game.rooms.W19S29;
-  room2 = Game.rooms.W18S29;
+  p_room = Game.rooms.W5N12;
+  room2 = null; //Game.rooms.W18S29;
 }
 
 var USE_STORAGE_THRESHOLD = 500000;
@@ -19,7 +19,7 @@ module.exports.loop = function () {
   var startCpu = Game.getUsedCpu();
   ALLOW_SPAWN_USE = p_room.find(FIND_FLAGS, { filter: { name: 'USE_SPAWN', color: COLOR_WHITE}}).length;
 
-  console.log('===== Tick ===== ');
+  log('===== Tick ===== ', 'game');
 
   stayAlive(Game.spawns.Spawn1, p_room);
   if(room2){
@@ -78,7 +78,10 @@ module.exports.loop = function () {
   // REPORTINGS
 
   storageReport(p_room);
-  storageReport(room2);
+  if(room2){
+    storageReport(room2);
+  }
+
   console.log(' Energy: ' + nwc(p_room.energyAvailable) + ' of ' + nwc(p_room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy()));
   var rptController = p_room.controller;
 
