@@ -107,3 +107,35 @@ function findNearestEnergyNeed(creep){
 
   return closestEnergy;
 }
+
+function getExtensionsWithEnergy(creep) {
+  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
+                                  structureType: STRUCTURE_EXTENSION
+                                                            } });
+  var usefulExtensions = [];
+  var extension = null;
+
+  for(var id in extensions){
+    extension = extensions[id];
+    if(extension.energy == extension.energyCapacity){
+      usefulExtensions.push(extension);
+    }
+  }
+  return usefulExtensions;
+}
+
+function getExtensionsWithEnergyNeeds(creep){
+  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
+                                  structureType: STRUCTURE_EXTENSION
+                                                            } });
+  var withNeeds = [];
+  var extension = null;
+
+  for(var id in extensions){
+    extension = extensions[id];
+    if(extension.energy < extension.energyCapacity){
+      withNeeds.push(extension);
+    }
+  }
+  return withNeeds;
+}

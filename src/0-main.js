@@ -32,6 +32,7 @@ module.exports.loop = function () {
   var guards = [];
   var hoarders = [];
   var sweepers = [];
+  var transporters = [];
 
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
@@ -62,6 +63,9 @@ module.exports.loop = function () {
     case 'sweeper':
       sweepers.push(creep.id);
       break;
+    case 'transporter':
+      transporters.push(creep.id);
+      break;
     default:
       lca(creep, 'does not have a programmed role.');
       break;
@@ -74,6 +78,7 @@ module.exports.loop = function () {
   processHoarders(hoarders, p_room);
   processExplorers(explorers, p_room);
   processSweepers(sweepers, p_room);
+  processTransporters(transporters, p_room);
 
   // REPORTINGS
 

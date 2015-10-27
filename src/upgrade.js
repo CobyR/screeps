@@ -1,9 +1,4 @@
 function upgrade(creep) {
-  if(creep.spawning === true) {
-    lca(creep,'is still spawning.');
-    return 0;
-  }
-
   var spawn = creep.room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_SPAWN}})[0];
 
   if(creep.memory.state == 'fill') {
@@ -62,36 +57,4 @@ function upgrade(creep) {
       creep.upgradeController(creep.room.controller);
     }
   }
-}
-
-function getExtensionsWithEnergy(creep) {
-  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
-                                  structureType: STRUCTURE_EXTENSION
-                                                            } });
-  var usefulExtensions = [];
-  var extension = null;
-
-  for(var id in extensions){
-    extension = extensions[id];
-    if(extension.energy == extension.energyCapacity){
-      usefulExtensions.push(extension);
-    }
-  }
-  return usefulExtensions;
-}
-
-function getExtensionsWithEnergyNeeds(creep){
-  var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
-                                  structureType: STRUCTURE_EXTENSION
-                                                            } });
-  var withNeeds = [];
-  var extension = null;
-
-  for(var id in extensions){
-    extension = extensions[id];
-    if(extension.energy < extension.energyCapacity){
-      withNeeds.push(extension);
-    }
-  }
-  return withNeeds;
 }

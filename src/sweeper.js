@@ -4,37 +4,6 @@ function sweep(creep, room){
   }
 
   switch(creep.memory.state){
-  case 'cleanup':
-    var drops = creep.room.find(FIND_DROPPED_ENERGY);
-
-    var closestDrop = null;
-    var distance = 0;
-    var shortestDistance = 50;
-
-    for(var index in drops){
-      var drop = drops[index];
-
-      distance = creep.pos.getRangeTo(drop);
-
-      if(distance < shortestDistance) {
-        shortestDistance = distance;
-        closestDrop = drop;
-      }
-    }
-
-    if(closestDrop === null){
-      lca(creep, 'no drops switching to fillGet.');
-      creep.memory.state = 'fillGet';
-    } else{
-      if(creep.carry.energy == creep.carryCapacity) {
-        creep.memory.state = 'fillGet';
-      } else {
-        lca(creep, 'moving to ' + closestDrop.pos.x + ',' + closestDrop.pos.y + ' to pickup ' + closestDrop.energy + ' energy.');
-        creep.moveTo(closestDrop);
-        creep.pickup(closestDrop);
-      }
-    }
-    break;
   case 'fillGet':
     if(creep.carry.energy < creep.carryCapacity){
       lca(creep, 'moving to Storage to get energy, currently at: ' + creep.carry.energy + '.');
@@ -50,7 +19,7 @@ function sweep(creep, room){
     fillPut(creep, room);
     break;
   default:
-    creep.memory.state = 'cleanup';
+    creep.memory.state = 'fillGet';
   }
 
 }
@@ -80,7 +49,7 @@ function spawnSweepers(spawn, room, sweepers, MAX) {
                                      MOVE, CARRY,
                                      MOVE, CARRY],
                                     'S' + room.memory.sweeperCounter,
-                                    {role: 'sweeper', state: 'cleanup'});
+                                    {role: 'sweeper', state: 'fillGet'});
     switch(results){
     case OK:
       room.memory.sweeperCounter ++;
@@ -107,8 +76,8 @@ function fillPut(creep,room){
   }
 
   if(results != OK) {
-    creep.memory.state = 'cleanup';
-    lca(creep, 'nothing needs energy (' + displayErr(results) + '), going to cleanup.');
+    lca(creep, 'nothing needs energy (' + displayErr(results) + '), going to refill.');
+    creep.memory.state = 'fillGet';
   }
 }
 

@@ -17,7 +17,11 @@ function buildThings(creep, builder_index) {
 
     if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
       creep.memory.state = 'filling';
-      t = findNearestEnergy(creep);
+      if(creep.room.storage){
+        t = creep.room.storage;
+      } else {
+        t = findNearestEnergy(creep);
+      }
       if(t){
         lca(creep, 'is getting energy from '+ t.structureType + ' at ' + t.pos.x + ',' + t.pos.y +'.');
         creep.moveTo(t);

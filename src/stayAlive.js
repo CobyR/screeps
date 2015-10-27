@@ -39,12 +39,17 @@ function stayAlive(spawn, room) {
     room.memory.explorerCounter = 0;
     room.memory.hoarderCounter = 0;
     room.memory.sweeperCounter = 0;
-    room.memory.transportCounter = 0;
+    room.memory.transporterCounter = 0;
   }
 
   // count creeps
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
+    if(creep.spawning){
+      log(creep.name +  'is still spawning.','spawn');
+      continue;
+    }
+
     if(creep.room.name == room.name){
       switch(creep.memory.role){
       case 'harvester':
@@ -72,6 +77,7 @@ function stayAlive(spawn, room) {
         break;
       case 'transporter':
         transporters ++;
+        break;
       default:
         unknowns ++;
         break;
@@ -155,9 +161,10 @@ function stayAlive(spawn, room) {
     spawnWorker(spawn, room, workers, MAX_WORKERS);
   }
 
-  // spawn hoarders
-  if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS  && room.controller.level >= 4) {
+  // spawn hoarders and transporters
+  if(workers >= MAX_WORKERS  && room.controller.level >= 4) {
     spawnHoarder(spawn, room, hoarders, MAX_HOARDERS);
+    spawnTransporter(spawn, room, transporters, MAX_TRANSPORTERS);
   }
 
 
@@ -228,7 +235,7 @@ function getMaxCreeps(room, color, character){
   for(var i in flags){
     var flag = flags[i];
 
-    if(flage.name.charAt(0) == character){
+    if(flag.name.charAt(0) == character){
       maxCreeps ++;
     }
   }
