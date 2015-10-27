@@ -13,29 +13,33 @@ function stayAlive(spawn, room) {
   var explorers = 0;
   var hoarders = 0;
   var sweepers = 0;
+  var transporters = 0;
   var unknowns = 0;
 
-  var MAX_WORKERS =   getMaxCreeps(room, COLOR_YELLOW, 'w');
-  var MAX_GUARDS =    getMaxCreeps(room, COLOR_RED,    'g');
-  var MAX_WARRIORS =  getMaxCreeps(room, COLOR_RED,    'w');
-  var MAX_BUILDERS =  getMaxCreeps(room, COLOR_BROWN,  'b');
-  var MAX_HEALERS =   getMaxCreeps(room, COLOR_BLUE,   'h');
-  var MAX_EXPLORERS = getMaxCreeps(room, COLOR_ORANGE, 'e');
-  var MAX_HOARDERS =  getMaxCreeps(room, COLOR_PURPLE, 'h');
-  var MAX_SWEEPERS =  getMaxCreeps(room, COLOR_GREEN,  's');
+  var MAX_WORKERS =      getMaxCreeps(room, COLOR_YELLOW, 'w');
+  var MAX_GUARDS =       getMaxCreeps(room, COLOR_RED,    'g');
+  var MAX_WARRIORS =     getMaxCreeps(room, COLOR_RED,    'w');
+  var MAX_BUILDERS =     getMaxCreeps(room, COLOR_BROWN,  'b');
+  var MAX_HEALERS =      getMaxCreeps(room, COLOR_BLUE,   'h');
+  var MAX_EXPLORERS =    getMaxCreeps(room, COLOR_ORANGE, 'e');
+  var MAX_SWEEPERS =     getMaxCreeps(room, COLOR_GREEN,  's');
+
+  var MAX_HOARDERS =     getMaxCreeps(room, COLOR_PURPLE, 'h');
+  var MAX_TRANSPORTERS = getMaxCreeps(room, COLOR_PURPLE, 't');
 
   var explorerDestination = 'W18S29';
   var results = OK;
 
-  if(typeof room.memory.worker_counter === 'undefined') {
-    room.memory.worker_counter = 0;
-    room.memory.builder_counter = 0;
-    room.memory.guard_counter = 0;
-    room.memory.warrior_counter = 0;
-    room.memory.healer_counter = 0;
-    room.memory.explorer_counter = 0;
-    room.memory.hoarder_counter = 0;
-    room.memory.sweeper_counter = 0;
+  if(typeof room.memory.workerCounter === 'undefined') {
+    room.memory.workerCounter = 0;
+    room.memory.builderCounter = 0;
+    room.memory.guardCounter = 0;
+    room.memory.warriorCounter = 0;
+    room.memory.healerCounter = 0;
+    room.memory.explorerCounter = 0;
+    room.memory.hoarderCounter = 0;
+    room.memory.sweeperCounter = 0;
+    room.memory.transportCounter = 0;
   }
 
   // count creeps
@@ -66,6 +70,8 @@ function stayAlive(spawn, room) {
       case 'sweeper':
         sweepers ++;
         break;
+      case 'transporter':
+        transporters ++;
       default:
         unknowns ++;
         break;
@@ -129,14 +135,14 @@ function stayAlive(spawn, room) {
                                                 ATTACK,MOVE,
                                                 ATTACK,MOVE,
                                                 ATTACK,MOVE,
-                                                ATTACK,MOVE], 'G' + room.memory.guard_counter, { role: 'guard'});
+                                                ATTACK,MOVE], 'G' + room.memory.guardCounter, { role: 'guard'});
       if(results != OK ){
         console.log('Spawning a new guard, tough guard said ' + displayErr(results) + '.');
-        results = spawn.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + room.memory.guard_counter, { role: 'guard'});
+        results = spawn.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + room.memory.guardCounter, { role: 'guard'});
       }
 
       if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.guard_counter +=1;
+        room.memory.guardCounter +=1;
       }
     } else {
       console.log('I wanted to spawn a guard - energy levels at ' + room.energyAvailable + ' of required 270.');
@@ -151,20 +157,7 @@ function stayAlive(spawn, room) {
 
   // spawn hoarders
   if( hoarders < MAX_HOARDERS && workers >= MAX_WORKERS  && room.controller.level >= 4) {
-    if(room.energyAvailable >= 550) {
-      results = spawn.createCreep( [MOVE,MOVE,
-                                                 CARRY,CARRY,
-                                                 CARRY,CARRY,
-                                                 CARRY,WORK,
-                                                 WORK,WORK,
-                                                 WORK], 'H' + room.memory.hoarder_counter, { role: 'hoarder', locked: true});
-      console.log('Spawning a new hoarder - ' + displayErr(results) +'.');
-      if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.hoarder_counter +=1;
-      }
-    } else {
-      console.log('I wanted to spawn a hoarder - energy levels at ' + spawn.energy + ' of required 550.');
-    }
+    spawnHoarder(spawn, room, hoarders, MAX_HOARDERS);
   }
 
 
@@ -179,13 +172,13 @@ function stayAlive(spawn, room) {
                                                 CARRY, CARRY,
                                                 MOVE, MOVE,
                                                 MOVE, MOVE,
-                                                MOVE, MOVE], 'B' + room.memory.builder_counter, { role: 'builder', state: 'constructing'});
+                                                MOVE, MOVE], 'B' + room.memory.builderCounter, { role: 'builder', state: 'constructing'});
       if(results == ERR_NOT_ENOUGH_ENERGY) {
         log('Spawning a new builder, mega builder said: ' + displayErr(results), 'spawn');
-          results = spawn.createCreep([WORK,CARRY,CARRY,MOVE,MOVE], 'b' + room.memory.builder_counter, {role: 'builder', state: 'constructing'});
+          results = spawn.createCreep([WORK,CARRY,CARRY,MOVE,MOVE], 'b' + room.memory.builderCounter, {role: 'builder', state: 'constructing'});
       }
       if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.builder_counter += 1;
+        room.memory.builderCounter += 1;
       }
     } else {
       console.log('I wanted to spawn a builder - energy levels at ' + room.energyAvailable + ' of required 300.');
@@ -201,7 +194,7 @@ function stayAlive(spawn, room) {
   } else {
     if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
       if(room.energyAvailable >= 550) {
-        var explorerName = 'E' + room.memory.explorer_counter;
+        var explorerName = 'E' + room.memory.explorerCounter;
         console.log('Spawning a new explorer - ' + explorerName + '.');
 
         results = spawn.createCreep([TOUGH,MOVE,
@@ -216,7 +209,7 @@ function stayAlive(spawn, room) {
                                                   MOVE,WORK],
                 explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
         if(results == OK || results == ERR_NAME_EXISTS) {
-          room.memory.explorer_counter += 1;
+          room.memory.explorerCounter += 1;
         } else {
           console.log('trying to create an explorer resulted in ' + displayErr(results));
         }
@@ -235,7 +228,7 @@ function getMaxCreeps(room, color, character){
   for(var i in flags){
     var flag = flags[i];
 
-    if(flag.name.charAt(0) == character){
+    if(flage.name.charAt(0) == character){
       maxCreeps ++;
     }
   }

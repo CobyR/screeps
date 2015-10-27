@@ -79,15 +79,15 @@ function spawnSweepers(spawn, room, sweepers, MAX) {
                                      MOVE, CARRY,
                                      MOVE, CARRY,
                                      MOVE, CARRY],
-                                    'S' + room.memory.sweeper_counter,
+                                    'S' + room.memory.sweeperCounter,
                                     {role: 'sweeper', state: 'cleanup'});
     switch(results){
     case OK:
-      room.memory.sweeper_counter ++;
+      room.memory.sweeperCounter ++;
       log('Spawning a new sweeper succeeded.');
       break;
     case ERR_NAME_EXISTS:
-      room.memory.sweeper_counter ++;
+      room.memory.sweeperCounter ++;
       break;
     default:
       log('Spawning a new sweeper failed: ' + displayErr(results) + '.');
