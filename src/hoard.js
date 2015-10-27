@@ -39,7 +39,7 @@ function hoard(creep, source_index) {
     creep.moveTo(sources[source_index]);
     creep.harvest(sources[source_index]);
 
-    if(creep.carry.energy == creep.carryCapacity) {
+    if(creep.carry.energy == creep.carryCapacity && creep.carryCapacity !== 0) {
       creep.memory.state = 'transferring';
     }
     break;
