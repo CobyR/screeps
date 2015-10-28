@@ -194,3 +194,14 @@ function flagReports(name){
 function structureReports(){
     return p_room.find(FIND_FLAGS, { filter: {name: 'SR'}}).length;
 }
+
+function cleanupMemory() {
+  if(Game.time % 100 === 1){
+    if (_.isObject(Memory.creeps) && _.isObject(Game.creeps)) {
+      var dead = _.difference(Object.keys(Memory.creeps), Object.keys(Game.creeps));
+      _.forEach(dead, function(name) {
+      delete Memory.creeps[name]
+      });
+    }
+  }
+}

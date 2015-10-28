@@ -1,6 +1,20 @@
 /*
  * Stayalive - code to keep breeding creeps
  */
+function spawnCreeps(){
+  _.forEach(Game.rooms, function(room){
+    processRoom(room);
+  });
+}
+
+function processRoom(room){
+  _.forEach(Game.spawns, function (spawn){
+    if(spawn.pos.roomName == room.name){
+      stayAlive(spawn,room);
+    }
+  });
+}
+
 function stayAlive(spawn, room) {
 
   var workers = 0;
@@ -42,6 +56,8 @@ function stayAlive(spawn, room) {
   }
 
   // count creeps
+  var totalCreeps = 0;
+
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
     if(creep.spawning){
@@ -50,6 +66,7 @@ function stayAlive(spawn, room) {
     }
 
     if(creep.room.name == room.name){
+      totalCreeps ++;
       switch(creep.memory.role){
       case 'harvester':
         harvesters ++;
@@ -86,7 +103,7 @@ function stayAlive(spawn, room) {
 
   // Tweak MAX Numbers based on circumstance
   if(workers < 4 ) {
-    MAX_WORKERS = 4;
+    MAX_WORKERS = 2;
     MAX_BUILDERS = 0;
   } else if (workers == 4 && room.controller.level > 3) {
     MAX_WORKERS = 6;
@@ -102,7 +119,7 @@ function stayAlive(spawn, room) {
 
     if(MAX_SWEEPERS === 0){
       switch(true) {
-      case ( storedEnergy < 250000):
+      case ( storedEnergy < 5000):
         MAX_SWEEPERS = 0;
         break;
       case( storedEnergy < 500000):
@@ -129,31 +146,7 @@ function stayAlive(spawn, room) {
               unknowns + ' unknown creeps.');
 
   // spawn guards
-  if(guards < MAX_GUARDS && workers >= MAX_WORKERS / 2 ) {
-    if(room.energyAvailable >= 270){
-      results = OK;
-      // spawn standard guard
-
-      console.log('Spawning a new tough guard.');
-      results = spawn.createCreep([TOUGH,MOVE,
-                                                TOUGH,MOVE,
-                                                ATTACK,MOVE,
-                                                ATTACK,MOVE,
-                                                ATTACK,MOVE,
-                                                ATTACK,MOVE,
-                                                ATTACK,MOVE], 'G' + room.memory.guardCounter, { role: 'guard'});
-      if(results != OK ){
-        console.log('Spawning a new guard, tough guard said ' + displayErr(results) + '.');
-        results = spawn.createCreep([TOUGH,ATTACK,ATTACK,MOVE,MOVE], 'g' + room.memory.guardCounter, { role: 'guard'});
-      }
-
-      if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.guardCounter +=1;
-      }
-    } else {
-      console.log('I wanted to spawn a guard - energy levels at ' + room.energyAvailable + ' of required 270.');
-    }
-  }
+  spawnGuard(spawn, room, guards, MAX_GUARDS);
 
 
   // spawn workers
@@ -167,41 +160,15 @@ function stayAlive(spawn, room) {
     spawnTransporter(spawn, room, transporters, MAX_TRANSPORTERS);
   }
 
-
   // spawn builders
-  if(builders < MAX_BUILDERS && workers >= MAX_WORKERS && guards >= MAX_GUARDS) {
-    if(room.energyAvailable >= 300){
-      results = OK;
-      console.log('Spawning a new mega builder.');
-      results = spawn.createCreep([WORK, WORK,
-                                                CARRY, CARRY,
-                                                CARRY, CARRY,
-                                                CARRY, CARRY,
-                                                MOVE, MOVE,
-                                                MOVE, MOVE,
-                                                MOVE, MOVE], 'B' + room.memory.builderCounter, { role: 'builder', state: 'constructing'});
-      if(results == ERR_NOT_ENOUGH_ENERGY) {
-        log('Spawning a new builder, mega builder said: ' + displayErr(results), 'spawn');
-          results = spawn.createCreep([WORK,CARRY,CARRY,MOVE,MOVE], 'b' + room.memory.builderCounter, {role: 'builder', state: 'constructing'});
-      }
-      if(results == OK || results == ERR_NAME_EXISTS) {
-        room.memory.builderCounter += 1;
-      }
-    } else {
-      console.log('I wanted to spawn a builder - energy levels at ' + room.energyAvailable + ' of required 300.');
-    }
-  }
+  spawnBuilder(spawn, room, builders, MAX_BUILDERS);
 
   // spawn sweepers
   spawnSweepers(spawn, room, sweepers, MAX_SWEEPERS);
 
   // spawn explorers
-  if(typeof spawn.memory.explorersEnabled === 'undefined' || spawn.memory.explorersEnabled === false ) {
-    // not launching any explorers
-  } else {
-    if(workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
-      spawnExplorer(spawn, room, explorers, MAX_EXPLORERS);
-    }
+  if(workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
+    spawnExplorer(spawn, room, explorers, MAX_EXPLORERS);
   }
 }
 
@@ -218,4 +185,46 @@ function getMaxCreeps(room, color, character){
     }
   }
   return maxCreeps;
+}
+
+function spawnCreep(spawn, room, current, max,
+                    BODY_PARTS, classification, counterName){
+  var results = OK;
+  var spawnLevel = room.controller.level;
+
+  if(!spawn){
+    log('Trying to spawn a ' + classification + ' in ' + room.name + ' and there is no spawn.','spawn');
+    return ERR_INVALID_TARGET;
+  }
+
+  for(var l = spawnLevel; l >= 1; l--){
+    results = spawn.canCreateCreep(BODY_PARTS[l],
+                                'W' + l +
+                                '_' + room.memory[counterName],
+                                { role: classification});
+    if(results == OK){
+      spawnLevel = l;
+      break;
+    }
+    if(results == ERR_NAME_EXISTS){
+      log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in check.', 'spawn');
+      room.memory[counterName] ++;
+    }
+  }
+
+  if(current < max) {
+    log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
+    results = spawn.createCreep(BODY_PARTS[spawnLevel],
+                                'W' + spawnLevel +
+                                '_' + room.memory.workerCounter,
+                                { role: 'upgrade', locked: false});
+    if(results == OK){
+      room.memory[counterName] ++;
+    } else if(results == ERR_NAME_EXISTS){
+      log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in create.','spawn');
+      room.memory[counterName] ++;
+    } else {
+      log('Spawning ' + classification + ' returned: ' + displayErr(results), 'spawn');
+    }
+  }
 }
