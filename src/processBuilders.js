@@ -1,3 +1,19 @@
+var BUILDER = {
+  1: [MOVE, MOVE, WORK, CARRY, CARRY],
+  2: [MOVE, MOVE, MOVE,
+      WORK, WORK, WORK,
+      CARRY, CARRY, CARRY, CARRY],
+  3: [MOVE, MOVE, MOVE, MOVE,
+      WORK, WORK, WORK, WORK,
+      CARRY, CARRY, CARRY, CARRY],
+  4: [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+      WORK, WORK, WORK, WORK,
+      CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY],
+  5: [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+      WORK, WORK, WORK, WORK, WORK, WORK,
+      CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
+}
+
 function processBuilders(builders) {
 
   if(builders.length > 0) {
@@ -28,4 +44,8 @@ function processBuilders(builders) {
       buildThings(creep, index);
    }
   }
+}
+
+function spawnBuilder(spawn, room, current, max){
+  spawnCreep(spawn, room, current, max, BUILDER, 'builder', 'builderCounter');
 }

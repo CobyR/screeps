@@ -58,43 +58,7 @@ function processWorkers(workers, p_room) {
   }
 }
 
-function spawnWorker(spawn, room, current, MAX){
-  var results = OK;
-  var spawnLevel = room.controller.level;
-
-  if(!spawn){
-    log('Trying to spawn in ' + room.name + ' and there is no spawn.', 'spawn');
-    return ERR_INVALID_TARGET;
-  }
-
-  for(var l = spawnLevel; l >= 1; l--){
-    results = spawn.canCreateCreep(WORKER[l],
-                                'W' + l +
-                                '_' + room.memory.workerCounter,
-                                { role: 'harvest', locked: false});
-    if(results == OK){
-      spawnLevel = l;
-      break;
-    }
-    if(results == ERR_NAME_EXISTS){
-      log('Incrementing workerCounter for ' + room.name + ' from ' + room.memory.workerCounter + ' by 1 in check.', 'spawn');
-      room.memory.workerCounter ++;
-    }
-  }
-
-  if(current < MAX) {
-    log('Attempting to spawn a level ' + spawnLevel + ' worker.');
-    results = spawn.createCreep(WORKER[spawnLevel],
-                                'W' + spawnLevel +
-                                '_' + room.memory.workerCounter,
-                                { role: 'upgrade', locked: false});
-    if(results == OK){
-      room.memory.workerCounter ++;
-    } else if(results == ERR_NAME_EXISTS){
-      log('Incrementing workerCounter for ' + room.name + ' from ' + room.memory.workerCounter + ' by 1 in create.','spawn');
-      room.memory.workerCounter ++;
-    } else {
-      log('Spawning returned: ' + displayErr(results), 'spawn');
-    }
-  }
+function spawnWorker(spawn, room, current, max){
+  spawnCreep(spawn, room, current, max,
+             WORKER, 'worker', 'workerCounter');
 }
