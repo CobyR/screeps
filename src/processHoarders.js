@@ -1,5 +1,22 @@
 var HOARDER = {
-  1: [MOVE, WORK, WORK,
+  1: [MOVE, WORK, WORK],
+  2: [MOVE, WORK, WORK,
+      MOVE, WORK, WORK],
+  3: [MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK],
+  4: [MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK],
+  5: [MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK],
+  6: [MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
+      MOVE, WORK, WORK,
       MOVE, WORK, WORK,
       MOVE, WORK, WORK,
       MOVE, WORK, WORK]
@@ -16,7 +33,6 @@ function processHoarders(hoarders) {
 
       if(creep.spawning === true) {
         lca(creep, 'is still spawning.');
-        return 0;
       } else {
         i++;
         // console.log( i + " " + i % 2);
@@ -34,8 +50,9 @@ function spawnHoarder(spawn, room, current, max){
   var results = OK;
   var spawnLevel = room.controller.level;
 
-  results = spawn.canCreateCreep(HOARDER[1],
-                                 'H_' + room.memory.hoarderCounter,
+  results = spawn.canCreateCreep(HOARDER[spawnLevel],
+                                 'H' + spawnLevel +
+                                 '_' + room.memory.hoarderCounter,
                                  { role: 'hoarder', locked: true });
 
   if(results == ERR_NAME_EXISTS){
@@ -44,8 +61,9 @@ function spawnHoarder(spawn, room, current, max){
   }
 
   if(current < max){
-    results = spawn.createCreep(HOARDER[1],
-      'H_' + room.memory.hoarderCounter,
+    results = spawn.createCreep(HOARDER[spawnLevel],
+      'H' + spawnLevel +
+      '_' + room.memory.hoarderCounter,
       { role: 'hoarder', locked: true });
 
     if(results == ERR_NOT_ENOUGH_ENERGY){

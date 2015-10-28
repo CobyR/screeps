@@ -1,5 +1,5 @@
 function calcRatio(target){
-  var RAMPART_HITS = 500000;
+  var RAMPART_HITS = 1000000;
   var WALL_HITS = 1000000;
   var ratio = 0;
 

@@ -1,9 +1,22 @@
 var TRANSPORTER = {
-  1: [MOVE, CARRY, CARRY,
+  4: [MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
-      MOVE, CARRY, CARRY]
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY],
+  5: [
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY
+  ]
 }
 
 function processTransporters(transporters){
@@ -33,8 +46,9 @@ function spawnTransporter(spawn, room, current, max){
   var spawnLevel = room.controller.level;
 
   if(spawnLevel >= 4  && current < max){
-    results = spawn.canCreateCreep(TRANSPORTER[1],
-                                   'T_' + room.memory.transporterCounter,
+    results = spawn.canCreateCreep(TRANSPORTER[spawnLevel],
+                                   'T' + spawnLevel +
+                                   '_' + room.memory.transporterCounter,
                                    { role: 'transporter', state: 'cleanup'});
     if(results == ERR_NAME_EXISTS){
       log('Incrementing transporterCounter for ' + room.name + ' from ' + room.memory.transporterCounter + ' by 1 in check.', 'spawn');
@@ -42,10 +56,10 @@ function spawnTransporter(spawn, room, current, max){
     }
 
     if(results != ERR_NOT_ENOUGH_ENERGY){
-      results = spawn.createCreep(TRANSPORTER[1],
+      results = spawn.createCreep(TRANSPORTER[spawnLevel],
                                    'T_' + room.memory.transporterCounter,
                                    { role: 'transporter', state: 'cleanup'});
-      if(results == ERR_NOT_ENOUGH_ENERGY){
+      if(results != OK){
         log('Spawning a new transporter, but spawn said ' + displayErr(results), 'spawn');
       }
     }

@@ -26,7 +26,7 @@ function buildThings(creep, builder_index) {
         lca(creep, 'is getting energy from '+ t.structureType + ' at ' + t.pos.x + ',' + t.pos.y +'.');
         creep.moveTo(t);
         t.transferEnergy(creep);
-      } else if(ALLOW_SPAWN_USE === true) {
+      } else if(ALLOW_SPAWN_USE === true || creep.room.controller.level < 4) {
         lca( creep, 'is getting energy from spawn.');
         creep.moveTo(spawn);
         spawn.transferEnergy(creep);

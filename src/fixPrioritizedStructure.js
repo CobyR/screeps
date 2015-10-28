@@ -6,6 +6,9 @@ function fixPrioritizedStructure(creep) {
   var targets = creep.room.find(FIND_STRUCTURES);
   var sites = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
 
+  var dnrStructures  = getDNRStructures(creep.room);
+  var dnrIds = _.map(dnrStructures, 'id');
+
   // console.log('gps found ' + targets.length + ' structures to consider.');
 
   var preferredTarget = null;
@@ -16,24 +19,29 @@ function fixPrioritizedStructure(creep) {
   var index = 0;
 
   for(var name in targets) {
-    index ++;
     var target = targets[name];
-    var targetRatio = calcRatio(target);
 
-    // 1. structure with lowest hits and not at maxHits
-    //    a. low health being equal go to one with smallest ticksToDecary
-    // 2.
-    //console.log( targetRatio + ' vs ' + lowestHitsRatio + '|' + target.hits + ' of ' + target.hitsMax);
-    if(targetRatio < lowestHitsRatio && target.hits < target.hitsMax) {
-      preferredTarget = target;
-      lowestHits = target.hits;
-      lowestHitsRatio = targetRatio;
-      // lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is now the preferredTarget',true);
+    if(_.includes(dnrIds, target.id)){
+      log( 'skipping ' + target.id + ' at ' + target.pos.x + ',' + target.pos.y + ' it is in a Do Not Repair zone.',true);
     } else {
-      if(target.structureType == 'constructedWall' && target.ticksToLive > 0){
-        // lca(creep, 'reviewing a constructedWall that is a newbie protective barrier, and passing on it.  TicksToLive: ' + target.ticksToLive, true);
+      index ++;
+      var targetRatio = calcRatio(target);
+
+      // 1. structure with lowest hits and not at maxHits
+      //    a. low health being equal go to one with smallest ticksToDecary
+      // 2.
+      //console.log( targetRatio + ' vs ' + lowestHitsRatio + '|' + target.hits + ' of ' + target.hitsMax);
+      if(targetRatio < lowestHitsRatio && target.hits < target.hitsMax) {
+        preferredTarget = target;
+        lowestHits = target.hits;
+        lowestHitsRatio = targetRatio;
+        lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is now the preferredTarget',true);
       } else {
-        //lca(creep, '[DEBUG] ' + index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is being passed over');
+        if(target.structureType == 'constructedWall' && target.ticksToLive > 0){
+          lca(creep, 'reviewing a constructedWall that is a newbie protective barrier, and passing on it.  TicksToLive: ' + target.ticksToLive, true);
+        } else {
+          lca(creep, '[DEBUG] ' + index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is being passed over', true);
+        }
       }
     }
   }
@@ -42,7 +50,7 @@ function fixPrioritizedStructure(creep) {
   if(typeof creep.memory.currentTarget === 'undefined' ||
      creep.memory.currentTarget === null) {
     // Creep had no currentTarget - set it.
-    // lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
+    lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
     creep.memory.currentTarget = preferredTarget;
   } else {
     // Creep has target - decide if it should switch to preferredTarget

@@ -8,10 +8,10 @@ if(isSimulation){
   p_room = Game.rooms.sim;
 } else {
   p_room = Game.rooms.W5N12;
-  room2 = null; //Game.rooms.W18S29;
+  room2 =  Game.rooms.W5N11;
 }
 
-var USE_STORAGE_THRESHOLD = 500000;
+var USE_STORAGE_THRESHOLD = 10000;
 var ALLOW_SPAWN_USE = null;
 
 
@@ -119,51 +119,5 @@ module.exports.loop = function () {
   var endCpu = Game.getUsedCpu();
 
   console.log('all scripts completed ' + nwc(endCpu));
-}
-
-
-function helloWorld() {
-  console.log('HELLO WORLD!');
-}
-
-function flagReports(name){
-  var rptFlags = p_room.find(FIND_FLAGS, { filter: { name: name}});
-  var reports = [];
-  // console.log('flagReports: ' + name + ' - ' + rptFlags + ' -  ' + rptFlags.length + '.');
-
-  for(var i in rptFlags){
-    var check = rptFlags[i];
-    // console.log('  ' + check.color);
-
-    switch(check.color){
-    case COLOR_WHITE:
-      reports.push('global');
-      break;
-    case COLOR_YELLOW:
-      reports.push('harvester');
-      reports.push('upgrade');
-      break;
-    case COLOR_PURPLE:
-      reports.push('hoarder');
-      break;
-    case COLOR_RED:
-      reports.push('guard');
-      break;
-    case COLOR_BROWN:
-      reports.push('builder');
-      break;
-    case COLOR_ORANGE:
-      reports.push('explorer');
-      break;
-    case COLOR_GREEN:
-      reports.push('sweeper');
-      break;
-    }
-  }
-  // console.log('     ' + reports.length + ' first ' + reports[0]);
-  return reports;
-}
-
-function structureReports(){
-    return p_room.find(FIND_FLAGS, { filter: {name: 'SR'}}).length;
+  Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),3);
 }

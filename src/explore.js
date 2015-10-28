@@ -1,12 +1,7 @@
 function explore(creep) {
   var results = null;
   var target = null;
-
-  if(creep.spawning) {
-    lca(creep, 'is still spawning.');
-    return OK;
-  }
-
+  lca(creep, creep.id + ' - ' + creep.memory.mode);
   switch(creep.memory.mode) {
   case 'build':
     if(creep.carry.energy === 0){
@@ -86,7 +81,13 @@ function explore(creep) {
       lca(creep,'is in room mode, but has no roomDestination');
     } else {
       lca(creep, 'is in room mode in room: ' + creep.pos.roomName + ' heading to ' + creep.memory.roomDestination + '.');
-      results = moveToDestinationRoom(creep, creep.memory.roomDestination);
+      if(creep.carryCapacity > 0 && creep.carry.energy != creep.carryCapacity){
+        creep.moveTo(creep.room.storage);
+        creep.room.storage.transferEnergy(creep);
+      }else {
+        results = moveToDestinationRoom(creep, creep.memory.roomDestination);
+
+      }
     }
     break;
   case 'pos':

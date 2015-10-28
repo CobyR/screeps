@@ -27,7 +27,6 @@ function stayAlive(spawn, room) {
   var MAX_HOARDERS =     getMaxCreeps(room, COLOR_PURPLE, 'h');
   var MAX_TRANSPORTERS = getMaxCreeps(room, COLOR_PURPLE, 't');
 
-  var explorerDestination = 'W18S29';
   var results = OK;
 
   if(typeof room.memory.workerCounter === 'undefined') {
@@ -46,7 +45,7 @@ function stayAlive(spawn, room) {
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
     if(creep.spawning){
-      log(creep.name +  'is still spawning.','spawn');
+      log(creep.name +  ' is still spawning.','spawn');
       continue;
     }
 
@@ -89,7 +88,7 @@ function stayAlive(spawn, room) {
   if(workers < 4 ) {
     MAX_WORKERS = 4;
     MAX_BUILDERS = 0;
-  } else if (workers == 4 ) {
+  } else if (workers == 4 && room.controller.level > 3) {
     MAX_WORKERS = 6;
     MAX_BUILDERS = 1;
   }
@@ -125,7 +124,8 @@ function stayAlive(spawn, room) {
               builders + ' of ' + MAX_BUILDERS + ' builders, ' +
               explorers + ' of ' + MAX_EXPLORERS + ' explorers, ' +
               hoarders + ' of ' + MAX_HOARDERS + ' hoarders, ' +
-              sweepers + ' of ' + MAX_SWEEPERS + ' sweepers, and ' +
+              sweepers + ' of ' + MAX_SWEEPERS + ' sweepers, ' +
+              transporters + ' of ' + MAX_TRANSPORTERS + ' transporters, and ' +
               unknowns + ' unknown creeps.');
 
   // spawn guards
@@ -162,7 +162,7 @@ function stayAlive(spawn, room) {
   }
 
   // spawn hoarders and transporters
-  if(workers >= MAX_WORKERS  && room.controller.level >= 4) {
+  if(workers >= MAX_WORKERS) {
     spawnHoarder(spawn, room, hoarders, MAX_HOARDERS);
     spawnTransporter(spawn, room, transporters, MAX_TRANSPORTERS);
   }
@@ -199,30 +199,8 @@ function stayAlive(spawn, room) {
   if(typeof spawn.memory.explorersEnabled === 'undefined' || spawn.memory.explorersEnabled === false ) {
     // not launching any explorers
   } else {
-    if(explorers < MAX_EXPLORERS  && workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
-      if(room.energyAvailable >= 550) {
-        var explorerName = 'E' + room.memory.explorerCounter;
-        console.log('Spawning a new explorer - ' + explorerName + '.');
-
-        results = spawn.createCreep([TOUGH,MOVE,
-                                                  TOUGH,MOVE,
-                                                  MOVE,CARRY,
-                                                  MOVE,WORK,
-                                                  MOVE,CARRY,
-                                                  MOVE,WORK,
-                                                  MOVE,CARRY,
-                                                  MOVE,WORK,
-                                                  MOVE,CARRY,
-                                                  MOVE,WORK],
-                explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
-        if(results == OK || results == ERR_NAME_EXISTS) {
-          room.memory.explorerCounter += 1;
-        } else {
-          console.log('trying to create an explorer resulted in ' + displayErr(results));
-        }
-      } else {
-        console.log('I wanted to spawn an explorer - energy levels at ' + spawn.energy + ' of required 550');
-      }
+    if(workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
+      spawnExplorer(spawn, room, explorers, MAX_EXPLORERS);
     }
   }
 }

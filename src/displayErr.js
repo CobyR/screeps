@@ -34,6 +34,8 @@ function displayErr(results) {
     return 'ERR_FULL';
   case -9:
     return 'ERR_NOT_IN_RANGE';
+  case -10:
+    return 'ERR_INVALID_ARGS';
   case -11:
     return 'ERR_TIRED';
   case -12:

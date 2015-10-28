@@ -62,6 +62,11 @@ function spawnWorker(spawn, room, current, MAX){
   var results = OK;
   var spawnLevel = room.controller.level;
 
+  if(!spawn){
+    log('Trying to spawn in ' + room.name + ' and there is no spawn.', 'spawn');
+    return ERR_INVALID_TARGET;
+  }
+
   for(var l = spawnLevel; l >= 1; l--){
     results = spawn.canCreateCreep(WORKER[l],
                                 'W' + l +

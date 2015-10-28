@@ -33,6 +33,15 @@ function roomSecretMission(creep) {
     case 'explorer':
       creep.memory.mode='build';
       creep.memory.state='fill';
+      break;
+    }
+    break;
+  case 'W5N11':
+    switch(creep.memory.role){
+    case 'explorer':
+      creep.memory.mode = 'build';
+      creep.memory.state = 'fill';
+      break;
     }
     break;
   default:

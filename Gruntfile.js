@@ -23,9 +23,9 @@ module.exports = function(grunt) {
           files: ['src/*.js', 'spec/*.js'],
           tasks: ['test'],
           options: {
-            spawn: true,
-          },
-        },
+            spawn: true
+          }
+        }
       },
 
       jshint: {
@@ -39,15 +39,14 @@ module.exports = function(grunt) {
           },
         dist: {
           src: ['src/*.js'],
-          dest: 'dist/main.js',
-        },
+          dest: 'dist/main.js'
+        }
       },
-
       screeps: {
         options: {
           email: auth.username,
           password: auth.password,
-          branch: 'default'
+          branch: (grunt.option('branch') || branch)
           },
         dist: {
           src: ['dist/main.js']

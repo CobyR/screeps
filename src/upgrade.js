@@ -27,6 +27,7 @@ function upgrade(creep) {
     if(typeof creep.room.storage !== 'undefined' && creep.room.storage.store.energy >= USE_STORAGE_THRESHOLD){
       lca(creep, 'is getting energy from storage.');
       creep.moveTo(creep.room.storage);
+      pickupEnergy(creep);
       creep.room.storage.transferEnergy(creep,creep.carryCapacity - creep.carry.energy);
     } else if(usefulExtensions.length > 0){
       for(var id in usefulExtensions){
@@ -47,13 +48,12 @@ function upgrade(creep) {
       pickupEnergy(creep);
     }
   } else {
-    if(spawn.energy < spawn.energyCapacity  && !creep.memory.locked) {
+    if(spawn.energy < spawn.energyCapacity  && !creep.memory.locked && creep.room.level < 4) {
       lca(creep, 'spawn is low on energy changing to harvester mode.');
       creep.memory.role='harvester';
     } else {
       lca(creep, 'is upgrading controller.');
       creep.moveTo(creep.room.controller);
-      pickupEnergy(creep);
       creep.upgradeController(creep.room.controller);
     }
   }

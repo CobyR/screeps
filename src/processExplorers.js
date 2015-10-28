@@ -1,6 +1,15 @@
-function processExplorers(explorers, room) {
+var EXPLORER = {
+  4: [MOVE, MOVE, MOVE, MOVE,
+      MOVE, MOVE, MOVE,
+      WORK, WORK, WORK, WORK,
+      CARRY, CARRY, CARRY, CARRY,
+      CARRY, CARRY, CARRY, CARRY,
+      ATTACK]
+}
+
+function processExplorers(explorers) {
   if(explorers.length > 0) {
-    log('[Explorers] ------------------','creep');
+    log('[Explorers] ------------------ ' + explorers.length,'creep');
     var poss = [];
     var creep = null;
 
@@ -14,7 +23,6 @@ function processExplorers(explorers, room) {
         break;
       default:
         explore(creep);
-        return OK;
       }
     }
 
@@ -63,6 +71,25 @@ function processExplorers(explorers, room) {
       creep = Game.getObjectById(poss[id]);
 
       explore(creep);
+    }
+  }
+}
+
+var explorerDestination = 'W5N11';
+
+function spawnExplorer(spawn, room, current, max){
+  var explorerName = 'E' + room.memory.explorerCounter;
+  var spawnLevel = room.controller.level;
+  var results = OK;
+  if(current.length < max){
+    log('Spawning a new explorer - ' + explorerName + '.', 'spawn');
+
+    results = spawn.createCreep(EXPLORER[spawnLevel],
+      explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
+    if(results == OK || results == ERR_NAME_EXISTS) {
+      room.memory.explorerCounter += 1;
+    } else {
+      console.log('trying to create an explorer resulted in ' + displayErr(results));
     }
   }
 }
