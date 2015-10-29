@@ -111,28 +111,22 @@ function transport(creep){
       creep.moveTo(creep.room.storage);
       creep.transferEnergy(creep.room.storage);
 
-    } else {
+    } else { // No storage exists
       var altTarget = findNearestEnergyNeed(creep);
+      if(altTarget){
+        // log('altTarget is a ' + altTarget.structureType)
 
-      log('altTarget is a ' + altTarget.structureType)
-
-      if(altTarget !== null){
+        if(altTarget !== null){
           lca(creep, 'is taking energy to a (' + altTarget.structureType + ' - ' + altTarget.pos.x +',' + altTarget.pos.y + ' it is at ' + altTarget.energy + ' of ' + altTarget.energyCapacity + ').');
           creep.moveTo(altTarget);
           creep.transferEnergy(altTarget);
         } else {
           lca(creep, 'all extensions and spawn are full.');
         }
+      } else {
+        lca(creep, 'no targets with energy needs.');
       }
-
-      /*lca(creep, 'no storage exists, moving to pile flag to make a pile at ' + pile.pos.x + ',' + pile.pos.y + '.');
-
-      creep.moveTo(pile);
-      if(creep.pos.x == pile.pos.x && creep.pos.y == pile.pos.y){
-        lca(creep, 'reached pile, dropping energy');
-        creep.dropEnergy();
-        creep.memory.state = 'cleanup';
-      }*/
+    }
     break;
   default:
     lca(creep, 'my state ' + creep.memory.state + ' has no functionality...');

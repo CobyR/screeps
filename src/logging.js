@@ -10,6 +10,9 @@ function log(message, classification){
     }
     break;
   default:
+    if(classification === 'undefined'){
+      var classification = '';
+    }
     console.log('[' + classification + '] ' + message);
   }
 }

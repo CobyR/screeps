@@ -206,7 +206,7 @@ function flagReports(name){
       break;
     case COLOR_YELLOW:
       reports.push('harvester');
-      reports.push('upgrade');
+      reports.push('upgrader');
       break;
     case COLOR_PURPLE:
       reports.push('hoarder');

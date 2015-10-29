@@ -22,12 +22,27 @@ function stayAlive(spawn, room) {
   var guards = 0;
   var builders = 0;
   var warriors = 0;
-  var healers = 0;
+  var medics = 0;
   var explorers = 0;
   var hoarders = 0;
   var sweepers = 0;
   var transporters = 0;
   var unknowns = 0;
+
+  var maximums = {
+    harvesters:   getMaxCreeps(room, COLOR_YELLOW, 'h'),
+    hoarders:     getMaxCreeps(room, COLOR_PURPLE, 'h'),
+    sweepers:     getMaxCreeps(room, COLOR_GREEN,  's'),
+    transporters: getMaxCreeps(room, COLOR_PURPLE, 't'),
+    upgraders:    getMaxCreeps(room, COLOR_YELLOW, 'u'),
+
+    guards:       getMaxCreeps(room, COLOR_RED,    'g'),
+    warriors:     getMaxCreeps(room, COLOR_RED,    'w'),
+    medics:       getMaxCreeps(room, COLOR_BLUE,   'm'),
+
+    builders:     getMaxCreeps(room, COLOR_BROWN,  'b'),
+    explorers:    getMaxCreeps(room, COLOR_ORANGE, 'e')
+  }
 
   var MAX_HARVESTERS   = getMaxCreeps(room, COLOR_YELLOW, 'h');
   var MAX_HOARDERS     = getMaxCreeps(room, COLOR_PURPLE, 'h');
@@ -37,7 +52,7 @@ function stayAlive(spawn, room) {
 
   var MAX_GUARDS       = getMaxCreeps(room, COLOR_RED,    'g');
   var MAX_WARRIORS     = getMaxCreeps(room, COLOR_RED,    'w');
-  var MAX_HEALERS      = getMaxCreeps(room, COLOR_BLUE,   'h');
+  var MAX_MEDICS      = getMaxCreeps(room, COLOR_BLUE,   'h');
 
   var MAX_BUILDERS     = getMaxCreeps(room, COLOR_BROWN,  'b');
   var MAX_EXPLORERS    = getMaxCreeps(room, COLOR_ORANGE, 'e');
@@ -46,6 +61,9 @@ function stayAlive(spawn, room) {
 
   initializeRoom(room);
 
+  log('maximum[harvesters] ' + maximums.harvesters + ' at the top of stayAlive.');
+ maximums =  overrideMaximums(room, maximums);
+  log('maximum[harvesters] ' + maximums.harvesters + ' after call to overrideMaximums.');
   // count creeps
   var totalCreeps = 0;
 
@@ -71,7 +89,7 @@ function stayAlive(spawn, room) {
       case 'transporter':
         transporters ++;
         break;
-      case 'upgrade':
+      case 'upgrader':
         upgraders ++;
         break;
       case 'guard':
@@ -80,8 +98,8 @@ function stayAlive(spawn, room) {
       case 'warrior':
         warriors ++;
         break;
-      case 'healer':
-        healers ++;
+      case 'medic':
+        medics ++;
         break;
       case 'builder':
         builders ++;
@@ -98,43 +116,40 @@ function stayAlive(spawn, room) {
 
   // report stats
 
-  creepCountReport(room, guards, warriors, healers,
+  creepCountReport(room, guards, warriors, medics,
                    harvesters, hoarders, sweepers, transporters,
-                   upgraders, builders, explorers, unknowns, MAX_GUARDS,
-                   MAX_WARRIORS, MAX_HEALERS, MAX_HARVESTERS,
-                   MAX_HOARDERS, MAX_SWEEPERS, MAX_TRANSPORTERS,
-                   MAX_UPGRADERS, MAX_BUILDERS, MAX_EXPLORERS);
+                   upgraders, builders, explorers, unknowns, maximums);
 
   switch(true){
-  case (room.controller.level == 1 && harvesters < MAX_HARVESTERS):
-    spawnHarvester(spawn, room, harvesters, MAX_HARVESTERS);
+  case (room.controller.level == 1 && harvesters < maximums.harvesters):
+    spawnHarvester(spawn, room, harvesters, maximums.harvesters);
     break;
-  case (hoarders < MAX_HOARDERS):
-    spawnHoarder(spawn, room, hoarders, MAX_HOARDERS);
+  case (hoarders < maximums.hoarders):
+    spawnHoarder(spawn, room, hoarders, maximums.hoarders);
     break;
-  case (sweepers < MAX_SWEEPERS):
-    spawnSweeper(spawn, room, sweepers, MAX_SWEEPERS);
+  case (sweepers < maximums.sweepers):
+    spawnSweeper(spawn, room, sweepers, maximums.sweepers);
     break;
-  case(transporters < MAX_TRANSPORTERS):
-    spawnTransporter(spawn, room, transporters, MAX_TRANSPORTERS);
+  case(transporters < maximums.transporters):
+    spawnTransporter(spawn, room, transporters, maximums.transporters);
     break;
-  case (builders < MAX_BUILDERS):
-    spawnBuilder(spawn, room, builders, MAX_BUILDERS);
+  case (builders < maximums.builders):
+    spawnBuilder(spawn, room, builders, maximums.builders);
     break;
-  case (upgraders < MAX_UPGRADERS):
-    spawnUpgrader(spawn, room, upgraders, MAX_UPGRADERS);
+  case (upgraders < maximums.upgraders):
+    spawnUpgrader(spawn, room, upgraders, maximums.upgraders);
     break;
-  case (guards < MAX_GUARDS):
-    spawnGuard(spawn, room, guards, MAX_GUARDS);
+  case (guards < maximums.guards):
+    spawnGuard(spawn, room, guards, maximums.guards);
     break;
-  case(warriors < MAX_WARRIORS):
-    spawnWarrior(spawn, room, warriors, MAX_WARRIORS);
+  case(warriors < maximums.warriors):
+    spawnWarrior(spawn, room, warriors, maximums.warriors);
     break;
-  case(healers < MAX_HEALERS):
-    spawnHealer(spawn, room, healers, MAX_HEALERS);
+  case(medics < maximums.medics):
+    spawnMedic(spawn, room, medics, maximums.medics);
     break;
-  case(explorers < MAX_EXPLORERS):
-    spawnExplorer(spawn, room, explorers, MAX_EXPLORERS);
+  case(explorers < maximums.explorers):
+    spawnExplorer(spawn, room, explorers, maximums.explorers);
     break;
   default:
     log('No spawning happening this tick.');
@@ -145,7 +160,7 @@ function getMaxCreeps(room, color, character){
   var maxCreeps = 0;
   var flags = null;
 
-  log('looking for flags that are ' + color);
+  //log('looking for flags that are ' + color);
   flags = room.find(FIND_FLAGS, { filter: {color: color}});
   for(var i in flags){
     var flag = flags[i];
@@ -194,8 +209,8 @@ function spawnCreep(spawn, room, current, max,
     log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
     results = spawn.createCreep(BODY_PARTS[spawnLevel],
                                 classification.charAt(0).toUpperCase() + spawnLevel +
-                                '_' + room.memory.workerCounter,
-                                { role: 'upgrade', locked: false});
+                                '_' + room.memory[counterName],
+                                { role: classification });
     if(results == OK){
       room.memory[counterName] ++;
     } else if(results == ERR_NAME_EXISTS){

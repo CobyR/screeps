@@ -51,6 +51,10 @@ function upgrade(creep, source) {
         creep.moveTo(creep.room.storage);
         pickupEnergy(creep);
         creep.room.storage.transferEnergy(creep);
+      } else if(spawn) {
+        lca(creep, 'is getting energy from spawn.');
+        creep.moveTo(spawn);
+        spawn.transferEnergy(creep);
       } else {
         lca(creep, 'is gathering energy from a source.');
         creep.moveTo(source);
@@ -68,6 +72,8 @@ function upgrade(creep, source) {
       creep.upgradeController(creep.room.controller);
     }
     break;
+  default:
+    creep.memory.state = 'fill';
   }
 }
 

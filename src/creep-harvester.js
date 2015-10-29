@@ -7,8 +7,36 @@ var HARVESTER = {
   6: [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
 }
 
-function processHarvesters(harvesters){
-  
+function processHarvesters(creeps){
+  var index = 0;
+
+  log('[Harvesters (Boot Strap)] -------------------','creep');
+
+  var sources = null;
+  var source = null;
+
+  for(var id in creeps) {
+    var creep = Game.getObjectById(creeps[id]);
+    index ++;
+
+    // lca(creep, creep.room.name + ' vs ' + p_room.name, true );
+    sources = creep.room.find(FIND_SOURCES);
+
+    if(sources.length > 1){
+      if(index % 2){
+        source = sources[0];
+      } else {
+        source = sources[1];
+      }
+    } else if(sources.length == 1) {
+      source = sources[0];
+    } else {
+        lca(creep, 'Odd - there are ' + sources.length + ' sources in this room ' + creep.pos.roomName + ', and there is no code in creep-upgrader to deal with this.');
+        return OK;
+    }
+    harvest(creep, source);
+  }
+
 }
 
 function harvest(creep, source) {
@@ -31,10 +59,16 @@ function harvest(creep, source) {
     creep.moveTo(target);
     creep.transferEnergy(target);
 
-    if(creep.energy === 0){
+    if(creep.carry.energy === 0){
       creep.memory.state = 'gathering';
     }
     break;
+  default:
+    if(creep.carry.energy > 0){
+      creep.memory.state = 'transferring';
+    } else {
+      creep.memory.state = 'gathering';
+    }
   }
 }
 

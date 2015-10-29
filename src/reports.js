@@ -23,23 +23,20 @@ function displayReports(){
   Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),3);
 }
 
-function creepCountReport(room, guards, warriors, healers,
+function creepCountReport(room, guards, warriors, medics,
                           harvesters, hoarders, sweepers, transporters,
-                          upgraders, builders, explorers, unknowns, MAX_GUARDS,
-                          MAX_WARRIORS, MAX_HEALERS, MAX_HARVESTERS,
-                          MAX_HOARDERS, MAX_SWEEPERS, MAX_TRANSPORTERS,
-                          MAX_UPGRADERS, MAX_BUILDERS, MAX_EXPLORERS){
+                          upgraders, builders, explorers, unknowns, max){
   log('CREEPS ' + room.name + ': ' +
-      harvesters + ' of ' + MAX_HARVESTERS + ' harvesters ' +
-      hoarders   + ' of ' + MAX_HOARDERS + ' hoarders ' +
-      sweepers   + ' of ' + MAX_SWEEPERS + ' sweepers ' +
-      transporters + ' of ' + MAX_TRANSPORTERS + ' transporters ' +
-      upgraders + ' of ' + MAX_UPGRADERS + ' upgraders ' +
-      builders + ' of ' + MAX_BUILDERS + ' builders ' +
-      explorers + ' of ' + MAX_EXPLORERS + ' explorers ' +
-      guards + ' of ' + MAX_GUARDS + ' guards ' +
-      warriors + ' of ' + MAX_WARRIORS + ' warriors ' +
-      healers + ' of ' + MAX_HEALERS + ' healers.' +
+      harvesters + ' of ' + max.harvesters + ' harvesters, ' +
+      hoarders   + ' of ' + max.hoarders + ' hoarders, ' +
+      sweepers   + ' of ' + max.sweepers + ' sweepers, ' +
+      transporters + ' of ' + max.transporters + ' transporters, ' +
+      upgraders + ' of ' + max.upgraders + ' upgraders, ' +
+      builders + ' of ' + max.builders + ' builders, ' +
+      explorers + ' of ' + max.explorers + ' explorers, ' +
+      guards + ' of ' + max.guards + ' guards, ' +
+      warriors + ' of ' + max.warriors + ' warriors, ' +
+      medics + ' of ' + max.medics + ' medics, ' +
       unknowns + ' unknown creeps.');
 
 }

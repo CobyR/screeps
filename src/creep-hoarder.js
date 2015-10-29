@@ -36,11 +36,7 @@ function processHoarders(hoarders) {
       } else {
         i++;
         // console.log( i + " " + i % 2);
-        if(creep.room.name == p_room.name && i % 2 === 0 && creep.room.storage.store.energy > 100000 + creep.carryCapacity && HOARD_REMOTE === true) {
-          remoteHoard(creep);
-        } else {
-          hoard(creep, i % 2);
-        }
+        hoard(creep, i % 2);
       }
     }
   }

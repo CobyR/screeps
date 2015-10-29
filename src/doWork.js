@@ -8,7 +8,7 @@ function doWork(){
   var transporters = [];
   var upgraders = [];
   var warriors = [];
-  var healers = [];
+  var medics = [];
 
 
   for(var name in Game.creeps) {
@@ -25,7 +25,7 @@ function doWork(){
     case 'harvester':
       harvesters.push(creep.id);
       break;
-    case 'upgrade':
+    case 'upgrader':
       upgraders.push(creep.id);
       break;
     case 'builder':
@@ -57,7 +57,7 @@ function doWork(){
 
   processGuards(guards, p_room);
   processWarriors(warriors, p_room);
-  processHealers(healers, p_room);
+  processMedics(medics, p_room);
 
   processBuilders(builders, p_room);
   processExplorers(explorers, p_room);
