@@ -1,3 +1,32 @@
+var SWEEPER = {
+  1: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY],
+  2: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY],
+  3: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY],
+  4: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY],
+  5: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY]
+}
 function sweep(creep, room){
   if(typeof creep.memory.state === 'undefined'){
     creep.memory.state = creep.memory.mode;
@@ -36,32 +65,9 @@ function processSweepers(sweepers, room){
 
 }
 
-function spawnSweepers(spawn, room, sweepers, MAX) {
-  if(sweepers < MAX) {
-    var results = spawn.createCreep([MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY,
-                                     MOVE, CARRY],
-                                    'S' + room.memory.sweeperCounter,
-                                    {role: 'sweeper', state: 'fillGet'});
-    switch(results){
-    case OK:
-      room.memory.sweeperCounter ++;
-      log('Spawning a new sweeper succeeded.');
-      break;
-    case ERR_NAME_EXISTS:
-      room.memory.sweeperCounter ++;
-      break;
-    default:
-      log('Spawning a new sweeper failed: ' + displayErr(results) + '.');
-    }
-  }
+function spawnSweeper(spawn, room, sweepers, max) {
+  spawnCreep(spawn, room, sweepers, max,
+             SWEEPER, 'sweeper','sweeperCounter');
 }
 
 function fillPut(creep,room){

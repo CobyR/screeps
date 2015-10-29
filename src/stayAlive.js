@@ -64,6 +64,41 @@ function stayAlive(spawn, room) {
       log(creep.name +  ' is still spawning.','spawn');
       continue;
     }
+    //log('name ' + creep.name + ' creep.name.charAt 0 is ' + creep.name.charAt(0) + '.')
+    switch(creep.name.charAt(0)){
+    case 'B':
+      creep.memory.role = 'builder';
+      break;
+    case 'G':
+      if(creep.memory.role != 'guard'){
+        lca(creep,'WTF? my role was ' + creep.memory.role + '.');
+        creep.memory.role = 'guard';
+      }
+      break;
+    case 'W':
+      if(creep.memory.role != 'harvester' && creep.memory.role != 'upgrade'){
+        lca(creep, 'WTF? my role was ' + creep.memory.role + '.');
+        creep.memory.role = 'upgrade';
+      }
+      break;
+    case 'S':
+      creep.memory.role = 'sweeper';
+      break;
+    case 'H':
+      creep.memory.role = 'hoarder';
+      break;
+    case 'T':
+      creep.memory.role = 'transporter';
+      break;
+    default:
+      log('WTF - fix ' + creep.memory.role + ' for ' + creep.name + '.');
+    }
+
+    switch(creep.name){
+    case 'W2_83':
+      creep.memory.role = 'transporter';
+      break;
+    }
 
     if(creep.room.name == room.name){
       totalCreeps ++;
@@ -101,39 +136,6 @@ function stayAlive(spawn, room) {
     }
   }
 
-  // Tweak MAX Numbers based on circumstance
-  if(workers < 4 ) {
-    MAX_WORKERS = 2;
-    MAX_BUILDERS = 0;
-  } else if (workers == 4 && room.controller.level > 3) {
-    MAX_WORKERS = 6;
-    MAX_BUILDERS = 1;
-  }
-
-  if (workers >=8 && guards >= 4 && builders >= 2) {
-    MAX_EXPLORERS=room.find(FIND_FLAGS, { filter: {color: COLOR_ORANGE}}).length;
-  }
-
-  if(typeof room.storage !== 'undefined'){
-    var storedEnergy = room.storage.store.energy;
-
-    if(MAX_SWEEPERS === 0){
-      switch(true) {
-      case ( storedEnergy < 5000):
-        MAX_SWEEPERS = 0;
-        break;
-      case( storedEnergy < 500000):
-        MAX_SWEEPERS = 1;
-        break;
-      case (storedEnergy < 750000):
-        MAX_SWEEPERS = 2;
-        break;
-      case( storedEnergy < 1000000):
-        MAX_SWEEPERS = 3;
-      }
-    }
-  }
-
   // report stats
   console.log('CREEPS ' + room.name + ': ' +
               workers + ' of ' + MAX_WORKERS +  ' workers h:' + harvesters + '/ u:' + upgraders + ', ' +
@@ -146,7 +148,9 @@ function stayAlive(spawn, room) {
               unknowns + ' unknown creeps.');
 
   // spawn guards
-  spawnGuard(spawn, room, guards, MAX_GUARDS);
+  if(guards < MAX_GUARDS){
+    spawnGuard(spawn, room, guards, MAX_GUARDS);
+  }
 
 
   // spawn workers
@@ -164,7 +168,7 @@ function stayAlive(spawn, room) {
   spawnBuilder(spawn, room, builders, MAX_BUILDERS);
 
   // spawn sweepers
-  spawnSweepers(spawn, room, sweepers, MAX_SWEEPERS);
+  spawnSweeper(spawn, room, sweepers, MAX_SWEEPERS);
 
   // spawn explorers
   if(workers >= MAX_WORKERS && guards >= MAX_GUARDS && builders >= MAX_BUILDERS) {
@@ -189,6 +193,11 @@ function getMaxCreeps(room, color, character){
 
 function spawnCreep(spawn, room, current, max,
                     BODY_PARTS, classification, counterName){
+  if(spawn.spawning){
+    log('spawner is busy was called by ' + classification + ' with ' + current + ' of ' + max + '.');
+    return ERR_BUSY;
+  }
+
   var results = OK;
   var spawnLevel = room.controller.level;
 
@@ -199,7 +208,7 @@ function spawnCreep(spawn, room, current, max,
 
   for(var l = spawnLevel; l >= 1; l--){
     results = spawn.canCreateCreep(BODY_PARTS[l],
-                                'W' + l +
+                                classification.charAt(0).toUpperCase() + l +
                                 '_' + room.memory[counterName],
                                 { role: classification});
     if(results == OK){
@@ -210,12 +219,15 @@ function spawnCreep(spawn, room, current, max,
       log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in check.', 'spawn');
       room.memory[counterName] ++;
     }
+    if(results == ERR_NOT_ENOUGH_ENERGY){
+      spawnLevel = l;
+    }
   }
 
   if(current < max) {
     log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
     results = spawn.createCreep(BODY_PARTS[spawnLevel],
-                                'W' + spawnLevel +
+                                classification.charAt(0).toUpperCase() + spawnLevel +
                                 '_' + room.memory.workerCounter,
                                 { role: 'upgrade', locked: false});
     if(results == OK){

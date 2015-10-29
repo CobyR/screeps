@@ -16,6 +16,30 @@ function findNearestEnemy(creep, enemies){
   return closestHostile;
 }
 
+function findNearestDroppedEnergy(creep, maxRange) {
+  var shortestDistance = 50;
+  var distance = 0;
+  var nearestDrop = null;
+
+  if(!maxRange){
+    maxRange = 50;
+  }
+
+  var drops = creep.room.find(FIND_DROPPED_ENERGY);
+
+  for(var i in drops){
+    var drop = drops[i];
+
+    distance = creep.pos.getRangeTo(drop);
+    if(distance < maxRange){
+      if(distance < shortestDistance){
+        shortestDistance = distance;
+        nearestDrop = drop;
+      }
+    }
+  }
+  return nearestDrop;
+}
 
 function findNearestConstructionSite(creep) {
   var shortestDistance = 50;
@@ -85,8 +109,23 @@ function findNearestEnergyNeed(creep){
     storage = creep.room.storage;
   }
 
-  for(var i in extensions){
-    var extension = extensions[i];
+  var spawn = null;
+  var spawns = creep.room.find(FIND_MY_SPAWNS);
+  for(var i in spawns){
+    spawn = spawns[i];
+    if(spawn.energy == spawn.energyCapacity){
+      continue;
+    }
+    distance = creep.pos.getRangeTo(spawn);
+
+    if(distance < shortestDistance){
+      shortestDistance = distance;
+      closestEnergy = spawn;
+    }
+  }
+
+  for(var e in extensions){
+    var extension = extensions[e];
 
     distance = creep.pos.getRangeTo(extension);
 

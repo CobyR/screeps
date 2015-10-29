@@ -1,4 +1,15 @@
 var TRANSPORTER = {
+  1: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY],
+  2: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY],
+  3: [MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY,
+      MOVE, CARRY, CARRY],
   4: [MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
@@ -6,7 +17,7 @@ var TRANSPORTER = {
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY],
-  5: [
+  5: [MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
@@ -14,9 +25,7 @@ var TRANSPORTER = {
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY,
-      MOVE, CARRY, CARRY,
-      MOVE, CARRY, CARRY
-  ]
+      MOVE, CARRY]
 }
 
 function processTransporters(transporters){
@@ -42,31 +51,16 @@ function processTransporters(transporters){
 }
 
 function spawnTransporter(spawn, room, current, max){
-  var results = OK;
-  var spawnLevel = room.controller.level;
-
-  if(spawnLevel >= 4  && current < max){
-    results = spawn.canCreateCreep(TRANSPORTER[spawnLevel],
-                                   'T' + spawnLevel +
-                                   '_' + room.memory.transporterCounter,
-                                   { role: 'transporter', state: 'cleanup'});
-    if(results == ERR_NAME_EXISTS){
-      log('Incrementing transporterCounter for ' + room.name + ' from ' + room.memory.transporterCounter + ' by 1 in check.', 'spawn');
-      room.memory.transporterCounter ++;
-    }
-
-    if(results != ERR_NOT_ENOUGH_ENERGY){
-      results = spawn.createCreep(TRANSPORTER[spawnLevel],
-                                   'T_' + room.memory.transporterCounter,
-                                   { role: 'transporter', state: 'cleanup'});
-      if(results != OK){
-        log('Spawning a new transporter, but spawn said ' + displayErr(results), 'spawn');
-      }
-    }
-  }
+  spawnCreep(spawn, room, current, max,
+             TRANSPORTER, 'transporter', 'transporterCounter');
 }
 
 function transport(creep){
+  var pileFlag = creep.room.find(FIND_FLAGS,
+                              {filter: { color: COLOR_PURPLE,
+                                         name: 'PILE'}});
+  var pile = pileFlag[0];
+
   switch(creep.memory.state){
   case 'cleanup':
         var drops = creep.room.find(FIND_DROPPED_ENERGY);
@@ -77,6 +71,10 @@ function transport(creep){
 
     for(var index in drops){
       var drop = drops[index];
+      if(pile && drop.pos.x == pile.pos.x && drop.pos.y == pile.pos.y){
+        lca(creep, 'skipping the storage PILE, moving on.',true);
+        continue;
+      }
 
       distance = creep.pos.getRangeTo(drop);
 
@@ -86,12 +84,12 @@ function transport(creep){
       }
     }
 
-    if(closestDrop === null){
+    if(closestDrop === null  || creep.carry.energy == creep.carryCapacity){
       if(creep.carry.energy > 0){
         lca(creep, 'dropping off the energy I have ' + creep.carry.energy + '.');
         creep.memory.state = 'transferring';
       } else {
-        lca(creep, 'no drops, no energy, waiting.');
+        lca(creep, 'no valid drops, no energy, waiting.');
       }
     } else{
       if(creep.carry.energy == creep.carryCapacity) {
@@ -113,12 +111,35 @@ function transport(creep){
       creep.moveTo(creep.room.storage);
       creep.transferEnergy(creep.room.storage);
 
-      if(creep.carry.energy === 0){
-        creep.memory.state = 'cleanup';
+    } else {
+      var altTarget = findNearestEnergyNeed(creep);
+
+      log('altTarget is a ' + altTarget.structureType)
+
+      if(altTarget !== null){
+          lca(creep, 'is taking energy to a (' + altTarget.structureType + ' - ' + altTarget.pos.x +',' + altTarget.pos.y + ' it is at ' + altTarget.energy + ' of ' + altTarget.energyCapacity + ').');
+          creep.moveTo(altTarget);
+          creep.transferEnergy(altTarget);
+        } else {
+          lca(creep, 'all extensions and spawn are full.');
+        }
       }
-    }
+
+      /*lca(creep, 'no storage exists, moving to pile flag to make a pile at ' + pile.pos.x + ',' + pile.pos.y + '.');
+
+      creep.moveTo(pile);
+      if(creep.pos.x == pile.pos.x && creep.pos.y == pile.pos.y){
+        lca(creep, 'reached pile, dropping energy');
+        creep.dropEnergy();
+        creep.memory.state = 'cleanup';
+      }*/
     break;
   default:
     lca(creep, 'my state ' + creep.memory.state + ' has no functionality...');
+    creep.memory.state = 'cleanup';
+  }
+
+  if(creep.carry.energy === 0){
+    creep.memory.state = 'cleanup';
   }
 }
