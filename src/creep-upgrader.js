@@ -31,11 +31,11 @@ function processUpgraders(creeps){
     } else if(sources.length == 1) {
       source = sources[0];
     } else {
-        lca(creep, 'Odd - there are ' + sources.length ' sources in this room ' + creep.pos.roomName + ', and there is no code in creep-upgrader to deal with this.');
+        lca(creep, 'Odd - there are ' + sources.length + ' sources in this room ' + creep.pos.roomName + ', and there is no code in creep-upgrader to deal with this.');
         return OK;
     }
-  }
     upgrade(creep, source);
+  }
 }
 
 function upgrade(creep, source) {
@@ -53,8 +53,8 @@ function upgrade(creep, source) {
         creep.room.storage.transferEnergy(creep);
       } else {
         lca(creep, 'is gathering energy from a source.');
-        creep.moveTo(sources);
-        creep.harvest(sources);
+        creep.moveTo(source);
+        creep.harvest(source);
         pickupEnergy(creep);
       }
     }

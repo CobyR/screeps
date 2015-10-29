@@ -37,7 +37,7 @@ function processHoarders(hoarders) {
         i++;
         // console.log( i + " " + i % 2);
         if(creep.room.name == p_room.name && i % 2 === 0 && creep.room.storage.store.energy > 100000 + creep.carryCapacity && HOARD_REMOTE === true) {
-          hoardRCL(creep);
+          remoteHoard(creep);
         } else {
           hoard(creep, i % 2);
         }
