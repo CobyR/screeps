@@ -1,3 +1,22 @@
+function log(message, classification){
+  var reportFor = flagReports('CR');
+
+  var creepReport = (reportFor.indexOf('global') > -1 );
+
+  switch(classification){
+  case 'creep':
+    if(creepReport){
+      console.log('[creep] ' + message);
+    }
+    break;
+  default:
+    if(classification === 'undefined'){
+      var classification = '';
+    }
+    console.log('[' + classification + '] ' + message);
+  }
+}
+
 function lca(creep, message, debug) {
   var debugFor = flagReports('DEBUG');
   var reportFor = flagReports('CR');

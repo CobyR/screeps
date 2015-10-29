@@ -1,11 +1,15 @@
 function doWork(){
   var explorers = [];
   var builders = [];
-  var workers = [];
+  var harvesters = [];
   var guards = [];
   var hoarders = [];
   var sweepers = [];
   var transporters = [];
+  var upgraders = [];
+  var warriors = [];
+  var medics = [];
+
 
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
@@ -19,10 +23,10 @@ function doWork(){
       guards.push(creep.id);
       break;
     case 'harvester':
-      workers.push(creep.id);
+      harvesters.push(creep.id);
       break;
-    case 'upgrade':
-      workers.push(creep.id);
+    case 'upgrader':
+      upgraders.push(creep.id);
       break;
     case 'builder':
       builders.push(creep.id);
@@ -45,12 +49,17 @@ function doWork(){
     }
   }
 
-  processGuards(guards, p_room);
-  processWorkers(workers, p_room);
-  processBuilders(builders, p_room);
-  processHoarders(hoarders, p_room);
-  processExplorers(explorers, p_room);
+  processHarvesters(harvesters);
+  processHoarders(hoarders);
+  processUpgraders(upgraders);
   processSweepers(sweepers, p_room);
   processTransporters(transporters, p_room);
+
+  processGuards(guards, p_room);
+  processWarriors(warriors, p_room);
+  processMedics(medics, p_room);
+
+  processBuilders(builders, p_room);
+  processExplorers(explorers, p_room);
 
 }

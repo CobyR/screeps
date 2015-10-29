@@ -35,13 +35,15 @@ function sweep(creep, room){
   switch(creep.memory.state){
   case 'fillGet':
     if(creep.carry.energy < creep.carryCapacity){
-      lca(creep, 'moving to Storage to get energy, currently at: ' + creep.carry.energy + '.');
-      creep.moveTo(room.storage);
-      room.storage.transferEnergy(creep);
-    } else {
-      // figure out which extension to move to
-      creep.memory.state = 'fillPut';
-      sweep(creep, room);
+      switch(true){
+      case (room.storage):
+        lca(creep, 'moving to Storage to get energy, currently at: ' + creep.carry.energy + '.');
+        creep.moveTo(room.storage);
+        room.storage.transferEnergy(creep);
+        break;
+      default:
+        lca(creep, 'trying to get energy, but there is no storage ???');
+      }
     }
     break;
   case 'fillPut':

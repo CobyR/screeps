@@ -1,5 +1,5 @@
 function displayReports(){
-  storageReport(p_room)
+  storageReport(p_room);
   if(room2){
     storageReport(room2);
   }
@@ -21,4 +21,22 @@ function displayReports(){
 
   console.log('all scripts completed ' + nwc(endCpu));
   Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),3);
+}
+
+function creepCountReport(room, guards, warriors, medics,
+                          harvesters, hoarders, sweepers, transporters,
+                          upgraders, builders, explorers, unknowns, max){
+  log('CREEPS ' + room.name + ': ' +
+      harvesters + ' of ' + max.harvesters + ' harvesters, ' +
+      hoarders   + ' of ' + max.hoarders + ' hoarders, ' +
+      sweepers   + ' of ' + max.sweepers + ' sweepers, ' +
+      transporters + ' of ' + max.transporters + ' transporters, ' +
+      upgraders + ' of ' + max.upgraders + ' upgraders, ' +
+      builders + ' of ' + max.builders + ' builders, ' +
+      explorers + ' of ' + max.explorers + ' explorers, ' +
+      guards + ' of ' + max.guards + ' guards, ' +
+      warriors + ' of ' + max.warriors + ' warriors, ' +
+      medics + ' of ' + max.medics + ' medics, ' +
+      unknowns + ' unknown creeps.');
+
 }

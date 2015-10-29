@@ -1,3 +1,99 @@
+var EXPLORER = {
+  4: [MOVE, MOVE, MOVE, MOVE,
+      MOVE, MOVE, MOVE,
+      WORK, WORK, WORK, WORK,
+      CARRY, CARRY, CARRY, CARRY,
+      CARRY, CARRY, CARRY, CARRY,
+      ATTACK]
+}
+
+function processExplorers(explorers) {
+  if(explorers.length > 0) {
+    log('[Explorers] ------------------ ' + explorers.length,'creep');
+    var poss = [];
+    var creep = null;
+
+    for(var id in explorers) {
+      creep = Game.getObjectById(explorers[id]);
+      // split explorers into groups by their mode of operation
+
+      switch(creep.memory.mode){
+      case 'pos':
+        poss.push(creep.id);
+        break;
+      default:
+        explore(creep);
+      }
+    }
+
+    // process position based creeps as a group
+    var commonDestination = '';
+    var cdCreeps = [];
+
+    for(id in poss) {
+      creep = Game.getObjectById(poss[id]);
+      // lca(creep, 'part of poss and my destination is ' + creep.memory.posDestination.x + ',' + creep.memory.posDestination.y,true);
+      if(commonDestination === '') {
+        lca(creep, 'setting common destination', true);
+        commonDestination = creep.memory.posDestination;
+        cdCreeps.push(creep.id);
+      } else {
+        cdCreeps.push(creep.id);
+      }
+    }
+
+    // process the position based creeps with a commonDestination
+    var goal = false;
+
+    if(cdCreeps.length > 1) {
+      // There is more than one creep with a commonDestination
+      for(id in cdCreeps) {
+        creep = Game.getObjectById(cdCreeps[id]);
+        lca(creep, 'evaluating for goal success');
+
+        if(creep.pos.x == commonDestination.x && creep.pos.y == commonDestination.y) {
+          lca(creep, '   goal == true', true);
+          goal = true;
+        } else {
+          lca(creep, ' goal == false - ' + commonDestination.x + ',' + commonDestination.y, true);
+        }
+      }
+
+      if(goal) {
+        assignNextPosition(cdCreeps);
+      }
+    } else {
+      log('another unexepected code branch in processExplorers','creep');
+    }
+
+    // let all position based creeps do their thing
+    for(id in poss) {
+      creep = Game.getObjectById(poss[id]);
+
+      explore(creep);
+    }
+  }
+}
+
+var explorerDestination = 'W5N11';
+
+function spawnExplorer(spawn, room, current, max){
+  var explorerName = 'E' + room.memory.explorerCounter;
+  var spawnLevel = room.controller.level;
+  var results = OK;
+  if(current.length < max){
+    log('Spawning a new explorer - ' + explorerName + '.', 'spawn');
+
+    results = spawn.createCreep(EXPLORER[spawnLevel],
+      explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
+    if(results == OK || results == ERR_NAME_EXISTS) {
+      room.memory.explorerCounter += 1;
+    } else {
+      console.log('trying to create an explorer resulted in ' + displayErr(results));
+    }
+  }
+}
+
 function explore(creep) {
   var results = null;
   var target = null;
@@ -169,3 +265,58 @@ function explore(creep) {
      }
      */
  }
+
+function assignNextPosition(creep_ids) {
+
+  console.log('assignNextPosition');
+  var oldestCreep = Game.getObjectById(creep_ids[0]);
+
+  var positions = null;
+  var roomName = oldestCreep.room.name;
+
+  switch(roomName){
+    case 'W11S26':
+      console.log(roomName + ' has positions to go for');
+      positions = [
+        new RoomPosition(35,16, roomName),
+        new RoomPosition(36,16, roomName),
+        new RoomPosition(34,16, roomName)
+      ];
+  }
+
+  // check to see if any positions have been completed
+  var positionToCheck = -1;
+  if(typeof oldestCreep.memory.secretMissionStepCompleted == 'undefined' ||
+     oldestCreep.memory.secretMissionStepCompleted === null) {
+     positionToCheck = 0;
+  } else {
+    positionToCheck = oldestCreep.memory.secretMissionStepCompleted + 1;
+  }
+  console.log('positionToCheck ' + positionToCheck);
+  lca(oldestCreep, oldestCreep.pos.x + ',' + oldestCreep.pos.y + ' vs ' + positions[positionToCheck].x + ',' + positions[positionToCheck].y);
+
+  if(oldestCreep.pos.x == positions[positionToCheck].x && oldestCreep.pos.y == positions[positionToCheck].y) {
+    console.log('the oldest creep has reached the position in question');
+    // the specified position has been reached
+    // set secretMissionStepCompleted to position index for all creeps passed in
+    // if it is not the last position then set their next position to the next
+    //   element in the array
+
+    for(var id in creep_ids){
+      var creep = Game.getObjectById(creep_ids[id]);
+
+      creep.memory.secretMissionStepCompleted = positionToCheck;
+      lca(creep, 'reassigning creeps');
+      if(positionToCheck != positions.length - 1){
+        creep.memory.posDestination = positions[positionToCheck +1];
+      } else {
+        creep.memory.posDestination = null;
+        creep.memory.secretMissionStepCompleted = null;
+        creep.memory.state = 'success';
+        creep.memory.mode = 'pillage';
+      }
+    }
+  } else {
+    lca(oldestCreep, 'unexpected code branch');
+  }
+}
