@@ -1,3 +1,11 @@
+var UPGRADER = {
+  1: [ MOVE, WORK, CARRY, CARRY]
+}
+
+function processUpgraders(creeps){
+  
+}
+
 function upgrade(creep) {
   var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
   var sources = creep.room.find(FIND_SOURCES);
@@ -23,4 +31,9 @@ function upgrade(creep) {
     }
     break;
   }
+}
+
+function spawnUpgrader(spawn, room, current, max){
+  spawnCreep(spawn, room, current, max,
+             UPGRADER, 'upgrader', 'upgraderCounter');
 }
