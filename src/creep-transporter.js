@@ -28,13 +28,15 @@ var TRANSPORTER = {
       MOVE, CARRY]
 }
 
-function processTransporters(transporters){
-  var TRANSPORT_REMOTE = false;
+function processTransporters(transporters, hoarders){
 
   if(transporters.length > 0){
-    log('[Transporters] ------------','creep');
+    log('[Transporters] ------------ ','creep');
 
     var i = 0;
+
+    updateAssignments(transporters, hoarders);
+
     for(var id in transporters){
       var creep = Game.getObjectById(transporters[id]);
 
@@ -56,48 +58,32 @@ function spawnTransporter(spawn, room, current, max){
 }
 
 function transport(creep){
-  var pileFlag = creep.room.find(FIND_FLAGS,
-                              {filter: { color: COLOR_PURPLE,
-                                         name: 'PILE'}});
-  var pile = pileFlag[0];
-
+  var results = OK;
+  // Does the transporter have an assignment?
   switch(creep.memory.state){
   case 'cleanup':
-        var drops = creep.room.find(FIND_DROPPED_ENERGY);
-
-    var closestDrop = null;
-    var distance = 0;
-    var shortestDistance = 50;
-
-    for(var index in drops){
-      var drop = drops[index];
-      if(pile && drop.pos.x == pile.pos.x && drop.pos.y == pile.pos.y){
-        lca(creep, 'skipping the storage PILE, moving on.',true);
-        continue;
-      }
-
-      distance = creep.pos.getRangeTo(drop);
-
-      if(distance < shortestDistance) {
-        shortestDistance = distance;
-        closestDrop = drop;
-      }
-    }
-
-    if(closestDrop === null  || creep.carry.energy == creep.carryCapacity){
-      if(creep.carry.energy > 0){
-        lca(creep, 'dropping off the energy I have ' + creep.carry.energy + '.');
-        creep.memory.state = 'transferring';
+    if(creep.carry.energy == creep.carryCapacity) {
+      lca(creep, 'my carryCapacity has been reached, transferring...');
+      creep.memory.state = 'transferring';
+    } else {
+      if(creep.memory.follow){
+        var follow = Game.getObjectById(creep.memory.follow.id);
+        if(follow){
+          results = creep.moveTo(follow);
+          if(results == ERR_INVALID_TARGET){
+            lca(creep, 'was following an INVALID_TARGET, clearning memory.follow');
+            creep.memory.follow = null;
+          } else {
+            lca(creep, 'following ' + follow.name + ' to pickup  energy. '+ displayErr(results));
+            var closestDrop = findNearestDroppedEnergy(creep,1);
+            pickupEnergy(creep);
+          }
+        }
       } else {
-        lca(creep, 'no valid drops, no energy, waiting.');
-      }
-    } else{
-      if(creep.carry.energy == creep.carryCapacity) {
-        creep.memory.state = 'transferring';
-      } else {
-        lca(creep, 'moving to ' + closestDrop.pos.x + ',' + closestDrop.pos.y + ' to pickup ' + closestDrop.energy + ' energy.');
-        creep.moveTo(closestDrop);
-        creep.pickup(closestDrop);
+        lca(creep, 'not following, moving to pickup dropped energy.');
+        var drop = findNearestDroppedEnergy(creep);
+        creep.moveTo(drop);
+        creep.pickup(drop);
       }
     }
     break;
@@ -135,5 +121,39 @@ function transport(creep){
 
   if(creep.carry.energy === 0){
     creep.memory.state = 'cleanup';
+  }
+}
+
+function updateAssignments(creeps, hoarders){
+  for(var i in creeps){
+    var creep = Game.getObjectById(creeps[i]);
+
+    if(!creep.memory.follow){
+      // Creep has no assignment, let's figure one out.
+      lca(creep, 'getting a new assignment',true);
+      updateAssignment(creep, hoarders);
+    }
+  }
+}
+
+function updateAssignment(creep, hoarders){
+  if(!creep.memory.follow){
+    _.forEach(hoarders, function(hoarder_id) {
+                var hoarder = Game.getObjectById(hoarder_id);
+                if(creep.pos.roomName == hoarder.pos.roomName){
+                  if(!hoarder.memory.transporter ){
+                    hoarder.memory.transporter = creep;
+                    creep.memory.follow = hoarder;
+                    lca(creep, 'assigned to ' + hoarder.name);
+                  } else {
+                    lca(creep, hoarder.name + ' already has a transporter: ' + hoarder.memory.transporter.name + '.',true);
+                    var checkCreep = Game.getObjectById(hoarder.memory.transporter.id);
+                    if(checkCreep && checkCreep.id == creep.id){
+                      creep.memory.follow = hoarder;
+                      lca(creep, 'WTF? ' + hoarder.name + ' thought I was his transporter, so now I am',true);
+                    }
+                  }
+                }
+              });
   }
 }

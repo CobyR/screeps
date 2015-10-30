@@ -10,56 +10,59 @@ function doWork(){
   var warriors = [];
   var medics = [];
 
+  _.forEach(Game.rooms, function(room){
+    for(var name in Game.creeps) {
+      var creep = Game.creeps[name];
+      if(creep.pos.roomName != room.name){
+        continue;
+      }
 
-  for(var name in Game.creeps) {
-    var creep = Game.creeps[name];
+      if(creep.age < 25) {
+        lca(creep, 'is about to die in ' + creep.age + ' ticks.');
+      }
 
-    if(creep.age < 25) {
-      lca(creep, 'is about to die in ' + creep.age + ' ticks.');
+      switch(creep.memory.role) {
+      case 'guard':
+        guards.push(creep.id);
+        break;
+      case 'harvester':
+        harvesters.push(creep.id);
+        break;
+      case 'upgrader':
+        upgraders.push(creep.id);
+        break;
+      case 'builder':
+        builders.push(creep.id);
+        break;
+      case 'explorer':
+        explorers.push(creep.id);
+        break;
+      case 'hoarder':
+        hoarders.push(creep.id);
+        break;
+      case 'sweeper':
+        sweepers.push(creep.id);
+        break;
+      case 'transporter':
+        transporters.push(creep.id);
+        break;
+      default:
+        lca(creep, 'does not have a programmed role.');
+        break;
+      }
     }
 
-    switch(creep.memory.role) {
-    case 'guard':
-      guards.push(creep.id);
-      break;
-    case 'harvester':
-      harvesters.push(creep.id);
-      break;
-    case 'upgrader':
-      upgraders.push(creep.id);
-      break;
-    case 'builder':
-      builders.push(creep.id);
-      break;
-    case 'explorer':
-      explorers.push(creep.id);
-      break;
-    case 'hoarder':
-      hoarders.push(creep.id);
-      break;
-    case 'sweeper':
-      sweepers.push(creep.id);
-      break;
-    case 'transporter':
-      transporters.push(creep.id);
-      break;
-    default:
-      lca(creep, 'does not have a programmed role.');
-      break;
-    }
-  }
+    processHarvesters(harvesters, room);
+    processHoarders(hoarders, room);
+    processUpgraders(upgraders,room);
+    processSweepers(sweepers,room);
+    processTransporters(transporters, hoarders, room);
 
-  processHarvesters(harvesters);
-  processHoarders(hoarders);
-  processUpgraders(upgraders);
-  processSweepers(sweepers, p_room);
-  processTransporters(transporters, p_room);
+    processGuards(guards,room);
+    processWarriors(warriors,room);
+    processMedics(medics,room);
 
-  processGuards(guards, p_room);
-  processWarriors(warriors, p_room);
-  processMedics(medics, p_room);
-
-  processBuilders(builders, p_room);
-  processExplorers(explorers, p_room);
-
+    processBuilders(builders,room);
+    processExplorers(explorers,room);
+  });
 }

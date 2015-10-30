@@ -35,15 +35,16 @@ function sweep(creep, room){
   switch(creep.memory.state){
   case 'fillGet':
     if(creep.carry.energy < creep.carryCapacity){
-      switch(true){
-      case (room.storage):
+      if(room.storage){
         lca(creep, 'moving to Storage to get energy, currently at: ' + creep.carry.energy + '.');
         creep.moveTo(room.storage);
         room.storage.transferEnergy(creep);
-        break;
-      default:
+        creep.memory.state = 'fillPut';
+      } else {
         lca(creep, 'trying to get energy, but there is no storage ???');
       }
+    } else {
+      creep.memory.state = 'fillPut';
     }
     break;
   case 'fillPut':
@@ -84,7 +85,7 @@ function fillPut(creep,room){
   }
 
   if(results != OK) {
-    lca(creep, 'nothing needs energy (' + displayErr(results) + '), going to refill.');
+    lca(creep, 'nothing needs energy going to refill.');
     creep.memory.state = 'fillGet';
   }
 }

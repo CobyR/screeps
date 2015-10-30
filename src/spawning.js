@@ -44,26 +44,12 @@ function stayAlive(spawn, room) {
     explorers:    getMaxCreeps(room, COLOR_ORANGE, 'e')
   }
 
-  var MAX_HARVESTERS   = getMaxCreeps(room, COLOR_YELLOW, 'h');
-  var MAX_HOARDERS     = getMaxCreeps(room, COLOR_PURPLE, 'h');
-  var MAX_SWEEPERS     = getMaxCreeps(room, COLOR_GREEN,  's');
-  var MAX_TRANSPORTERS = getMaxCreeps(room, COLOR_PURPLE, 't');
-  var MAX_UPGRADERS    = getMaxCreeps(room, COLOR_YELLOW, 'u');
-
-  var MAX_GUARDS       = getMaxCreeps(room, COLOR_RED,    'g');
-  var MAX_WARRIORS     = getMaxCreeps(room, COLOR_RED,    'w');
-  var MAX_MEDICS      = getMaxCreeps(room, COLOR_BLUE,   'h');
-
-  var MAX_BUILDERS     = getMaxCreeps(room, COLOR_BROWN,  'b');
-  var MAX_EXPLORERS    = getMaxCreeps(room, COLOR_ORANGE, 'e');
-
   var results = OK;
 
   initializeRoom(room);
 
-  log('maximum[harvesters] ' + maximums.harvesters + ' at the top of stayAlive.');
- maximums =  overrideMaximums(room, maximums);
-  log('maximum[harvesters] ' + maximums.harvesters + ' after call to overrideMaximums.');
+  maximums =  overrideMaximums(room, maximums);
+
   // count creeps
   var totalCreeps = 0;
 

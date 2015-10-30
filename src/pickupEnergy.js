@@ -1,5 +1,5 @@
 function pickupEnergy(creep, drops) {
-  if(drops === null) {
+  if(!drops) {
     drops = creep.room.find(FIND_DROPPED_ENERGY);
   }
 

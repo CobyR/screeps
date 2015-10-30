@@ -187,8 +187,11 @@ function getDNRStructures(room){
     var dnr = dnrFlags[i];
     var structures = dnr.pos.findInRange(FIND_STRUCTURES,1);
 
-  return _.flatten(dnrStructures);
+    dnrStructures.push(structures);
+
   }
+  return _.flatten(dnrStructures);
+
 }
 
 function flagReports(name){
@@ -250,8 +253,8 @@ function pct(value) {
 }
 
 function calcRatio(target){
-  var RAMPART_HITS = 1000000;
-  var WALL_HITS = 1000000;
+  var RAMPART_HITS = 2000000;
+  var WALL_HITS = 2000000;
   var ratio = 0;
 
   if(target === null){

@@ -138,6 +138,7 @@ function fixPrioritizedStructure(creep) {
   var sites = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
 
   var dnrStructures  = getDNRStructures(creep.room);
+  // log('dnrStructures returned: ' + dnrStructures.length);
   var dnrIds = _.map(dnrStructures, 'id');
 
   // console.log('gps found ' + targets.length + ' structures to consider.');
@@ -151,9 +152,8 @@ function fixPrioritizedStructure(creep) {
 
   for(var name in targets) {
     var target = targets[name];
-
     if(_.includes(dnrIds, target.id)){
-      log( 'skipping ' + target.id + ' at ' + target.pos.x + ',' + target.pos.y + ' it is in a Do Not Repair zone.',true);
+      // log( 'skipping ' + target.id + ' at ' + target.pos.x + ',' + target.pos.y + ' it is in a Do Not Repair zone.',true);
     } else {
       index ++;
       var targetRatio = calcRatio(target);

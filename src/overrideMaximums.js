@@ -7,17 +7,18 @@ function overrideMaximums(room, maximums){
     log('Room Controller is at level: ' + room.controller.level);
     log('found ' + sources.length + ' sources in this room.');
     log('maximums[harvesters] is ' + maximums.harvesters);
-  }
-  if(maximums.harvesters < sources.length){
-    maximums.harvesters = 2;
+    if(maximums.harvesters < sources.length){
+      maximums.harvesters = sources.length;
+    }
+
   }
   if(maximums.hoarders < sources.length){
-    maximums.hoarders = 2;
+    maximums.hoarders = sources.length;
   }
   if(maximums.transporters < sources.length){
-    maximums.transporters = 2;
+    maximums.transporters = sources.length;
   }
-  if(maximums.upgraders == 0){
+  if(maximums.upgraders === 0){
     maximums.upgraders = room.controller.level;
   }
   if(maximums.builders <= 0){
