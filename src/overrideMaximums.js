@@ -25,6 +25,11 @@ function overrideMaximums(room, maximums){
     maximums.builders = 1;
   }
 
+  if(room.storage && room.storage.store.energy < 50000){
+    maximums.builders -= 1;
+    maximums.upgraders -= 1;
+  }
+
   room.memory.max = maximums;
   return maximums;
 }

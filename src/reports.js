@@ -39,34 +39,34 @@ function creepCountReport(room, guards, warriors, medics,
 
   var report = '';
 
-  if(max.harvesters > 0){
+  if(max.harvesters > 0 || harvesters > 0){
     report += harvesters + ' of ' + max.harvesters + ' harvesters, ';
   }
-  if(max.hoarders > 0){
+  if(max.hoarders > 0 || hoarders > 0){
     report +=   hoarders   + ' of ' + max.hoarders + ' hoarders, ';
   }
-  if(max.sweepers > 0){
+  if(max.sweepers > 0 || sweepers > 0){
     report += sweepers   + ' of ' + max.sweepers + ' sweepers, ';
   }
-  if(max.transporters > 0){
+  if(max.transporters > 0 || transporters > 0){
     report += transporters + ' of ' + max.transporters + ' transporters, ';
   }
-  if(max.upgraders > 0 ){
+  if(max.upgraders > 0 || upgraders > 0){
     report += upgraders + ' of ' + max.upgraders + ' upgraders, ';
   }
-  if(max.builders > 0 ){
+  if(max.builders > 0 || builders > 0){
     report +=   builders + ' of ' + max.builders + ' builders, ';
   }
-  if(max.explorers > 0){
+  if(max.explorers > 0 || explorers > 0){
     report += explorers + ' of ' + max.explorers + ' explorers, ';
   }
-  if(max.guards > 0){
+  if(max.guards > 0 || guards > 0){
     report +=   guards + ' of ' + max.guards + ' guards, ';
   }
-  if(max.warriors > 0){
+  if(max.warriors > 0 || warriors > 0){
     report +=       warriors + ' of ' + max.warriors + ' warriors, ';
   }
-  if(max.medics > 0){
+  if(max.medics > 0 || medics > 0){
     report +=   medics + ' of ' + max.medics + ' medics, ';
   }
   report += unknowns + ' unknown creeps.';
