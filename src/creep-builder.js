@@ -17,7 +17,7 @@ var BUILDER = {
 function processBuilders(builders) {
 
   if(builders.length > 0) {
-    log('[Builders] -------------------','creep');
+    log('------------------- '+ builders.length ,'Builders');
 
     var previousCreepsTargetId = null;
     var index = -1;

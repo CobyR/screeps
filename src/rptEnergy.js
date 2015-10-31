@@ -1,7 +1,7 @@
-function totalEnergy() {
+function totalEnergy(room) {
   var tE = 0;
 
-  var structures = p_room.find(FIND_MY_STRUCTURES);
+  var structures = room.find(FIND_MY_STRUCTURES);
   var extensions = [];
   var spawns = [];
 

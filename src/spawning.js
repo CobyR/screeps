@@ -138,7 +138,7 @@ function stayAlive(spawn, room) {
     spawnExplorer(spawn, room, explorers, maximums.explorers);
     break;
   default:
-    log('No spawning happening this tick.');
+    log('No spawning happening this tick.', room.name);
   }
 }
 
@@ -160,10 +160,6 @@ function getMaxCreeps(room, color, character){
 
 function spawnCreep(spawn, room, current, max,
                     BODY_PARTS, classification, counterName){
-  if(spawn.spawning){
-    log('spawner is busy was called by ' + classification + ' with ' + current + ' of ' + max + '.');
-    return ERR_BUSY;
-  }
 
   var results = OK;
   var spawnLevel = room.controller.level;
@@ -171,39 +167,45 @@ function spawnCreep(spawn, room, current, max,
   if(!spawn){
     log('Trying to spawn a ' + classification + ' in ' + room.name + ' and there is no spawn.','spawn');
     return ERR_INVALID_TARGET;
-  }
+  } else {
+    if(spawn.spawning){
+      log('spawner is busy was called by ' + classification + ' with ' + current + ' of ' + max + '.', room.name);
+      return ERR_BUSY;
+    }
 
-  for(var l = spawnLevel; l >= 1; l--){
+    for(var l = spawnLevel; l >= 1; l--){
     results = spawn.canCreateCreep(BODY_PARTS[l],
                                 classification.charAt(0).toUpperCase() + l +
                                 '_' + room.memory[counterName],
                                 { role: classification});
-    if(results == OK){
-      spawnLevel = l;
-      break;
+      if(results == OK){
+        spawnLevel = l;
+        break;
+      }
+      if(results == ERR_NAME_EXISTS){
+        log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in check.', 'spawn');
+        room.memory[counterName] ++;
+      }
+      if(results == ERR_NOT_ENOUGH_ENERGY){
+        spawnLevel = l;
+      }
     }
-    if(results == ERR_NAME_EXISTS){
-      log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in check.', 'spawn');
-      room.memory[counterName] ++;
-    }
-    if(results == ERR_NOT_ENOUGH_ENERGY){
-      spawnLevel = l;
-    }
-  }
 
-  if(current < max) {
-    log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
-    results = spawn.createCreep(BODY_PARTS[spawnLevel],
-                                classification.charAt(0).toUpperCase() + spawnLevel +
-                                '_' + room.memory[counterName],
-                                { role: classification });
-    if(results == OK){
-      room.memory[counterName] ++;
-    } else if(results == ERR_NAME_EXISTS){
-      log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in create.','spawn');
-      room.memory[counterName] ++;
-    } else {
-      log('Spawning ' + classification + ' returned: ' + displayErr(results), 'spawn');
+    if(current < max) {
+      log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
+      results = spawn.createCreep(BODY_PARTS[spawnLevel],
+                  classification.charAt(0).toUpperCase() + spawnLevel +
+                  '_' + room.memory[counterName],
+                  { role: classification });
+
+      if(results == OK){
+        room.memory[counterName] ++;
+      } else if(results == ERR_NAME_EXISTS){
+        log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in create.','spawn');
+        room.memory[counterName] ++;
+      } else {
+        log('Spawning ' + classification + ' returned: ' + displayErr(results), 'spawn');
+      }
     }
   }
 }

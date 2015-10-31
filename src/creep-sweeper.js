@@ -27,6 +27,21 @@ var SWEEPER = {
       MOVE, CARRY, CARRY,
       MOVE, CARRY]
 }
+
+function processSweepers(sweepers, room){
+  if(sweepers.length > 0) {
+    log('----------------- ' + sweepers.length,'Sweepers');
+
+    for(var id in sweepers) {
+      var creep = Game.getObjectById(sweepers[id]);
+      if(!creep.spawning){
+        sweep(creep, room);
+      }
+    }
+  }
+
+}
+
 function sweep(creep, room){
   if(typeof creep.memory.state === 'undefined'){
     creep.memory.state = creep.memory.mode;
@@ -44,6 +59,7 @@ function sweep(creep, room){
         lca(creep, 'trying to get energy, but there is no storage ???');
       }
     } else {
+      lca(creep, 'capacity full, checking energy needs.');
       creep.memory.state = 'fillPut';
     }
     break;
@@ -52,18 +68,6 @@ function sweep(creep, room){
     break;
   default:
     creep.memory.state = 'fillGet';
-  }
-
-}
-
-function processSweepers(sweepers, room){
-  if(sweepers.length > 0) {
-    log('[Sweepers] -----------------','creep');
-
-    for(var id in sweepers) {
-      var creep = Game.getObjectById(sweepers[id]);
-      sweep(creep, room);
-    }
   }
 
 }
@@ -85,8 +89,12 @@ function fillPut(creep,room){
   }
 
   if(results != OK) {
+    if(creep.carry.energy < creep.carryCapacity){
     lca(creep, 'nothing needs energy going to refill.');
     creep.memory.state = 'fillGet';
+    } else {
+      lca(creep, 'nothing needs energy, and my capacity is full(' + creep.carry.energy + ').');
+    }
   }
 }
 
@@ -126,8 +134,8 @@ function fillStructure(creep, room, structure){
     } else {
       lca(creep, 'moving to Extension at ' +
           closestStructure.pos.x + ',' +
-          closestStructure.pos.y + ' with ' +
-          closestStructure.energy + '.');
+          closestStructure.pos.y + ' it has ' +
+          closestStructure.energy + ' energy.');
       creep.moveTo(closestStructure);
       creep.transferEnergy(closestStructure);
       return OK;

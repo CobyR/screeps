@@ -10,32 +10,34 @@ var UPGRADER = {
 function processUpgraders(creeps){
   var index = 0;
 
-  log('[Upgraders] -------------------','creep');
+    if(creeps.length > 0){
+      log('------------------- ' + creeps.length,'Upgraders');
 
-  var sources = null;
-  var source = null;
+      var sources = null;
+      var source = null;
 
-  for(var id in creeps) {
-    var creep = Game.getObjectById(creeps[id]);
-    index ++;
+      for(var id in creeps) {
+        var creep = Game.getObjectById(creeps[id]);
+        index ++;
 
-    // lca(creep, creep.room.name + ' vs ' + p_room.name, true );
-    sources = creep.room.find(FIND_SOURCES);
+        // lca(creep, creep.room.name + ' vs ' + p_room.name, true );
+        sources = creep.room.find(FIND_SOURCES);
 
-    if(sources.length > 1){
-      if(index % 2){
-        source = sources[0];
-      } else {
-        source = sources[1];
+        if(sources.length > 1){
+          if(index % 2){
+            source = sources[0];
+          } else {
+            source = sources[1];
+          }
+        } else if(sources.length == 1) {
+          source = sources[0];
+        } else {
+          lca(creep, 'Odd - there are ' + sources.length + ' sources in this room ' + creep.pos.roomName + ', and there is no code in creep-upgrader to deal with this.');
+          return OK;
+        }
+        upgrade(creep, source);
       }
-    } else if(sources.length == 1) {
-      source = sources[0];
-    } else {
-        lca(creep, 'Odd - there are ' + sources.length + ' sources in this room ' + creep.pos.roomName + ', and there is no code in creep-upgrader to deal with this.');
-        return OK;
     }
-    upgrade(creep, source);
-  }
 }
 
 function upgrade(creep, source) {

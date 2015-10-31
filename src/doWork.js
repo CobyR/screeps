@@ -1,16 +1,17 @@
 function doWork(){
-  var explorers = [];
-  var builders = [];
-  var harvesters = [];
-  var guards = [];
-  var hoarders = [];
-  var sweepers = [];
-  var transporters = [];
-  var upgraders = [];
-  var warriors = [];
-  var medics = [];
 
   _.forEach(Game.rooms, function(room){
+    var explorers = [];
+    var builders = [];
+    var harvesters = [];
+    var guards = [];
+    var hoarders = [];
+    var sweepers = [];
+    var transporters = [];
+    var upgraders = [];
+    var warriors = [];
+    var medics = [];
+              log('------------------------------------------------', room.name);
     for(var name in Game.creeps) {
       var creep = Game.creeps[name];
       if(creep.pos.roomName != room.name){

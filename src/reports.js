@@ -1,12 +1,9 @@
 function displayReports(){
-  storageReport(p_room);
-  if(room2){
-    storageReport(room2);
-  }
+  _.forEach(Game.rooms, function(room){
+    storageReport(room);
 
-  console.log(' Energy: ' + nwc(p_room.energyAvailable) + ' of ' + nwc(p_room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy()));
-  var rptController = p_room.controller;
-
+    log('Energy ' + nwc(room.energyAvailable) + ' of ' + nwc(room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy(room)), 'Energy Report');
+  var rptController = room.controller;
 
   if(structureReports()){
     console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
@@ -15,28 +12,54 @@ function displayReports(){
     structureReport(p_room, STRUCTURE_WALL);
   }
 
-  console.log('Global Control Report - Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.');
+            });
+
+
+  log('Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.','Global Control Report');
 
   var endCpu = Game.getUsedCpu();
 
-  console.log('all scripts completed ' + nwc(endCpu));
-  Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),3);
+  log('all scripts completed ' + nwc(endCpu), 'END Tick');
+  Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),60);
 }
 
 function creepCountReport(room, guards, warriors, medics,
                           harvesters, hoarders, sweepers, transporters,
                           upgraders, builders, explorers, unknowns, max){
-  log('CREEPS ' + room.name + ': ' +
-      harvesters + ' of ' + max.harvesters + ' harvesters, ' +
-      hoarders   + ' of ' + max.hoarders + ' hoarders, ' +
-      sweepers   + ' of ' + max.sweepers + ' sweepers, ' +
-      transporters + ' of ' + max.transporters + ' transporters, ' +
-      upgraders + ' of ' + max.upgraders + ' upgraders, ' +
-      builders + ' of ' + max.builders + ' builders, ' +
-      explorers + ' of ' + max.explorers + ' explorers, ' +
-      guards + ' of ' + max.guards + ' guards, ' +
-      warriors + ' of ' + max.warriors + ' warriors, ' +
-      medics + ' of ' + max.medics + ' medics, ' +
-      unknowns + ' unknown creeps.');
 
+  var report = '';
+
+  if(max.harvesters > 0){
+    report += harvesters + ' of ' + max.harvesters + ' harvesters, ';
+  }
+  if(max.hoarders > 0){
+    report +=   hoarders   + ' of ' + max.hoarders + ' hoarders, ';
+  }
+  if(max.sweepers > 0){
+    report += sweepers   + ' of ' + max.sweepers + ' sweepers, ';
+  }
+  if(max.transporters > 0){
+    report += transporters + ' of ' + max.transporters + ' transporters, ';
+  }
+  if(max.upgraders > 0 ){
+    report += upgraders + ' of ' + max.upgraders + ' upgraders, ';
+  }
+  if(max.builders > 0 ){
+    report +=   builders + ' of ' + max.builders + ' builders, ';
+  }
+  if(max.explorers > 0){
+    report += explorers + ' of ' + max.explorers + ' explorers, ';
+  }
+  if(max.guards > 0){
+    report +=   guards + ' of ' + max.guards + ' guards, ';
+  }
+  if(max.warriors > 0){
+    report +=       warriors + ' of ' + max.warriors + ' warriors, ';
+  }
+  if(max.medics > 0){
+    report +=   medics + ' of ' + max.medics + ' medics, ';
+  }
+  report += unknowns + ' unknown creeps.';
+
+  log(report,room.name);
 }

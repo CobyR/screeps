@@ -10,33 +10,34 @@ var HARVESTER = {
 function processHarvesters(creeps){
   var index = 0;
 
-  log('[Harvesters (Boot Strap)] -------------------','creep');
+  if(creeps.length > 0){
+    log('-------------------' + creeps.length ,'Boot Straper');
 
-  var sources = null;
-  var source = null;
+    var sources = null;
+    var source = null;
 
-  for(var id in creeps) {
-    var creep = Game.getObjectById(creeps[id]);
-    index ++;
+    for(var id in creeps) {
+      var creep = Game.getObjectById(creeps[id]);
+      index ++;
 
-    // lca(creep, creep.room.name + ' vs ' + p_room.name, true );
-    sources = creep.room.find(FIND_SOURCES);
+      // lca(creep, creep.room.name + ' vs ' + p_room.name, true );
+      sources = creep.room.find(FIND_SOURCES);
 
-    if(sources.length > 1){
-      if(index % 2){
+      if(sources.length > 1){
+        if(index % 2){
+          source = sources[0];
+        } else {
+          source = sources[1];
+        }
+      } else if(sources.length == 1) {
         source = sources[0];
       } else {
-        source = sources[1];
-      }
-    } else if(sources.length == 1) {
-      source = sources[0];
-    } else {
         lca(creep, 'Odd - there are ' + sources.length + ' sources in this room ' + creep.pos.roomName + ', and there is no code in creep-upgrader to deal with this.');
         return OK;
+      }
+      harvest(creep, source);
     }
-    harvest(creep, source);
   }
-
 }
 
 function harvest(creep, source) {

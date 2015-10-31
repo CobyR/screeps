@@ -31,7 +31,7 @@ var TRANSPORTER = {
 function processTransporters(transporters, hoarders){
 
   if(transporters.length > 0){
-    log('[Transporters] ------------ ','creep');
+    log('------------ ','Transporters');
 
     var i = 0;
 
@@ -78,6 +78,9 @@ function transport(creep){
             var closestDrop = findNearestDroppedEnergy(creep,1);
             pickupEnergy(creep);
           }
+        } else {
+          lca(creep, 'my follower is missing...');
+          creep.memory.follow = null;
         }
       } else {
         lca(creep, 'not following, moving to pickup dropped energy.');
@@ -110,7 +113,7 @@ function transport(creep){
           lca(creep, 'all extensions and spawn are full.');
         }
       } else {
-        lca(creep, 'no targets with energy needs.');
+        lca(creep, 'no targets need the energy I carry: ' + creep.carry.energy + '.');
       }
     }
     break;

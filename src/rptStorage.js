@@ -26,9 +26,9 @@ function storageReport(room) {
       upDown = 'gone down';
     }
     if(diff === 0){
-      log('Storage Report for ' + room.name + ': ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' for the last ' + (Game.time - room.memory.lastRoundTicks) + ' ticks.');
+      log('for ' + room.name + ': ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' for the last ' + (Game.time - room.memory.lastRoundTicks) + ' ticks.', 'Storage Report');
     } else {
-      log('Storage Report for ' + room.name + ': ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' by ' + nwc(Math.abs(diff)) + ' since the benchmark was set ' + (Game.time - room.memory.lastRoundTicks) + ' ticks ago.');
+      log('for ' + room.name + ': ' + nwc(room.storage.store.energy) + ' has ' + upDown + ' by ' + nwc(Math.abs(diff)) + ' since the benchmark was set ' + (Game.time - room.memory.lastRoundTicks) + ' ticks ago.', 'Storage Report');
     }
   }
 }

@@ -26,7 +26,7 @@ function processHoarders(hoarders) {
   var HOARD_REMOTE = false;
 
   if(hoarders.length > 0){
-    log('[Hoarders] --------------','creep');
+    log('-------------- ' + hoarders.length,'Hoarders');
     var i = 0;
     for(var id in hoarders) {
       var creep = Game.getObjectById(hoarders[id]);
@@ -72,8 +72,10 @@ function hoard(creep, source_index) {
     break;
   case 'gathering':
     var sources = creep.room.find(FIND_SOURCES);
-
-    lca(creep, 'is gathering energy ' + creep.carry.energy + ' of ' + creep.carryCapacity + '.');
+    var drop = findNearestDroppedEnergy(creep);
+    if(drop){
+      lca(creep, 'is gathering energy, nearest pile has ' + drop.energy + '.');
+    }
 
     //console.log('source_index: ' + source_index + ' sources.length: ' + sources.length);
 
@@ -87,6 +89,9 @@ function hoard(creep, source_index) {
 
     creep.moveTo(sources[source_index]);
     creep.harvest(sources[source_index]);
+    if(!drop){
+      lca(creep, 'my source has ' + sources[source_index].energy + ' energy and will regenerate in ' + sources[source_index].ticksToRegeneration + '.');
+    }
 
     if(creep.carry.energy == creep.carryCapacity && creep.carryCapacity !== 0) {
       creep.memory.state = 'transferring';

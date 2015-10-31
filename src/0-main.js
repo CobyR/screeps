@@ -23,7 +23,7 @@ module.exports.loop = function () {
                                 { filter: { name: 'USE_SPAWN',
                                             color: COLOR_WHITE}}).length;
 
-  log('===== Tick ===== ', 'game');
+  log('===== ' + Game.time + '|' + Game.getCpuUsed + ' ===== ', 'Start Tick');
 
   spawnCreeps();
 
