@@ -19,7 +19,17 @@ function displayReports(){
 
   var endCpu = Game.getUsedCpu();
 
-  log('all scripts completed ' + nwc(endCpu), 'END Tick');
+  if(Memory.cpuUsage){
+    Memory.cpuUsage.push(endCpu);
+    while(Memory.cpuUsage.length > 100){
+      var shifted = Memory.cpuUsage.shift();
+      // log('Discarding ' + shifted, 'debug');
+    }
+  } else{
+    Memory.cpuUsage = [];
+  }
+  // log(Memory.cpuUsage.length,'debug');
+  log('all scripts completed ' + nwc(endCpu.toPrecision(4)) + ' of ' + Game.cpuLimit + ', average execution time for last ' + Memory.cpuUsage.length + ' ticks is ' + average(Memory.cpuUsage).toPrecision(4) + '.','End Tick');
   Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),60);
 }
 

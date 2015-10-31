@@ -185,6 +185,8 @@ function spawnCreep(spawn, room, current, max,
       if(results == ERR_NAME_EXISTS){
         log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in check.', 'spawn');
         room.memory[counterName] ++;
+        spawnLevel = l;
+        break;
       }
       if(results == ERR_NOT_ENOUGH_ENERGY){
         spawnLevel = l;

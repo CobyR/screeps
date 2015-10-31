@@ -1,4 +1,7 @@
 function log(message, classification){
+  if(!flagBoolean('LOG')){
+    return OK;
+  }
   var reportFor = flagReports('CR');
 
   var creepReport = (reportFor.indexOf('global') > -1 );

@@ -194,6 +194,16 @@ function getDNRStructures(room){
 
 }
 
+function flagBoolean(name){
+  var flag = p_room.find(FIND_FLAGS, { filter: { name: name, color: COLOR_WHITE}});
+  //console.log (flag.length)
+  if(flag.length > 0){
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function flagReports(name){
   var rptFlags = p_room.find(FIND_FLAGS, { filter: { name: name}});
   var reports = [];
@@ -292,6 +302,18 @@ function median(values) {
         return values[half];
     else
         return (values[half-1] + values[half]) / 2.0;
+}
+
+function sum(values){
+  var sumation = 0;
+  _.forEach(values, function(value){
+              sumation += value;
+            });
+  return sumation;
+}
+
+function average(values){
+  return sum(values) / values.length;
 }
 
 function displayErr(results) {

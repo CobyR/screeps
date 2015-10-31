@@ -31,7 +31,7 @@ var TRANSPORTER = {
 function processTransporters(transporters, hoarders){
 
   if(transporters.length > 0){
-    log('------------ ','Transporters');
+    log('------------ ' + transporters.length ,'Transporters');
 
     var i = 0;
 
