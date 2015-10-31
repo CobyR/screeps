@@ -1,4 +1,7 @@
 var HOARDER = {
+  /* six work parts is sufficient to drawn a source in 300 ticks,
+   * no need for bigger creeps in this role.
+   */
   1: [MOVE, WORK, WORK],
   2: [MOVE, WORK, WORK,
       MOVE, WORK, WORK],
@@ -7,17 +10,17 @@ var HOARDER = {
       MOVE, WORK, WORK],
   4: [MOVE, WORK, WORK,
       MOVE, WORK, WORK,
-      MOVE, WORK, WORK,
       MOVE, WORK, WORK],
   5: [MOVE, WORK, WORK,
-      MOVE, WORK, WORK,
-      MOVE, WORK, WORK,
       MOVE, WORK, WORK,
       MOVE, WORK, WORK],
   6: [MOVE, WORK, WORK,
       MOVE, WORK, WORK,
+      MOVE, WORK, WORK],
+  7: [MOVE, WORK, WORK,
       MOVE, WORK, WORK,
-      MOVE, WORK, WORK,
+      MOVE, WORK, WORK],
+  8: [MOVE, WORK, WORK,
       MOVE, WORK, WORK,
       MOVE, WORK, WORK]
 }
