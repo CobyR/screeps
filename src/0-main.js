@@ -2,7 +2,6 @@
 
 var isSimulation = (Game.rooms.sim !== undefined);
 var p_room = null;
-var room2 = null;
 
 if(isSimulation){
   p_room = Game.rooms.sim;
@@ -14,11 +13,9 @@ if(isSimulation){
   switch(structure.owner.username){
   case 'Kobier':
     p_room = Game.rooms.W5N12;
-    room2 =  Game.rooms.W5N11;
     break;
   case 'Archival':
     p_room = Game.rooms.W14N17;
-    room2 = null;
     break;
   }
 }
