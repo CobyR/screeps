@@ -2,10 +2,18 @@
 
 function roomSecretMission(creep) {
 
+  // This is the arrived portion of the callForReplacement request
   if(creep.memory.previousRole){
     // revert to original role
     creep.memory.role = creep.memory.previousRole;
     creep.memory.previousRole = null;
+    var deadCreep = Game.getObjectById(creep.memory.summonedBy.id);
+    if(deadCreep){
+      lca(creep, 'has arrived time to terminate ' + deadCreep.name);
+      deadCreep.say('Bye! :)');
+      deadCreep.suicide();
+    }
+    creep.memory.summonadBy = null;
   } else {
     // no previous role, have at it.
     switch(creep.room.name){

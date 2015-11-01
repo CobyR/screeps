@@ -18,7 +18,6 @@ var RECRUIT_TIME = 75;
                       _.forEach(Game.creeps, function (candidate){
                                   if(candidate.memory.role == creep.memory.role && candidate.room.name == room.name){
                                     candidateCreeps.push(candidate);
-
                                   }
                                 });
                       lca(creep, 'considering ' + candidateCreeps.length + ' as options.');
@@ -33,6 +32,7 @@ var RECRUIT_TIME = 75;
                           youngestCreep.memory.role = 'explorer';
                           youngestCreep.memory.mode = 'room';
                           youngestCreep.memory.roomDestination = creep.room.name;
+                          youngestCreep.memory.summonedBy = creep;
                           return OK;
                         }
                       } else {

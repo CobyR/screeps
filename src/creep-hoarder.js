@@ -54,6 +54,13 @@ function hoard(creep, source_index) {
 
   var busy = 0;
 
+  if(creep.spawning){
+    lca(creep, 'is still spawning.');
+    return OK;
+  }
+
+  callForReplacement(creep);
+
   // validate that transporter is alive, if not clear
   if(creep.memory.transporter){
     var tCreep = Game.getObjectById(creep.memory.transporter.id);

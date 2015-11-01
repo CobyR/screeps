@@ -58,6 +58,8 @@ function buildThings(creep, builder_index) {
       return ERR_BUSY;
     }
 
+  callForReplacement(creep);
+
     var usefulExtensions = getExtensionsWithEnergy(creep);
     var extension = null;
   var spawn = creep.room.find(FIND_MY_STRUCTURES,{filter: {structureType: STRUCTURE_SPAWN}})[0];
@@ -68,23 +70,7 @@ function buildThings(creep, builder_index) {
   }
 
     if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
-      creep.memory.state = 'filling';
-      if(creep.room.storage){
-        t = creep.room.storage;
-      } else {
-        t = findNearestEnergy(creep);
-      }
-      if(t){
-        lca(creep, 'is getting energy from '+ t.structureType + ' at ' + t.pos.x + ',' + t.pos.y +'.');
-        creep.moveTo(t);
-        t.transferEnergy(creep);
-      } else if(ALLOW_SPAWN_USE === true || creep.room.controller.level < 4) {
-        lca( creep, 'is getting energy from spawn.');
-        creep.moveTo(spawn);
-        spawn.transferEnergy(creep);
-      } else {
-        lca(creep, 'waiting for energy in extensions or storage.');
-      }
+      findEnergy(creep);
     }
     else {
         if(creep.carry.energy === 0) {

@@ -14,7 +14,7 @@ function log(message, classification){
     break;
   default:
     if(classification === 'undefined'){
-      var classification = '';
+      classification = '';
     }
     console.log('[' + classification + '] ' + message);
   }

@@ -59,6 +59,14 @@ function spawnTransporter(spawn, room, current, max){
 
 function transport(creep){
   var results = OK;
+
+  if(creep.spawning){
+    lca(creep, 'is still spawning.');
+    return OK;
+  }
+
+  callForReplacement(creep);
+
   // Does the transporter have an assignment?
   switch(creep.memory.state){
   case 'cleanup':
