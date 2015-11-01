@@ -23,6 +23,7 @@ module.exports.loop = function () {
                                 { filter: { name: 'USE_SPAWN',
                                             color: COLOR_WHITE}}).length;
 
+  console.log('->');
   log('=============================================================', 'Start Tick');
   log('===== ' + Game.time + '|' + Game.cpuLimit + ' ===== ', 'Start Tick');
 

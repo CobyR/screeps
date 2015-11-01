@@ -77,7 +77,7 @@ function hoard(creep, source_index) {
     var sources = creep.room.find(FIND_SOURCES);
     var drop = findNearestDroppedEnergy(creep);
     if(drop){
-      lca(creep, 'is gathering energy, nearest pile has ' + drop.energy + '.');
+      lca(creep, 'is gathering energy, nearest pile has ' + nwc(drop.energy) + '.');
     }
 
     //console.log('source_index: ' + source_index + ' sources.length: ' + sources.length);

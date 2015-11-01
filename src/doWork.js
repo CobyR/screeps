@@ -11,7 +11,10 @@ function doWork(){
     var upgraders = [];
     var warriors = [];
     var medics = [];
-              log('------------------------------------------------', room.name);
+
+    console.log(' ');
+    log('------------------------------------------------', room.name);
+
     for(var name in Game.creeps) {
       var creep = Game.creeps[name];
       if(creep.pos.roomName != room.name){

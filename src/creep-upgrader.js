@@ -104,14 +104,17 @@ function upgrade(creep, source) {
         pickupEnergy(creep);
         creep.room.storage.transferEnergy(creep);
       } else if(spawn) {
-        lca(creep, 'is getting energy from spawn.');
-        creep.moveTo(spawn);
-        spawn.transferEnergy(creep);
-      } else {
-        lca(creep, 'is gathering energy from a source.');
-        creep.moveTo(source);
-        creep.harvest(source);
-        pickupEnergy(creep);
+        var nearestEnergy = findNearestEnergy(creep);
+        if(nearestEnergy){
+          lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
+          creep.moveTo(nearestEnergy);
+          nearestEnergy.transferEnergy(creep);
+        } else {
+          lca(creep, 'is gathering energy from a source.');
+          creep.moveTo(source);
+          creep.harvest(source);
+          pickupEnergy(creep);
+        }
       }
     }
     break;
