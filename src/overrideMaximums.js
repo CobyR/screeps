@@ -35,6 +35,10 @@ function overrideMaximums(room, maximums){
     log('Energy in ' + room.name + ' is below 50,000 (' + nwc(room.storage.store.energy) + ') reducing max # of buildrs and upgraders by 1.','WARNING');
   }
 
+  if(room.storage && maximums.sweepers === 0){
+    maximums.sweepers = 1;
+  }
+
 
   room.memory.max = maximums;
   return maximums;
