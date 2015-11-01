@@ -7,8 +7,20 @@ var room2 = null;
 if(isSimulation){
   p_room = Game.rooms.sim;
 } else {
-  p_room = Game.rooms.W5N12;
-  room2 =  Game.rooms.W5N11;
+  var structure = null;
+  _.forEach(Game.rooms, function(room){
+              structure = room.find(FIND_MY_STRUCTURES)[0];
+            });
+  switch(structure.owner.username){
+  case 'Kobier':
+    p_room = Game.rooms.W5N12;
+    room2 =  Game.rooms.W5N11;
+    break;
+  case 'Archival':
+    p_room = Game.rooms.W14N17;
+    room2 = null;
+    break;
+  }
 }
 
 var USE_STORAGE_THRESHOLD = 10000;
