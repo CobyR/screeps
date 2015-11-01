@@ -25,10 +25,16 @@ function overrideMaximums(room, maximums){
     maximums.builders = 1;
   }
 
-  if(room.storage && room.storage.store.energy < 50000){
+  if(room.storage && room.storage.store.energy < 35000){
+    maximums.buidlers = 0;
+    maximums.upgraders = 1;
+    log('Energy in ' + room.name + ' is below 35,000 (' + nwc(room.storage.store.energy) + ') builders now have a max of 0, and upgraders a max of 1.','WARNING');
+  } else if(room.storage && room.storage.store.energy < 50000){
     maximums.builders -= 1;
     maximums.upgraders -= 1;
+    log('Energy in ' + room.name + ' is below 50,000 (' + nwc(room.storage.store.energy) + ') reducing max # of buildrs and upgraders by 1.','WARNING');
   }
+
 
   room.memory.max = maximums;
   return maximums;
