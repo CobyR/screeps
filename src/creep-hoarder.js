@@ -54,6 +54,14 @@ function hoard(creep, source_index) {
 
   var busy = 0;
 
+  // validate that transporter is alive, if not clear
+  if(creep.memory.transporter){
+    var tCreep = Game.getObjectById(creep.memory.transporter.id);
+    if(!tCreep){
+      creep.memory.transporter = null;
+    }
+  }
+
   switch(creep.memory.state){
   case 'transferring':
     var target = creep.room.storage;
