@@ -99,10 +99,19 @@ function upgrade(creep, source) {
       creep.memory.state = 'upgrade';
     } else {
       if(creep.room.storage){
-        lca(creep, 'is moving to storage to get energy.');
-        creep.moveTo(creep.room.storage);
-        pickupEnergy(creep);
-        creep.room.storage.transferEnergy(creep);
+        var nearestDrop = findNearestDroppedEnergy(creep);
+        var dropDistance = creep.pos.getRangeTo(nearestDrop);
+        var storageDistance = creep.pos.getRangeTo(creep.room.stroage);
+        if(storageDistance < dropDistance && nearestDrop.energy > creep.carryCapacity){
+          lca(creep, 'is moving to storage to get energy.');
+          creep.moveTo(creep.room.storage);
+          pickupEnergy(creep);
+          creep.room.storage.transferEnergy(creep);
+        } else {
+          lca(creep, 'is moving to dropped energy to pick it up.');
+          creep.moveTo(nearestDrop);
+          creep.pickup(nearestDrop);
+        }
       } else if(spawn) {
         var nearestEnergy = findNearestEnergy(creep);
         if(nearestEnergy){
