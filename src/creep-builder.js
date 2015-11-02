@@ -61,7 +61,11 @@ function buildThings(creep, builder_index) {
 
   var site =  findNearestConstructionSite(creep);
 
-  lca(creep, 'site is a ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
+  if(site){
+    lca(creep, 'site is a ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
+  } else {
+    lca(creep, 'no construction sites.');
+  }
 
   switch(creep.memory.state){
   case 'filling':
