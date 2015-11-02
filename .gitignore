@@ -3,3 +3,7 @@ node_modules/
 .#*
 *~
 dist/main.js
+kobier
+archival
+.archival.json
+.kobier.json

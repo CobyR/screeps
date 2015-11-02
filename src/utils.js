@@ -1,39 +1,71 @@
 function findEnergy(creep,source){
-   var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+  var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
 
-  if(typeof source === 'undefined' || source === null){
+  if(!source){
     source = findNearestSource(creep);
   }
 
   if(creep.room.storage){
-        var nearestDrop = findNearestDroppedEnergy(creep);
-        var dropDistance = creep.pos.getRangeTo(nearestDrop);
-        var storageDistance = creep.pos.getRangeTo(creep.room.stroage);
-        if(storageDistance < dropDistance && nearestDrop.energy > creep.carryCapacity){
-          lca(creep, 'is moving to storage to get energy.');
-          creep.moveTo(creep.room.storage);
-          pickupEnergy(creep);
-          creep.room.storage.transferEnergy(creep);
-        } else {
-          lca(creep, 'is moving to dropped energy to pick it up.');
-          creep.moveTo(nearestDrop);
-          creep.pickup(nearestDrop);
-        }
-      } else if(spawn) {
-        var nearestEnergy = findNearestEnergy(creep);
-        if(nearestEnergy){
-          lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
-          creep.moveTo(nearestEnergy);
-          nearestEnergy.transferEnergy(creep);
-        } else if(source) {
-          lca(creep, 'is gathering energy from a source.');
-          creep.moveTo(source);
-          creep.harvest(source);
-          pickupEnergy(creep);
-        } else {
-          lca(creep, 'there is no available energy, and no viable source.');
-        }
-      }
+    var nearestDrop = findNearestDroppedEnergy(creep);
+    var dropDistance = creep.pos.getRangeTo(nearestDrop);
+    var storageDistance = creep.pos.getRangeTo(creep.room.storage);
+    lca(creep, 'storageDistance is: ' + storageDistance +
+        ' and dropDistance is: ' + dropDistance);
+    if(storageDistance <= dropDistance){
+      // storage is closer use it.
+      lca(creep, 'is moving to storage to get energy.');
+      creep.moveTo(creep.room.storage);
+      creep.room.storage.transferEnergy(creep);
+    } else if(storageDistance > dropDistance && nearestDrop.energy < creep.carryCapacity){
+      lca(creep, 'storage is further than an energy drop, but the drop is not worth it.');
+      creep.moveTo(creep.room.storage);
+      creep.room.storage.transferEnergy(creep);
+    } else {
+      lca(creep, 'is moving to dropped energy to pick it up.');
+      creep.moveTo(nearestDrop);
+      creep.pickup(nearestDrop);
+    }
+  } else if(spawn) {
+    var nearestEnergy = findNearestEnergy(creep);
+    if(nearestEnergy){
+      lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
+      creep.moveTo(nearestEnergy);
+      nearestEnergy.transferEnergy(creep);
+    } else if(source) {
+      lca(creep, 'is gathering energy from a source.');
+      creep.moveTo(source);
+      creep.harvest(source);
+      pickupEnergy(creep);
+    } else {
+      lca(creep, 'there is no available energy, and no viable source.');
+    }
+  }
+}
+
+function findNearestEmergencyRepair(creep){
+  var MIN_HITS = 1000;
+  var shortestDistance = 50;
+  var distance = 0;
+  var nearestEmergency = null;
+
+  var structures = creep.room.find(FIND_STRUCTURES);
+  var candidates = [];
+
+  _.forEach(structures, function (structure){
+    if(structure.hits < MIN_HITS){
+      candidates.push(structure);
+    }
+  });
+
+  _.forEach(candidates, function(candidate){
+    distance = creep.pos.getRangeTo(candidate);
+             if(distance < shortestDistance){
+               shortestDistance = distance;
+               nearestEmergency = candidate;
+             }
+  });
+
+  return nearestEmergency;
 }
 
 function findNearestEnemy(creep, enemies){
@@ -84,7 +116,7 @@ function findNearestSource(creep) {
   var distance = 0;
   var closestSource = null;
 
-  var sources = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
+  var sources = creep.room.find(FIND_SOURCES);
 
   for(var i in sources){
     var source = sources[i];

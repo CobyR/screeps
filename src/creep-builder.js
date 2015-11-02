@@ -51,68 +51,80 @@ function spawnBuilder(spawn, room, current, max){
 }
 
 function buildThings(creep, builder_index) {
-  var t = null;
 
-    if(creep.spawning === true) {
-      lca(creep, 'is still spawning.');
-      return ERR_BUSY;
-    }
+  if(creep.spawning === true) {
+    lca(creep, 'is still spawning.');
+    return ERR_BUSY;
+  }
 
   callForReplacement(creep);
 
-    var usefulExtensions = getExtensionsWithEnergy(creep);
-    var extension = null;
-  var spawn = creep.room.find(FIND_MY_STRUCTURES,{filter: {structureType: STRUCTURE_SPAWN}})[0];
+  var site =  findNearestConstructionSite(creep);
 
-  if(typeof spawn === 'undefined'){
-    lca(creep, 'no spawn available in this room.');
-    return OK;
-  }
+  lca(creep, 'site is a ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
 
-    if(creep.carry.energy === 0 || (creep.memory.state == 'filling' && creep.carry.energy != creep.carryCapacity)) {
+  switch(creep.memory.state){
+  case 'filling':
+    if(creep.carry.energy == creep.carryCapacity) {
+      var emergency = findNearestEmergencyRepair(creep);
+
+      if(site && !emergency){
+        creep.memory.state = 'constructing';
+        lca(creep, 'construction sites are available and nothing is in dire need of repair.');
+      } else {
+        creep.memory.state = 'repairing';
+        creep.memory.currentTarget = emergency;
+        fixPrioritizedStructure(creep);
+      }
+    } else {
       findEnergy(creep);
     }
-    else {
-        if(creep.carry.energy === 0) {
-          lca( creep, 'is traveling to spawn for energy.');
-          creep.moveTo(spawn);
-        }
-        else {
-            var targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
-            if(targets.length === 0) {
-              // lca(creep, 'calling fixPrioritizedStructure', true);
-              creep.memory.state = 'repairing';
-              fixPrioritizedStructure(creep);
-            }
-            else {
-                // console.log('[DEBUG] Construction sites: ' + targets.length);
-                if(targets.length > 0) {
-                  // If creep is repairing and is mid energy and target ratio is under 65% then keep repairing
-                  if(creep.memory.state == 'repairing' && creep.carry.energy != creep.carryCapacity && calcRatio(creep.memory.currentTarget) <= 0.65){
-                    lca(creep,'but I am in repairing mode, and am going to stay that way until I run out of energy ' + pct(calcRatio(creep.memory.currentTarget)) + '.');
-                    fixPrioritizedStructure(creep);
-                  } else {
-                    t =  findNearestConstructionSite(creep);
-                    creep.memory.state = 'constructing';
-                    if(t){
-                      lca(creep, 'found a ' + t.structureType + ' to construct at ' + t.pos.x + ',' + t.pos.y + '.');
-                      creep.moveTo(t);
-                      pickupEnergy(creep);
-                      creep.build(t);
-                      creep.memory.currentTarget = null; // this causes them to forget what they were working on before
-                    } else {
-                      // This gets hit when there are more builders than construction sites to work on.
-                      creep.memory.state = 'repairing';
-                      fixPrioritizedStructure(creep);
-                    }
-                  }
+    break;
+  case 'repairing':
+    var ctRatio = 0;
+    var t = null;
 
-                } else {
-                  lca(creep, 'needs a construction site.');
-                }
-            }
-        }
+    if(creep.carry.energy === 0){
+      creep.memory.state = 'filling';
+      lca(creep, 'out of energy, changing to filling.');
     }
+
+    if(creep.memory.currentTarget){
+      ctRatio = calcRatio(creep.memory.currentTarget);
+      t = Game.getObjectById(creep.memory.currentTarget.id);
+    }
+
+    lca(creep, 'current target ratio: ' + ctRatio);
+
+    if(t && ctRatio > 0.65){
+      creep.memory.state = 'constructing';
+      lca(creep, 'abandoning current repair at ' + ctRatio + ', new construction Site available.');
+    } else {
+      fixPrioritizedStructure(creep);
+    }
+    break;
+  case 'constructing':
+    if(creep.carry.energy === 0){
+      creep.memory.state = 'filling';
+      lca(creep, 'out of energy, changing to filling.');
+    }
+
+    if(site){
+      lca(creep, 'found a ' + site.structureType +
+        ' to construct at ' + site.pos.x + ',' + site.pos.y + '.');
+      creep.moveTo(site);
+      pickupEnergy(creep);
+      creep.build(site);
+      creep.memory.currentTarget = site;
+    } else {
+      /* This gets hit when there are no construction sites. */
+      creep.memory.state = 'repairing';
+      fixPrioritizedStructure(creep);
+    }
+    break;
+  default:
+    creep.memory.state = 'filling';
+  }
 }
 
 function fixPrioritizedStructure(creep) {
@@ -144,10 +156,6 @@ function fixPrioritizedStructure(creep) {
       index ++;
       var targetRatio = calcRatio(target);
 
-      // 1. structure with lowest hits and not at maxHits
-      //    a. low health being equal go to one with smallest ticksToDecary
-      // 2.
-      //console.log( targetRatio + ' vs ' + lowestHitsRatio + '|' + target.hits + ' of ' + target.hitsMax);
       if(targetRatio < lowestHitsRatio && target.hits < target.hitsMax) {
         preferredTarget = target;
         lowestHits = target.hits;
@@ -157,15 +165,14 @@ function fixPrioritizedStructure(creep) {
         if(target.structureType == 'constructedWall' && target.ticksToLive > 0){
           lca(creep, 'reviewing a constructedWall that is a newbie protective barrier, and passing on it.  TicksToLive: ' + target.ticksToLive, true);
         } else {
-          lca(creep, '[DEBUG] ' + index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is being passed over', true);
+          lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is being passed over', true);
         }
       }
     }
   }
 
   // Consider current target vs preferredTarget
-  if(typeof creep.memory.currentTarget === 'undefined' ||
-     creep.memory.currentTarget === null) {
+  if(!creep.memory.currentTarget) {
     // Creep had no currentTarget - set it.
     lca(creep, 'has a new preferredTarget:' + preferredTarget.id + ' is a ' + preferredTarget.structureType + '.');
     creep.memory.currentTarget = preferredTarget;
@@ -177,55 +184,44 @@ function fixPrioritizedStructure(creep) {
     var ctHitsRatio = calcRatio(ct);
     var ptHitsRatio = calcRatio(preferredTarget);
 
-    // console.log ('[DEBUG] currentTarget Ratio: ' + ctHitsRatio + ' preferredTarget Ratio: ' + ptHitsRatio)
-    // Switch from currentTarget to preferredTarget if the folowing conditions are met:
-    if(ct.structureType == 'road' && ct.hits < ct.hitsMax){
+    if(ct && ct.structureType == 'road' && ct.hits < ct.hitsMax){
       lca(creep,'road repair from: ' + nwc(ct.hits) + ' to a maxHits of: ' + nwc(ct.hitsMax) + ' at '+ ct.pos.x + ',' + ct.pos.y + ' ratio: ' + (calcRatio(ct) * 100).toFixed(2) + '%.');
     } else {
-      // 1. first  clause is that pt ratio is lower than ct - GAP
-      // 2. second clause is that ct has at least MIN_HITS
-      // 3. third  clause is that pt has less than MIN_HITS
       if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
-         ctHitsRatio >= MIN_HITS ||
          (preferredTarget.hits <= MIN_HITS && ct.hits >= MIN_HITS) ||
          ctHitsRatio == 1) {
-         if(ct === null){
-           lca(creep, 'changing focus to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
-         } else {
-           lca(creep, 'changing from focusing on ' + ct.structureType + ' with Ratio of ' + ctHitsRatio + ' to ' + preferredTarget.structureType + ' with Ratio of ' + ptHitsRatio);
-         }
-      creep.memory.currentTarget = preferredTarget;
+         lca(creep, 'changing from focusing on ' +
+           ct.structureType + ' with Ratio of ' +
+           ctHitsRatio + ' to ' + preferredTarget.structureType +
+           ' with Ratio of ' + ptHitsRatio);
+        creep.memory.currentTarget = preferredTarget;
       }
     }
   }
 
-  if(typeof creep.memory.currentTarget ===  'undefined' || creep.memory.currentTarget === null){
-    lca(creep, 'doesn\'t have a current target.');
-  } else {
-    var t = Game.getObjectById(creep.memory.currentTarget.id);
+  var t = Game.getObjectById(creep.memory.currentTarget.id);
 
-    // console.log('getObjectByID for ' + creep.memory.currentTarget.id + ' returned ' + t)
-
-    if(t) {
-      if(t.structureType != 'road') {
-        lca(creep,
-          t.structureType + ' at ' +
-          t.pos.x + ',' + t.pos.y + ' has ' +
-          nwc(t.hits) + ' of ' +
-          nwc(t.hitsMax) + ' hit ratio of: ' +
-          (calcRatio(t) * 100).toFixed(2) + '%');
-      }
-      // Take Action
-      // Move
-      var results = creep.moveTo(t);
-      if(results != OK) {
-        // lca(creep, 'call to MoveTo returned: ' + displayErr(results));
-      }
-      // attempt repair target
-      results = creep.repair(t);
-      if(results != OK && results != ERR_NOT_IN_RANGE) { lca(creep, 'call to repair returned: ' + displayErr(results)); }
-    } else {
-      lca(creep, 'has a currentTarget that is ' + t);
+  if(t) {
+    if(t.structureType != 'road') {
+      lca(creep,
+        t.structureType + ' at ' +
+        t.pos.x + ',' + t.pos.y + ' has ' +
+        nwc(t.hits) + ' of ' +
+        nwc(t.hitsMax) + ' hit ratio of: ' +
+        (calcRatio(t) * 100).toFixed(2) + '%');
     }
+    // Take Action
+    // Move
+    var results = creep.moveTo(t);
+    if(results != OK) {
+      // lca(creep, 'call to MoveTo returned: ' + displayErr(results));
+    }
+    // attempt repair target
+    results = creep.repair(t);
+    if(results != OK && results != ERR_NOT_IN_RANGE) {
+      lca(creep, 'call to repair returned: ' + displayErr(results));
+    }
+  } else {
+    lca(creep, 'has a currentTarget that is ' + t);
   }
 }
