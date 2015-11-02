@@ -6,16 +6,9 @@ var p_room = null;
 if(isSimulation){
   p_room = Game.rooms.sim;
 } else {
-  var structure = null;
-  _.forEach(Game.rooms, function(room){
-              structure = room.find(FIND_MY_STRUCTURES)[0];
-            });
-  switch(structure.owner.username){
-  case 'Kobier':
-    p_room = Game.rooms.W5N12;
-    break;
-  case 'Archival':
-    p_room = Game.rooms.W14N17;
+  for(var spawn in Game.spawns) {
+    var username = Game.spawns[spawn].owner.username;
+    p_room = Game.rooms[ALLIANCE[username].primary_room];
     break;
   }
 }
