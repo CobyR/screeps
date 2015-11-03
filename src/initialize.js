@@ -1,14 +1,40 @@
 function initializeRoom(room){
-  if(typeof room.memory.harvesterCounter === 'undefined') {
-    room.memory.harvesterCounter = 0;
-    room.memory.builderCounter = 0;
-    room.memory.guardCounter = 0;
-    room.memory.warriorCounter = 0;
-    room.memory.healerCounter = 0;
-    room.memory.explorerCounter = 0;
-    room.memory.hoarderCounter = 0;
-    room.memory.sweeperCounter = 0;
-    room.memory.transporterCounter = 0;
-    room.memory.upgradeCounter = 0;
+  if(!room.memory.counter) {
+    room.memory.counter = {
+      harvester: 0,
+      hoarder: 0,
+      sweeper: 0,
+      transporter: 0,
+      upgrader: 0,
+      guard: 0,
+      warrior: 0,
+      medic: 0,
+      builder: 0,
+      explorer: 0
+    };
+  }
+  if(!room.memory.max){
+    room.memory.max = {
+      harvesters: 0,
+      hoarders: 0,
+      sweepers: 0,
+      transporters: 0,
+      upgraders: 0,
+      guards: 0,
+      warriors: 0,
+      medics: 0,
+      builders: 0,
+      explorers: 0
+    };
+  }
+}
+
+function initializeSettings(){
+  if(!Memory.settings){
+    Memory.settings = {
+      reportFor: ['global','','','','',''],
+      log: true,
+      debug: false
+    };
   }
 }

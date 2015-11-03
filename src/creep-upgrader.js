@@ -82,5 +82,5 @@ function upgrade(creep, source) {
 
 function spawnUpgrader(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
-             UPGRADER, 'upgrader', 'upgraderCounter');
+             UPGRADER, 'upgrader');
 }

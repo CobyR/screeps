@@ -46,7 +46,7 @@ function processGuards(guards) {
 
 function spawnGuard(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
-             GUARD, 'guard', 'guardCounter');
+             GUARD, 'guard');
 }
 
 function guardDuty(creep) {

@@ -1,8 +1,8 @@
 function log(message, classification){
-  if(!flagBoolean('LOG')){
+  if(!Memory.settings.log){
     return OK;
   }
-  var reportFor = flagReports('CR');
+  var reportFor = Memory.settings.reportFor;
 
   var creepReport = (reportFor.indexOf('global') > -1 );
 
@@ -21,10 +21,9 @@ function log(message, classification){
 }
 
 function lca(creep, message, debug) {
-  var debugFor = flagReports('DEBUG');
-  var reportFor = flagReports('CR');
+  var reportFor = Memory.settings.reportFor;
 
-  var debugReport = (debugFor.indexOf('global') > -1) || (debugFor.indexOf(creep.memory.role) > -1);
+  var debugReport = Memory.settings.debug;
 
   var creepReport = (reportFor.indexOf(creep.memory.role)> -1);
 

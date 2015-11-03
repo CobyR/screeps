@@ -23,6 +23,8 @@ if(isSimulation){
 var USE_STORAGE_THRESHOLD = 10000;
 var ALLOW_SPAWN_USE = null;
 
+initializeSettings();
+
 module.exports.loop = function () {
   var startCpu = Game.getUsedCpu();
 

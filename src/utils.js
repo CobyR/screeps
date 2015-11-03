@@ -340,10 +340,17 @@ function structureReports(){
 
 function cleanupMemory() {
   if(Game.time % 100 === 1){
+    var dead = null;
     if (_.isObject(Memory.creeps) && _.isObject(Game.creeps)) {
-      var dead = _.difference(Object.keys(Memory.creeps), Object.keys(Game.creeps));
+      dead = _.difference(Object.keys(Memory.creeps), Object.keys(Game.creeps));
       _.forEach(dead, function(name) {
-      delete Memory.creeps[name]
+        delete Memory.creeps[name];
+      });
+    }
+    if(_.isObject(Memory.rooms) && _.isObject(Game.rooms)){
+      dead = _.difference(Object.keys(Memory.rooms), Object.keys(Game.rooms));
+      _.forEach(dead, function(name){
+        delete Memory.rooms[name];
       });
     }
   }

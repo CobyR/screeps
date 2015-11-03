@@ -78,20 +78,8 @@ function processExplorers(explorers) {
 var explorerDestination = 'W5N11';
 
 function spawnExplorer(spawn, room, current, max){
-  var explorerName = 'E' + room.memory.explorerCounter;
-  var spawnLevel = room.controller.level;
-  var results = OK;
-  if(current.length < max){
-    log('Spawning a new explorer - ' + explorerName + '.', 'spawn');
-
-    results = spawn.createCreep(EXPLORER[spawnLevel],
-      explorerName, { role: 'explorer', mode: 'room', roomDestination: explorerDestination});
-    if(results == OK || results == ERR_NAME_EXISTS) {
-      room.memory.explorerCounter += 1;
-    } else {
-      console.log('trying to create an explorer resulted in ' + displayErr(results));
-    }
-  }
+  spawnCreep(spawn, room, current, max,
+             EXPLORER, 'explorer');
 }
 
 function explore(creep) {

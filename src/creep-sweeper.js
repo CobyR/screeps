@@ -74,7 +74,7 @@ function sweep(creep, room){
 
 function spawnSweeper(spawn, room, sweepers, max) {
   spawnCreep(spawn, room, sweepers, max,
-             SWEEPER, 'sweeper','sweeperCounter');
+             SWEEPER, 'sweeper');
 }
 
 function fillPut(creep,room){

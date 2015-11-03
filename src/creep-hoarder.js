@@ -47,7 +47,7 @@ function processHoarders(hoarders) {
 
 function spawnHoarder(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
-             HOARDER, 'hoarder', 'hoarderCounter');
+             HOARDER, 'hoarder');
 }
 
 function hoard(creep, source_index) {
@@ -104,7 +104,7 @@ function hoard(creep, source_index) {
     creep.moveTo(sources[source_index]);
     creep.harvest(sources[source_index]);
 
-    lca(creep, 'sources.length ' + sources.length + ' vs ' + source_index);
+    lca(creep, 'sources.length ' + sources.length + ' vs ' + source_index,true);
 
     if(creep.carry.energy == creep.carryCapacity && creep.carryCapacity !== 0) {
       creep.memory.state = 'transferring';

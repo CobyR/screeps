@@ -54,7 +54,7 @@ function processTransporters(transporters, hoarders){
 
 function spawnTransporter(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
-             TRANSPORTER, 'transporter', 'transporterCounter');
+             TRANSPORTER, 'transporter');
 }
 
 function transport(creep){

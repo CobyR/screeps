@@ -47,7 +47,7 @@ function processBuilders(builders) {
 }
 
 function spawnBuilder(spawn, room, current, max){
-  spawnCreep(spawn, room, current, max, BUILDER, 'builder', 'builderCounter');
+  spawnCreep(spawn, room, current, max, BUILDER, 'builder');
 }
 
 function buildThings(creep, builder_index) {
@@ -87,6 +87,11 @@ function buildThings(creep, builder_index) {
   case 'repairing':
     var ctRatio = 0;
     var t = null;
+
+    if(creep.memory.currentTarget && creep.memory.currentTarget.structureType == STRUCTURE_CONTROLLER){
+      lca(creep, 'WTF? why am I being asked to repair a controller?  Resetting currentTarget to null.');
+      creep.memory.currentTarget = null;
+    }
 
     if(creep.carry.energy === 0){
       creep.memory.state = 'filling';

@@ -75,5 +75,5 @@ function harvest(creep, source) {
 
 function spawnHarvester(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
-             HARVESTER, 'harvester','harvesterCounter');
+             HARVESTER, 'harvester');
 }

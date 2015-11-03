@@ -30,19 +30,19 @@ function stayAlive(spawn, room) {
   var unknowns = 0;
 
   var maximums = {
-    harvesters:   getMaxCreeps(room, COLOR_YELLOW, 'h'),
-    hoarders:     getMaxCreeps(room, COLOR_PURPLE, 'h'),
-    sweepers:     getMaxCreeps(room, COLOR_GREEN,  's'),
-    transporters: getMaxCreeps(room, COLOR_PURPLE, 't'),
-    upgraders:    getMaxCreeps(room, COLOR_YELLOW, 'u'),
+    harvesters:   room.memory.max.harvesters,
+    hoarders:     room.memory.max.hoarders,
+    sweepers:     room.memory.max.sweepers,
+    transporters: room.memory.max.transporters,
+    upgraders:    room.memory.max.upgraders,
 
-    guards:       getMaxCreeps(room, COLOR_RED,    'g'),
-    warriors:     getMaxCreeps(room, COLOR_RED,    'w'),
-    medics:       getMaxCreeps(room, COLOR_BLUE,   'm'),
+    guards:       room.memory.max.guards,
+    warriors:     room.memory.max.warriors,
+    medics:       room.memory.max.medics,
 
-    builders:     getMaxCreeps(room, COLOR_BROWN,  'b'),
-    explorers:    getMaxCreeps(room, COLOR_ORANGE, 'e')
-  }
+    builders:     room.memory.max.builders,
+    explorers:    room.memory.max.explorers
+  };
 
   var results = OK;
 
@@ -142,24 +142,8 @@ function stayAlive(spawn, room) {
   }
 }
 
-function getMaxCreeps(room, color, character){
-  var maxCreeps = 0;
-  var flags = null;
-
-  //log('looking for flags that are ' + color);
-  flags = room.find(FIND_FLAGS, { filter: {color: color}});
-  for(var i in flags){
-    var flag = flags[i];
-
-    if(flag.name.charAt(0) == character){
-      maxCreeps ++;
-    }
-  }
-  return maxCreeps;
-}
-
 function spawnCreep(spawn, room, current, max,
-                    BODY_PARTS, classification, counterName){
+                    BODY_PARTS, classification){
 
   var results = OK;
   var spawnLevel = room.controller.level;
@@ -176,15 +160,15 @@ function spawnCreep(spawn, room, current, max,
     for(var l = spawnLevel; l >= 1; l--){
     results = spawn.canCreateCreep(BODY_PARTS[l],
                                 classification.charAt(0).toUpperCase() + l +
-                                '_' + room.memory[counterName],
+                                '_' + room.memory.counter[classification],
                                 { role: classification});
       if(results == OK){
         spawnLevel = l;
         break;
       }
       if(results == ERR_NAME_EXISTS){
-        log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in check.', 'spawn');
-        room.memory[counterName] ++;
+        log('Incrementing counter.' + classification + ' for ' + room.name + ' from ' + room.memory.counter[classification] + ' by 1 in check.', 'spawn');
+        room.memory.counter[classification] ++;
         spawnLevel = l;
         break;
       }
@@ -197,14 +181,14 @@ function spawnCreep(spawn, room, current, max,
       log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
       results = spawn.createCreep(BODY_PARTS[spawnLevel],
                   classification.charAt(0).toUpperCase() + spawnLevel +
-                  '_' + room.memory[counterName],
+                  '_' + room.memory.counter[classification],
                   { role: classification });
 
       if(results == OK){
-        room.memory[counterName] ++;
+        room.memory.counter[classification] ++;
       } else if(results == ERR_NAME_EXISTS){
-        log('Incrementing ' + counterName + ' for ' + room.name + ' from ' + room.memory[counterName] + ' by 1 in create.','spawn');
-        room.memory[counterName] ++;
+        log('Incrementing counter.' + classification + ' for ' + room.name + ' from ' + room.memory.counter[classification] + ' by 1 in create.','spawn');
+        room.memory.counter[classification] ++;
       } else {
         log('Spawning ' + classification + ' returned: ' + displayErr(results), 'spawn');
       }
