@@ -1,37 +1,49 @@
-function displayReports(){
-  _.forEach(Game.rooms, function(room){
+function displayReports() {
+  for( var id in Game.rooms )
+  {
+    var room = Game.rooms[id];
     storageReport(room);
-    console.log(' ');
     log('Energy ' + nwc(room.energyAvailable) + ' of ' + nwc(room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy(room)), 'Energy Report');
-  var rptController = room.controller;
 
-  if(structureReports()){
-    console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
-    structureReport(p_room, STRUCTURE_RAMPART);
-    structureReport(p_room, STRUCTURE_ROAD);
-    structureReport(p_room, STRUCTURE_WALL);
-  }
+    var rptController = room.controller;
 
-            });
-
-
-  log('Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.','Global Control Report');
-
-  var endCpu = Game.getUsedCpu();
-
-  if(Memory.cpuUsage){
-    Memory.cpuUsage.push(endCpu);
-    while(Memory.cpuUsage.length > 100){
-      var shifted = Memory.cpuUsage.shift();
-      // log('Discarding ' + shifted, 'debug');
+    if( structureReports() ){
+      console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
+      structureReport(p_room, STRUCTURE_RAMPART);
+      structureReport(p_room, STRUCTURE_ROAD);
+      structureReport(p_room, STRUCTURE_WALL);
     }
-  } else{
-    Memory.cpuUsage = [];
   }
-  // log(Memory.cpuUsage.length,'debug');
-  console.log(' ');
+
+  log('Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.', 'Global Control Report');
+
+  // TODO: REMOVE THIS CODE AFTER YOU HAVE MIGRATED TO THE NEW cpuUsage format
+  if( Memory.cpuUsage.length == 100 ) {
+    Memory.cpuUsage = {
+      samples: Memory.cpuUsage,
+      average: average(Memory.cpuUsage)
+    };
+  } // END TODO
+
+  // Log CPU Usage
+  var endCpu = Game.getUsedCpu();
+  if( Memory.cpuUsage == undefined ) { // First CPU Usage sample
+    Memory.cpuUsage = { samples: [ endCpu ], average: endCpu }
+  } else { // Recalculate the average with optimized algorithm
+    Memory.cpuUsage.average *= Memory.cpuUsage.samples.length;
+    Memory.cpuUsage - Memory.cpuUsage.samples[0];
+    Memory.cpuUsage.samples.push( endCpu )
+    while( Memory.cpuUsage.samples.length > (600 * 2) ) // 10 minutes worth of data
+      Memory.cpuUsage.samples.shift();
+    Memory.cpuUsage.average /= Memory.cpuUsage.samples.length;
+  }
+
   log('all scripts completed ' + nwc(endCpu.toPrecision(4)) + ' of ' + Game.cpuLimit + ', average execution time for last ' + Memory.cpuUsage.length + ' ticks is ' + average(Memory.cpuUsage).toPrecision(4) + '.','End Tick');
-  Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),60);
+
+  // Notify the player every 10 minutes for the average execution time in batch of 6 (every hour)
+  if( Game.time % (600 * 2) == 0 ) {
+    Game.notify( 'Average CPU Execution time is: ' + Memory.cpuUsage.average + ' for the last 10min as of ' (new Date).toUTCString(), 6);
+  }
 }
 
 function creepCountReport(room, guards, warriors, medics,
