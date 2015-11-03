@@ -62,9 +62,9 @@ function buildThings(creep, builder_index) {
   var site =  findNearestConstructionSite(creep);
 
   if(site){
-    lca(creep, 'site is a ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
+    lca(creep, 'site is a ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.', true);
   } else {
-    lca(creep, 'no construction sites.');
+    lca(creep, 'no construction sites.',true);
   }
 
   switch(creep.memory.state){
@@ -91,6 +91,7 @@ function buildThings(creep, builder_index) {
     if(creep.carry.energy === 0){
       creep.memory.state = 'filling';
       lca(creep, 'out of energy, changing to filling.');
+      break;
     }
 
     if(creep.memory.currentTarget){
@@ -98,9 +99,9 @@ function buildThings(creep, builder_index) {
       t = Game.getObjectById(creep.memory.currentTarget.id);
     }
 
-    lca(creep, 'current target ratio: ' + ctRatio);
+    lca(creep, 'current target ratio: ' + ctRatio, true);
 
-    if(t && ctRatio > 0.65){
+    if(site && ctRatio > 0.65){
       creep.memory.state = 'constructing';
       lca(creep, 'abandoning current repair at ' + ctRatio + ', new construction Site available.');
     } else {
@@ -111,6 +112,7 @@ function buildThings(creep, builder_index) {
     if(creep.carry.energy === 0){
       creep.memory.state = 'filling';
       lca(creep, 'out of energy, changing to filling.');
+      break;
     }
 
     if(site){
@@ -154,24 +156,28 @@ function fixPrioritizedStructure(creep) {
 
   for(var name in targets) {
     var target = targets[name];
-    if(_.includes(dnrIds, target.id)){
-      // log( 'skipping ' + target.id + ' at ' + target.pos.x + ',' + target.pos.y + ' it is in a Do Not Repair zone.',true);
-    } else {
-      index ++;
-      var targetRatio = calcRatio(target);
-
-      if(targetRatio < lowestHitsRatio && target.hits < target.hitsMax) {
-        preferredTarget = target;
-        lowestHits = target.hits;
-        lowestHitsRatio = targetRatio;
-        lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is now the preferredTarget',true);
+    if(target.structureType != STRUCTURE_CONTROLLER){
+      if(_.includes(dnrIds, target.id)){
+        // log( 'skipping ' + target.id + ' at ' + target.pos.x + ',' + target.pos.y + ' it is in a Do Not Repair zone.',true);
       } else {
-        if(target.structureType == 'constructedWall' && target.ticksToLive > 0){
-          lca(creep, 'reviewing a constructedWall that is a newbie protective barrier, and passing on it.  TicksToLive: ' + target.ticksToLive, true);
+        index ++;
+        var targetRatio = calcRatio(target);
+
+        if(targetRatio < lowestHitsRatio && target.hits < target.hitsMax) {
+          preferredTarget = target;
+          lowestHits = target.hits;
+          lowestHitsRatio = targetRatio;
+          lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is now the preferredTarget',true);
         } else {
-          lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is being passed over', true);
+          if(target.structureType == 'constructedWall' && target.ticksToLive > 0){
+            lca(creep, 'reviewing a constructedWall that is a newbie protective barrier, and passing on it.  TicksToLive: ' + target.ticksToLive, true);
+          } else {
+            lca(creep, index + ': ' + target.id + ' a ' + target.structureType + ' has ' + target.hits + ' for a ratio of ' + targetRatio + ' and is being passed over', true);
+          }
         }
       }
+    } else {
+      lca(creep, 'skipping this target it is a controller',true);
     }
   }
 
@@ -194,10 +200,15 @@ function fixPrioritizedStructure(creep) {
       if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
          (preferredTarget.hits <= MIN_HITS && ct.hits >= MIN_HITS) ||
          ctHitsRatio == 1) {
+        if(ct){
          lca(creep, 'changing from focusing on ' +
            ct.structureType + ' with Ratio of ' +
            ctHitsRatio + ' to ' + preferredTarget.structureType +
            ' with Ratio of ' + ptHitsRatio);
+        } else {
+          lca(creep, 'my currentTarget was invalid.');
+        }
+
         creep.memory.currentTarget = preferredTarget;
       }
     }
@@ -208,6 +219,7 @@ function fixPrioritizedStructure(creep) {
   if(t) {
     if(t.structureType != 'road') {
       lca(creep,
+        'repairing ' +
         t.structureType + ' at ' +
         t.pos.x + ',' + t.pos.y + ' has ' +
         nwc(t.hits) + ' of ' +

@@ -10,7 +10,7 @@ function findEnergy(creep,source){
     var dropDistance = creep.pos.getRangeTo(nearestDrop);
     var storageDistance = creep.pos.getRangeTo(creep.room.storage);
     lca(creep, 'storageDistance is: ' + storageDistance +
-        ' and dropDistance is: ' + dropDistance);
+        ' and dropDistance is: ' + dropDistance, true);
     if(storageDistance <= dropDistance){
       // storage is closer use it.
       lca(creep, 'is moving to storage to get energy.');

@@ -90,26 +90,21 @@ function hoard(creep, source_index) {
     break;
   case 'gathering':
     var sources = creep.room.find(FIND_SOURCES);
-    var drop = findNearestDroppedEnergy(creep);
-    if(drop){
-      lca(creep, 'is gathering energy, nearest pile has ' + nwc(drop.energy) + '.');
-    }
-
-    //console.log('source_index: ' + source_index + ' sources.length: ' + sources.length);
 
     if(source_index >= sources.length){
       source_index = sources.length -1;
     }
 
-    if(sources[source_index].energy === 0 ){
+    if(sources[source_index].energy === 0 && sources.length == 2){
       source_index = (source_index == 1) ? 0 : 1;
     }
 
+    lca(creep, 'my source has ' + sources[source_index].energy + ' energy and will regenerate in ' + sources[source_index].ticksToRegeneration + '.');
+
     creep.moveTo(sources[source_index]);
     creep.harvest(sources[source_index]);
-    if(!drop){
-      lca(creep, 'my source has ' + sources[source_index].energy + ' energy and will regenerate in ' + sources[source_index].ticksToRegeneration + '.');
-    }
+
+    lca(creep, 'sources.length ' + sources.length + ' vs ' + source_index);
 
     if(creep.carry.energy == creep.carryCapacity && creep.carryCapacity !== 0) {
       creep.memory.state = 'transferring';

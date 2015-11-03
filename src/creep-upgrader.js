@@ -54,7 +54,16 @@ function upgrade(creep, source) {
     if(creep.carry.energy == creep.carryCapacity) {
       creep.memory.state = 'upgrade';
     } else {
-      findEnergy(creep, source);
+      // prefer nearestEnergy
+      var nearestEnergy = findNearestEnergy(creep);
+      if(nearestEnergy){
+        lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
+        creep.moveTo(nearestEnergy)
+        nearestEnergy.transferEnergy(creep);
+      } else {
+        // no nearestEnergy figure out what else we can use.
+        findEnergy(creep, source);
+      }
     }
     break;
   case 'upgrade':

@@ -3,7 +3,7 @@ var RECRUIT_TIME = 75;
 
   if(creep.ticksToLive == RECRUIT_TIME){
     console.log('recruit time.');
-    if(creep.room.controller && creep.room.controller.level < 5){
+    if(creep.room.controller && creep.room.controller.level < 4){
       console.log('my room is insufficient');
       // request upgrader from another room
       lca(creep, 'it is time to request a replacement.');
