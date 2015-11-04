@@ -42,7 +42,7 @@ function displayReports() {
 
   // Notify the player every 10 minutes for the average execution time in batch of 6 (every hour)
   if( Game.time % (600 * 2) == 0 ) {
-    Game.notify( 'Average CPU Execution time is: ' + Memory.cpuUsage.average + ' for the last 10min as of ' (new Date).toUTCString(), 6);
+    Game.notify( 'Average CPU Execution time is: ' + Memory.cpuUsage.average + ' for the last 10min as of ' + (new Date).toUTCString(), 6);
   }
 }
 
