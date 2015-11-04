@@ -15,14 +15,14 @@ function overrideMaximums(room, maximums){
   if(maximums.hoarders < sources.length){
     maximums.hoarders = sources.length;
   }
-  if(maximums.transporters < sources.length){
-    maximums.transporters = sources.length;
+  if(maximums.transporters < sources.length * 1.5){
+    maximums.transporters = Math.floor(sources.length * 1.5) ;
   }
-  if(maximums.upgraders === 0){
+  if(maximums.upgraders < room.controller.level){
     maximums.upgraders = room.controller.level;
   }
-  if(maximums.builders <= 0){
-    maximums.builders = 1;
+  if(maximums.builders < 4){
+    maximums.builders = 4;
   }
 
   if(room.storage && room.storage.store.energy < 35000){
