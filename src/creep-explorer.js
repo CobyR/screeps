@@ -240,6 +240,8 @@ function explore(creep) {
     results = creep.claimController(creep.room.controller);
     if(results != OK) {
       console.log(creep.name + ' call to claimController returned: ' + displayErr(results));
+    } else {
+      creep.memory.mode = 'build';
     }
     break;
   default:

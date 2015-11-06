@@ -3,6 +3,7 @@
  */
 function spawnCreeps(){
   _.forEach(Game.rooms, function(room){
+    initializeRoom(room);
     processRoom(room);
   });
 }
@@ -45,8 +46,6 @@ function stayAlive(spawn, room) {
   }
 
   var results = OK;
-
-  initializeRoom(room);
 
   maximums =  overrideMaximums(room, maximums);
 
