@@ -123,7 +123,7 @@ function findNearestSource(creep) {
 
     distance = creep.pos.getRangeTo(source);
 
-    if(distance < shortestDistance){
+    if(distance < shortestDistance && source.energy > 0){
       shortestDistance = distance;
       closestSource = source;
     }

@@ -4,8 +4,24 @@ var EXPLORER = {
       WORK, WORK, WORK, WORK,
       CARRY, CARRY, CARRY, CARRY,
       CARRY, CARRY, CARRY, CARRY,
-      ATTACK]
+      ATTACK],
+  5: [MOVE, MOVE, MOVE, MOVE,
+      WORK, WORK, WORK, WORK,
+      MOVE, MOVE, MOVE, MOVE,
+      CARRY, CARRY, CARRY, CARRY,
+      MOVE, MOVE, MOVE, MOVE,
+      ATTACK, ATTACK, ATTACK, ATTACK],
+  6: [MOVE, ATTACK, CARRY, WORK,
+      MOVE, ATTACK, CARRY, WORK,
+      MOVE, ATTACK, CARRY, WORK,
+      MOVE, ATTACK, CARRY, WORK,
+      MOVE, ATTACK, CARRY, WORK,
+      MOVE, ATTACK, CARRY, WORK,
+      MOVE, WORK, CARRY, WORK
+     ]
 }
+
+var explorerDestination = 'W4N11';
 
 function processExplorers(explorers) {
   if(explorers.length > 0) {
@@ -22,6 +38,10 @@ function processExplorers(explorers) {
         poss.push(creep.id);
         break;
       default:
+        if(!creep.memory.mode){
+          creep.memory.mode = 'room';
+          creep.memory.roomDestination = explorerDestination;
+        }
         explore(creep);
       }
     }
@@ -75,8 +95,6 @@ function processExplorers(explorers) {
   }
 }
 
-var explorerDestination = 'W5N11';
-
 function spawnExplorer(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
              EXPLORER, 'explorer');
@@ -94,10 +112,11 @@ function explore(creep) {
     switch(creep.memory.state){
     case 'fill':
       if(creep.carry.energy < creep.carryCapacity){
-        var sources = creep.room.find(FIND_SOURCES);
+        var source = findNearestSource(creep);
         lca(creep, 'mining energy.');
-        creep.moveTo(sources[0]);
-        creep.harvest(sources[0]);
+        creep.moveTo(source);
+        creep.pickup(findNearestDroppedEnergy(creep,2));
+        creep.harvest(source);
 
       } else {
         creep.memory.state = 'build';
@@ -107,12 +126,12 @@ function explore(creep) {
       if(creep.carry.energy === 0) {
         creep.memory.state = 'fill';
       } else {
-        var sites = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
+        var site = findNearestConstructionSite(creep);
 
-        if(sites.length > 0){
-          lca(creep, 'building site');
-          creep.moveTo(sites[0]);
-          creep.build(sites[0]);
+        if(site){
+          lca(creep, 'building site ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
+          creep.moveTo(site);
+          creep.build(site);
         } else {
           lca(creep, 'upgrading controller');
           creep.moveTo(creep.room.controller);
@@ -128,10 +147,11 @@ function explore(creep) {
     var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
     // lca(creep, 'hostile creeps present: ' + hostileCreeps.length,true);
     if(hostileCreeps && hostileCreeps.length > 0) {
+      var enemy = findNearestEnemy(creep,hostileCreeps);
       // There are hostiles, run without concern and attack them.
       lca(creep, ' pillaging ' + hostileCreeps.length + ' hostile creeps in ' + creep.room.name + '.');
-      creep.moveTo(hostileCreeps[0]);
-      creep.attack(hostileCreeps[0]);
+      creep.moveTo(enemy);
+      creep.attack(enemy);
     } else {
       var hostileTargets = creep.room.find(FIND_HOSTILE_STRUCTURES);
       // lca(creep, 'hostile targets present: ' + hostileTargets.length,true);
@@ -224,12 +244,26 @@ function explore(creep) {
     }
     break;
   case 'controller':
-    creep.moveTo(creep.room.controller);
-    results = creep.claimController(creep.room.controller);
-    if(results != OK) {
-      console.log(creep.name + ' call to claimController returned: ' + displayErr(results));
-    } else {
+    if(creep.room.controller.my){
       creep.memory.mode = 'build';
+      if(creep.carry.energy > 0){
+        creep.memory.state = 'build';
+      } else if(creep.carryCapacity > 0){
+        creep.memory.state = 'fill';
+      }
+    } else {
+      creep.moveTo(creep.room.controller);
+      results = creep.claimController(creep.room.controller);
+      if(results != OK) {
+        console.log(creep.name + ' call to claimController returned: ' + displayErr(results));
+      } else {
+        creep.memory.mode = 'build';
+        if(creep.carry.energy > 0){
+          creep.memory.state = 'build';
+        } else if(creep.carryCapacity > 0){
+          creep.memory.state = 'fill';
+        }
+      }
     }
     break;
   default:
