@@ -34,6 +34,13 @@ function roomSecretMission(creep) {
           lca(creep, 'there is no secret mission defined for ' + creep.memory.role);
         }
       break;
+    case 'W4N11':
+      switch(creep.memory.role){
+      case 'explorer':
+        creep.memory.mode = 'controller';
+        break;
+      }
+      break;
     case 'W11S25':
       switch(creep.memory.role){
       case 'explorer':
