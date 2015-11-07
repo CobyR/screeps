@@ -1,6 +1,7 @@
 function findEnergy(creep,source){
   var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
 
+  //console.log('findEnergy says ' + creep.room + ' has a spawn ' + spawn)
   if(!source){
     source = findNearestSource(creep);
   }
@@ -42,9 +43,45 @@ function findEnergy(creep,source){
   }
 }
 
+function findNearestRoadWithMostNeed(creep){
+  var lowestRatio = 1;
+  var shortestDistance = 100;
+  var distance = 0;
+  var nearestRoad = null;
+  var worstRoads = [];
+
+  var roads = creep.room.find(FIND_STRUCTURES,
+    {filter: {structureType: STRUCTURE_ROAD}});
+  _.forEach(roads, function (road){
+    var ratio = calcRatio(road);
+    if(ratio < lowestRatio){
+      lowestRatio = ratio;
+    }
+  });
+
+  _.forEach(roads, function (road){
+    if(calcRatio(road)<= lowestRatio){
+      // console.log('ratio vs lowestRatio ' + calcRatio(road) + ' ' + lowestRatio);
+      worstRoads.push(road);
+    }
+  });
+
+  _.forEach(worstRoads, function(road){
+    distance = creep.pos.getRangeTo(road);
+
+    // console.log('distance away ' + distance);
+
+    if(distance < shortestDistance){
+      shortestDistance = distance;
+      nearestRoad = road;
+    }
+  });
+
+  return nearestRoad;
+}
 function findNearestEmergencyRepair(creep){
   var MIN_HITS = 1000;
-  var shortestDistance = 50;
+  var shortestDistance = 100;
   var distance = 0;
   var nearestEmergency = null;
 
@@ -165,8 +202,7 @@ function findNearestEnergy(creep){
     storage = creep.room.storage;
   }
 
-  for(var i in extensions){
-    var extension = extensions[i];
+  _.forEach(extensions, function(extension){
 
     distance = creep.pos.getRangeTo(extension);
 
@@ -174,13 +210,30 @@ function findNearestEnergy(creep){
       shortestDistance = distance;
       closestEnergy = extension;
     }
-  }
+    });
+
+  _.forEach(getLinksWithEnergy(creep), function(link){
+    distance = creep.pos.getRangeTo(link);
+    if(distance < shortestDistance){
+      shortestDistance = distance;
+      closestEnergy = link;
+    }
+  });
 
   if(storage){
     if(storage.store.energy > USE_STORAGE_THRESHOLD){
        distance = creep.pos.getRangeTo(storage);
       if(distance < shortestDistance){
         closestEnergy = storage;
+      }
+    }
+  }
+
+  if(!closestEnergy){
+    if(ALLOW_SPAWN_USE){
+      var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+      if(spawn){
+        closestEnergy = spawn;
       }
     }
   }
@@ -236,6 +289,22 @@ function findNearestEnergyNeed(creep){
   }
 
   return closestEnergy;
+}
+
+function getLinksWithEnergy(creep){
+  var links = creep.room.find(FIND_MY_STRUCTURES,
+                              {filter: { structureType: STRUCTURE_LINK } });
+
+  var usefulLinks = [];
+  var link = null;
+
+  _.forEach(links, function(link){
+    if(link.energy >= creep.carryCapacity){
+      usefulLinks.push(link);
+    }
+  });
+
+  return usefulLinks;
 }
 
 function getExtensionsWithEnergy(creep) {
@@ -385,9 +454,12 @@ function calcRatio(target){
 }
 
 function nwc(x) {
+  if(x){
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
+  }
+  return 0;
 }
 
 function median(values) {
@@ -461,4 +533,44 @@ function displayErr(results) {
   default:
     return results;
   }
+}
+
+function maintainLinks(room){
+  var links = room.find(FIND_MY_STRUCTURES,
+                        { filter: { structureType: STRUCTURE_LINK}});
+  var toLink = null;
+  var fromLink = null;
+  _.forEach(links, function(link){
+    if(room.memory.toLink && link.id == room.memory.toLink.id){
+      toLink = Game.getObjectById(room.memory.toLink.id);
+    } else {
+      fromLink = link;
+    }
+  });
+
+  if(toLink){
+    console.log('toLink ' + toLink.pos.x + ',' + toLink.pos.y +  ' - ' + toLink.id + '.');
+  }
+  if(fromLink){
+    console.log('fromLink ' + fromLink.pos.x + ',' + fromLink.pos.y + ' - ' + fromLink.id + '.');
+  }
+
+  if(fromLink && toLink){
+    console.log('both links are defined.');
+    if(fromLink.cooldown === 0){
+      console.log('from link is cool.');
+      if(toLink.energy < toLink.energyCapacity){
+        console.log('toLink needs energy.');
+        var results = fromLink.transferEnergy(toLink);
+        console.log(displayErr(results));
+        log('Transfering energy from link at ' + fromLink.pos.x + ',' + fromLink.pos.y +
+          ' to link at ' + toLink.pos.x + ',' + toLink.pos.y + ' resulted in ' + displayErr(results) + '.');
+      } else {
+        console.log('toLink is full.');
+      }
+    } else {
+      console.log('fromLink needs to cool down.');
+    }
+  }
+
 }

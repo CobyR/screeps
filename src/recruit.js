@@ -1,7 +1,7 @@
 function callForReplacement(creep){
 var RECRUIT_TIME = 75;
 
-  if(creep.ticksToLive == RECRUIT_TIME){
+  if(creep.ticksToLive == RECRUIT_TIME && creep.room.memory.recruit){
     console.log('recruit time.');
     if(creep.room.controller && creep.room.controller.level < 4){
       console.log('my room is insufficient');

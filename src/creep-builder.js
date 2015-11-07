@@ -70,6 +70,10 @@ function buildThings(creep, builder_index) {
   switch(creep.memory.state){
   case 'filling':
     if(creep.carry.energy == creep.carryCapacity) {
+      if(creep.memory.overrideState){
+        creep.memory.state = creep.memory.overrideState;
+        break;
+      }
       var emergency = findNearestEmergencyRepair(creep);
 
       if(site && !emergency){
@@ -83,6 +87,33 @@ function buildThings(creep, builder_index) {
     } else {
       findEnergy(creep);
     }
+    break;
+  case 'road':
+    var road = findNearestRoadWithMostNeed(creep);
+    var currentRoad = null;
+
+    if(creep.memory.currentRoad){
+      currentRoad = Game.getObjectById(creep.memory.currentRoad.id);
+    }
+    if(road){
+      if(currentRoad  && currentRoad.hits < currentRoad.hitsMax){
+        creep.moveTo(currentRoad);
+        creep.repair(currentRoad);
+        lca(creep, 'repairing road at ' + currentRoad.pos.x +
+            ',' + currentRoad.pos.y + ' ' +
+            currentRoad.hits + ' of ' + currentRoad.hitsMax + '.');
+      } else {
+        creep.memory.currentRoad = road;
+        lca(creep, 'moving to road at ' + road.pos.x + ',' + road.pos.y + ' ' + road.hits + ' of ' + road.hitsMax + '.');
+      }
+      if(creep.carry.energy === 0){
+        creep.memory.state = 'filling';
+        creep.memory.overrideState = 'road';
+      }
+    } else {
+      lca(creep, 'no roads to repair, so waiting for decay.');
+    }
+
     break;
   case 'repairing':
     var ctRatio = 0;
@@ -106,7 +137,7 @@ function buildThings(creep, builder_index) {
 
     lca(creep, 'current target ratio: ' + ctRatio, true);
 
-    if(site && ctRatio > 0.65){
+    if(site && ctRatio > 0.03){
       creep.memory.state = 'constructing';
       lca(creep, 'abandoning current repair at ' + ctRatio + ', new construction Site available.');
     } else {

@@ -30,10 +30,6 @@ module.exports.loop = function () {
 
   cleanupMemory();
 
-  ALLOW_SPAWN_USE = p_room.find(FIND_FLAGS,
-                                { filter: { name: 'USE_SPAWN',
-                                            color: COLOR_WHITE}}).length;
-
   console.log('->');
   log('=============================================================', 'Start Tick');
   log('===== ' + Game.time + '|' + Game.cpuLimit + ' ===== ', 'Start Tick');

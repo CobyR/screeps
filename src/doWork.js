@@ -15,46 +15,53 @@ function doWork(){
     console.log(' ');
     log('------------------------------------------------', room.name);
 
-    for(var name in Game.creeps) {
-      var creep = Game.creeps[name];
+    maintainLinks(room);
+
+    ALLOW_SPAWN_USE = room.find(FIND_FLAGS,
+      { filter: { name: 'USE_SPAWN',
+      color: COLOR_WHITE}}).length;
+
+
+    _.forEach(Game.creeps, function(creep) {
+
       if(creep.pos.roomName != room.name){
-        continue;
-      }
+        //
+      } else {
+        if(creep.age < 25) {
+          lca(creep, 'is about to die in ' + creep.age + ' ticks.');
+        }
 
-      if(creep.age < 25) {
-        lca(creep, 'is about to die in ' + creep.age + ' ticks.');
+        switch(creep.memory.role) {
+        case 'guard':
+          guards.push(creep.id);
+          break;
+        case 'harvester':
+          harvesters.push(creep.id);
+          break;
+        case 'upgrader':
+          upgraders.push(creep.id);
+          break;
+        case 'builder':
+          builders.push(creep.id);
+          break;
+        case 'explorer':
+          explorers.push(creep.id);
+          break;
+        case 'hoarder':
+          hoarders.push(creep.id);
+          break;
+        case 'sweeper':
+          sweepers.push(creep.id);
+          break;
+        case 'transporter':
+          transporters.push(creep.id);
+          break;
+        default:
+          lca(creep, 'does not have a programmed role.');
+          break;
+        }
       }
-
-      switch(creep.memory.role) {
-      case 'guard':
-        guards.push(creep.id);
-        break;
-      case 'harvester':
-        harvesters.push(creep.id);
-        break;
-      case 'upgrader':
-        upgraders.push(creep.id);
-        break;
-      case 'builder':
-        builders.push(creep.id);
-        break;
-      case 'explorer':
-        explorers.push(creep.id);
-        break;
-      case 'hoarder':
-        hoarders.push(creep.id);
-        break;
-      case 'sweeper':
-        sweepers.push(creep.id);
-        break;
-      case 'transporter':
-        transporters.push(creep.id);
-        break;
-      default:
-        lca(creep, 'does not have a programmed role.');
-        break;
-      }
-    }
+      });
 
     processHarvesters(harvesters, room);
     processHoarders(hoarders, room);

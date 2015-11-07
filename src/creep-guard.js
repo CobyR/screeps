@@ -57,6 +57,8 @@ function guardDuty(creep) {
   if(enemies.length > 0){
     // There are hostiles in the room
     creep.memory.state = 'defending';
+  } else {
+    creep.memory.state = 'traveling';
   }
 
   switch(creep.memory.state){

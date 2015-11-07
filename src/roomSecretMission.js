@@ -13,6 +13,9 @@ function roomSecretMission(creep) {
       deadCreep.say('Bye! :)');
       deadCreep.suicide();
     }
+    if(creep.memory.role == 'transporter'){
+      creep.memory.follow = null;
+    }
     creep.memory.summonadBy = null;
   } else {
     // no previous role, have at it.

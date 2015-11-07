@@ -46,6 +46,7 @@ function sweep(creep, room){
   if(typeof creep.memory.state === 'undefined'){
     creep.memory.state = creep.memory.mode;
   }
+  var results = OK;
 
   switch(creep.memory.state){
   case 'fillGet':
@@ -53,8 +54,10 @@ function sweep(creep, room){
       if(room.storage){
         lca(creep, 'moving to Storage to get energy, currently at: ' + creep.carry.energy + '.');
         creep.moveTo(room.storage);
-        room.storage.transferEnergy(creep);
-        creep.memory.state = 'fillPut';
+        results = room.storage.transferEnergy(creep);
+        if(results == OK){
+          creep.memory.state = 'fillPut';
+        }
       } else {
         lca(creep, 'trying to get energy, but there is no storage ???');
       }
@@ -135,7 +138,8 @@ function fillStructure(creep, room, structure){
       lca(creep, 'moving to Extension at ' +
           closestStructure.pos.x + ',' +
           closestStructure.pos.y + ' it has ' +
-          closestStructure.energy + ' energy.');
+          closestStructure.energy + ' energy, carrying ' +
+          creep.carry.energy + ' of ' + creep.carryCapacity + '.');
       creep.moveTo(closestStructure);
       creep.transferEnergy(closestStructure);
       return OK;

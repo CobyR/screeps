@@ -27,11 +27,16 @@ function lca(creep, message, debug) {
 
   var creepReport = (reportFor.indexOf(creep.memory.role)> -1);
 
+  var roomReport = Memory.settings.reportForRoom;
+
   if(!creepReport){
     creepReport = (reportFor.indexOf('global') > -1);
   }
+  if(roomReport && roomReport != creep.room.name && roomReport != 'all'){
+    creepReport = null;
+  }
 
-  //  console.log('creepReport: ' + creepReport + ' rpt ' + reportFor + ' role ' + creep.memory.role);
+  //console.log('creepReport: ' + creepReport + ' rpt ' + reportFor + ' role ' + creep.memory.role + ' roomReport ' + roomReport);
   if(debug){
     if(creepReport && debugReport) {
       console.log('  [DEBUG] ' + creep.name + '|' + creep.memory.role + ' ' + message);

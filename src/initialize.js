@@ -27,6 +27,13 @@ function initializeRoom(room){
       explorers: 0
     };
   }
+
+  switch(room.name){
+  case 'W14N17':
+    if(!room.memory.toLink){
+      room.memory.toLink = Game.getObjectById('563dbc2efb693e752eb6058a');
+    }
+  }
 }
 
 function initializeSettings(){

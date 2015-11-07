@@ -1,8 +1,8 @@
 function displayReports(){
   _.forEach(Game.rooms, function(room){
     storageReport(room);
-    console.log(' ');
-    log('Energy ' + nwc(room.energyAvailable) + ' of ' + nwc(room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy(room)), 'Energy Report');
+    //console.log(' ');
+    //log('Energy ' + nwc(room.energyAvailable) + ' of ' + nwc(room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy(room)), 'Energy Report');
   var rptController = room.controller;
 
   if(structureReports()){
