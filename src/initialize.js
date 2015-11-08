@@ -33,6 +33,12 @@ function initializeRoom(room){
     if(!room.memory.toLink){
       room.memory.toLink = Game.getObjectById('563dbc2efb693e752eb6058a');
     }
+    break;
+  case 'W5N12':
+    if(!room.memory.toLink){
+      room.memory.toLink = Game.getObjectById('563d8f672c04b9ce19c2311a');
+    }
+    break;
   }
 }
 
@@ -41,7 +47,9 @@ function initializeSettings(){
     Memory.settings = {
       reportFor: ['global','','','','',''],
       log: true,
-      debug: false
+      debug: false,
+      explorerDestination: '',
+      explorerDestinationMode: ''
     };
   }
 }

@@ -20,7 +20,10 @@ function roomSecretMission(creep) {
   } else {
     // no previous role, have at it.
     switch(creep.room.name){
-      case 'W11S26':
+    case 'W13N17':
+      creep.memory.mode = 'reserve';
+      break;
+    case 'W11S26':
         switch(creep.memory.role){
         case 'explorer':
           // punch hole through wall to make accessing the source easier for
@@ -69,8 +72,8 @@ function roomSecretMission(creep) {
       }
       break;
     default:
-      creep.memory.mode = 'pillage';
-      creep.memory.state = 'destroying';
+      creep.memory.mode = Memory.settings.explorerDestinationMode;
+      creep.memory.state = Memory.settings.explorerDestinationState;
     }
   }
 }

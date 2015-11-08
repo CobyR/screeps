@@ -81,15 +81,32 @@ function spawnSweeper(spawn, room, sweepers, max) {
 }
 
 function fillPut(creep,room){
-  var results =  fillStructure(creep,room, STRUCTURE_SPAWN);
+  var next = findNearestEnergyNeed(creep, true);
+  if(next){
+   lca(creep, 'moving to ' + next.structureType + ' at ' +
+          next.pos.x + ',' +
+          next.pos.y + ' it has ' +
+          next.energy + ' energy, carrying ' +
+          creep.carry.energy + ' of ' + creep.carryCapacity + '.');
+      creep.moveTo(next);
+      creep.transferEnergy(next);
+    if(creep.carry.energy === 0){
+      creep.memory.state = 'fillGet';
+    }
+
+  }
+
+/*
+   var results =  fillStructure(creep,room, STRUCTURE_SPAWN);
+
+  if(results != OK && results != ERR_NOT_ENOUGH_ENERGY){
+    results = fillStructure(creep,room, STRUCTURE_LINK);
+  }
 
   if(results != OK  && results != ERR_NOT_ENOUGH_ENERGY) {
     results = fillStructure(creep,room, STRUCTURE_EXTENSION);
   }
 
-  if(results != OK && results != ERR_NOT_ENOUGH_ENERGY){
-    results = fillStructure(creep,room, STRUCTURE_LINK);
-  }
 
   if(results != OK) {
     if(creep.carry.energy < creep.carryCapacity){
@@ -99,6 +116,7 @@ function fillPut(creep,room){
       lca(creep, 'nothing needs energy, and my capacity is full(' + creep.carry.energy + ').');
     }
   }
+*/
 }
 
 function fillStructure(creep, room, structure){

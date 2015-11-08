@@ -55,6 +55,8 @@
         "ERR_NOT_IN_RANGE",
         "ERR_NO_PATH",
         "ERR_INVALID_TARGET",
+        "ERR_GCL_NOT_ENOUGH",
+        "ERR_NO_BODYPART",
 
         "COLOR_WHITE",
         "COLOR_GREY",
