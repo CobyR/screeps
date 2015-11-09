@@ -540,7 +540,7 @@ function maintainLinks(room){
     console.log('both links are defined.');
     if(fromLink.cooldown === 0){
       console.log('from link is cool.');
-      if(toLink.energy < toLink.energyCapacity){
+      if(toLink.energy < toLink.energyCapacity - 50){
         console.log('toLink needs energy.');
         var results = fromLink.transferEnergy(toLink);
         console.log(displayErr(results));

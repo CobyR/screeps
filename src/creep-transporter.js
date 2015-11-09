@@ -101,7 +101,7 @@ function transport(creep){
   case 'transferring':
     var storage = creep.room.storage;
 
-    if(false){ // temporarily disabled - replace false with storage
+    if(storage){ 
       lca(creep, 'is taking energy(' + creep.carry.energy +
           ') to storage (' + nwc(storage.store.energy) +
           ' of ' + nwc(storage.storeCapacity) + ').');
