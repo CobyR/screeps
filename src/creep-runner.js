@@ -1,4 +1,4 @@
-var TRANSPORTER = {
+var RUNNER = {
   1: [MOVE, CARRY, CARRY,
       MOVE, CARRY, CARRY],
   2: [MOVE, CARRY, CARRY,
@@ -44,62 +44,43 @@ var TRANSPORTER = {
      ]
 }
 
-function processTransporters(transporters, hoarders){
+function processRunners(creeps){
 
-  if(transporters.length > 0){
-    log('------------ ' + transporters.length ,'Transporters');
+  if(creeps.length > 0){
+    log('------------ ' + creeps.length ,'Runners');
 
     var i = 0;
 
-    updateAssignments(transporters, hoarders);
-
-    for(var id in transporters){
-      var creep = Game.getObjectById(transporters[id]);
-
+    _.forEach(creeps, function (creep){
       if(creep.spawning === true){
         lca(creep, 'is still spawning.');
-
-        return 0;
+        return OK;
       } else {
-        i ++;
-        transport(creep);
+        i++;
+        run(creep);
       }
-    }
+    });
   }
 }
 
-function spawnTransporter(spawn, room, current, max){
+function spawnRunner(spawn, room, current, max){
   spawnCreep(spawn, room, current, max,
-             TRANSPORTER, 'transporter');
+             RUNNER, 'runner');
 }
 
-function transport(creep){
+function run(creep){
   var results = OK;
 
-  if(creep.spawning){
-    lca(creep, 'is still spawning.');
-    return OK;
-  }
-
-  callForReplacement(creep);
-
-  // Does the transporter have an assignment?
+  // Does the runner have an assignment?
   switch(creep.memory.state){
-  case 'cleanup':
-    modeCleanup(creep);
+  case 'getEnergy':
+    runnerGetEnergy(creep);
     break;
-  case 'transferring':
-    modeTransferring(creep);
-    break;
-  case 'roomTransfer':
-    modeRoomTransfer(creep);
+  case 'putEnergy':
+    runnerPutEnergy(creep);
     break;
   default:
     lca(creep, 'my state ' + creep.memory.state + ' has no functionality...');
-    creep.memory.state = 'cleanup';
-  }
-
-  if(creep.carry.energy === 0){
-    creep.memory.state = 'cleanup';
+    creep.memory.state = 'roomTransfer';
   }
 }

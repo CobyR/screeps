@@ -15,13 +15,14 @@ if(isSimulation){
     p_room = Game.rooms.W5N12;
     break;
   case 'Archival':
-    p_room = Game.rooms.W14N17;
+    p_room = Game.rooms.W1S7;
     break;
   }
 }
 
 var USE_STORAGE_THRESHOLD = 10000;
 var ALLOW_SPAWN_USE = null;
+var USE_DROPS = null;
 
 initializeSettings();
 

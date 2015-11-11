@@ -106,11 +106,11 @@ function spawnExplorer(spawn, room, current, max){
       explorers ++;
     }
   });
-  if(explorers < 3){
+  if(explorers < 5){
     spawnCreep(spawn, room, current, max,
              EXPLORER, 'explorer');
   } else {
-    console.log('You have 3 global explorers, not spawning more at this time.');
+    console.log('You have 5 global explorers, not spawning more at this time.');
   }
 
 }

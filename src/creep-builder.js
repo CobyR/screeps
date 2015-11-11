@@ -192,7 +192,7 @@ function fixPrioritizedStructure(creep) {
 
   for(var name in targets) {
     var target = targets[name];
-    if(target.structureType != STRUCTURE_CONTROLLER){
+    if(target.structureType != STRUCTURE_CONTROLLER && target.hitsMax != 1){
       if(_.includes(dnrIds, target.id)){
         // log( 'skipping ' + target.id + ' at ' + target.pos.x + ',' + target.pos.y + ' it is in a Do Not Repair zone.',true);
       } else {
@@ -216,6 +216,11 @@ function fixPrioritizedStructure(creep) {
       lca(creep, 'skipping this target it is a controller',true);
     }
   }
+  if(!preferredTarget  || (preferredTarget.hitsMax == 1)){
+    lca(creep, 'There are no preferredTargets.');
+    creep.memory.state = 'constructing';
+    return ERR_INVALID_TARGET;
+  }
 
   // Consider current target vs preferredTarget
   if(!creep.memory.currentTarget) {
@@ -233,6 +238,7 @@ function fixPrioritizedStructure(creep) {
     if(ct && ct.structureType == 'road' && ct.hits < ct.hitsMax){
       lca(creep,'road repair from: ' + nwc(ct.hits) + ' to a maxHits of: ' + nwc(ct.hitsMax) + ' at '+ ct.pos.x + ',' + ct.pos.y + ' ratio: ' + (calcRatio(ct) * 100).toFixed(2) + '%.');
     } else {
+      lca(creep, 'preferred target is ' + preferredTarget.structureType + '.');
       if(ptHitsRatio < (ctHitsRatio - GAP_BEFORE_CHANGING_TARGET) ||
          (preferredTarget.hits <= MIN_HITS && ct.hits >= MIN_HITS) ||
          ctHitsRatio == 1) {

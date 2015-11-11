@@ -21,6 +21,9 @@ function doWork(){
       { filter: { name: 'USE_SPAWN',
       color: COLOR_WHITE}}).length;
 
+    USE_DROPS = room.find(FIND_FLAGS,
+      { filter: {name: 'USE_DROPS',
+      color: COLOR_WHITE}}).length;
 
     _.forEach(Game.creeps, function(creep) {
 

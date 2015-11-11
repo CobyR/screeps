@@ -31,7 +31,11 @@ function findEnergy(creep,source){
     if(nearestEnergy){
       lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
       creep.moveTo(nearestEnergy);
-      nearestEnergy.transferEnergy(creep);
+      if(!nearestEnergy.structureType){
+        pickupEnergy(creep);
+      } else{
+        nearestEnergy.transferEnergy(creep);
+      }
     } else if(source) {
       lca(creep, 'is gathering energy from a source.');
       creep.moveTo(source);
@@ -234,6 +238,10 @@ function findNearestEnergy(creep){
       var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
       if(spawn){
         closestEnergy = spawn;
+      }
+    } else {
+      if(USE_DROPS){
+        closestEnergy = findNearestDroppedEnergy(creep);
       }
     }
   }
@@ -461,7 +469,7 @@ function calcRatio(target){
   var WALL_HITS = 2000000;
   var ratio = 0;
 
-  if(target === null){
+  if(target === null || target.hitsMax == 1){
     return 1;
   }
 

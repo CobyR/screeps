@@ -1,6 +1,9 @@
 var HARVESTER = {
-  1: [MOVE, WORK, CARRY, CARRY],
-  2: [MOVE, MOVE, WORK, CARRY, CARRY],
+  1: [MOVE, MOVE, WORK,
+      CARRY, CARRY],
+  2: [MOVE, MOVE, MOVE,
+      WORK, WORK, CARRY,
+      CARRY, CARRY, CARRY],
   3: [MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK],
   4: [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK],
   5: [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK],
@@ -50,6 +53,7 @@ function harvest(creep, source) {
       creep.memory.state = 'transferring';
     } else {
       lca(creep, 'is gathering energy: ' + creep.carry.energy + ' of ' + creep.carryCapacity + ' from Source at ' + source.pos.x + ',' + source.pos.y + ' ' + source.pos.roomName + '.');
+      pickupEnergy(creep);
       creep.moveTo(source);
       creep.harvest(source);
     }
