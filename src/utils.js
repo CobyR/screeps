@@ -6,7 +6,7 @@ function findEnergy(creep,source){
     source = findNearestSource(creep);
   }
 
-  if(creep.room.storage){
+  if(creep.room.storage  && creep.room.memory.preferStorage){
     var nearestDrop = findNearestDroppedEnergy(creep);
     var dropDistance = creep.pos.getRangeTo(nearestDrop);
     var storageDistance = creep.pos.getRangeTo(creep.room.storage);

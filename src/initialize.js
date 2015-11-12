@@ -28,6 +28,10 @@ function initializeRoom(room){
     };
   }
 
+  if(!room.memory.preferStorage){
+    room.memory.preferStorage = false;
+  }
+
   switch(room.name){
   case 'W14N17':
     if(!room.memory.toLink){
