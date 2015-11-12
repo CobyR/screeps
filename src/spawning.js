@@ -29,6 +29,7 @@ function stayAlive(spawn, room) {
   var sweepers = 0;
   var transporters = 0;
   var unknowns = 0;
+  var runners = 0;
 
   var maximums = {
     harvesters:   room.memory.max.harvesters,
@@ -42,7 +43,8 @@ function stayAlive(spawn, room) {
     medics:       room.memory.max.medics,
 
     builders:     room.memory.max.builders,
-    explorers:    room.memory.max.explorers
+    explorers:    room.memory.max.explorers,
+    runners:      room.memory.max.runners
   };
 
   var results = OK;
@@ -92,6 +94,9 @@ function stayAlive(spawn, room) {
       case 'explorer':
         explorers ++;
         break;
+      case 'runner':
+        runners ++;
+        break;
       default:
         unknowns ++;
         break;
@@ -103,7 +108,7 @@ function stayAlive(spawn, room) {
 
   creepCountReport(room, guards, warriors, medics,
                    harvesters, hoarders, sweepers, transporters,
-                   upgraders, builders, explorers, unknowns, maximums);
+                   upgraders, builders, explorers, runners, unknowns, maximums);
 
   switch(true){
   case (room.controller.level == 1 && harvesters < maximums.harvesters):
@@ -136,6 +141,11 @@ function stayAlive(spawn, room) {
   case(explorers < maximums.explorers):
     spawnExplorer(spawn, room, explorers, maximums.explorers);
     break;
+  case(runners < maximums.runners):
+    if(Game.time % 100 === 0){
+      spawnRunner(spawn, room, runners, maximums.runners);
+      break;
+    }
   default:
     log('No spawning happening this tick.', room.name);
   }

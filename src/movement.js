@@ -7,8 +7,10 @@ function moveToDestinationRoom(creep, destRoomName) {
   var exitDir = cRoom.findExitTo(destRoomName || creep.memory.roomDestination);
 
   var results = OK;
-
-  if(typeof creep.memory.wait == 'undefined' || creep.room.name != creep.memory.roomBeforeThat){
+  if(!creep.memory.roomBeforeThat){
+    creep.memory.roomBeforeThat = creep.room.name;
+  }
+  if(!creep.memory.wait || creep.room.name != creep.memory.roomBeforeThat){
     creep.memory.wait = 0;
   }
   if(creep.room.name != creep.memory.previousRoom) {

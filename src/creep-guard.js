@@ -29,7 +29,7 @@ var GUARD = {
 
 function processGuards(guards) {
   if(guards.length > 0) {
-    log('[Guards] -------------------','creep');
+    log('-------------------','Guards');
 
     for(var id in guards) {
       var creep = Game.getObjectById(guards[id]);

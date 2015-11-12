@@ -44,14 +44,30 @@ var RUNNER = {
      ]
 }
 
+var runnerFromRoom = null;
+var runnerToRoom = null;
+
+
+
 function processRunners(creeps){
+
+  _.forEach(Game.rooms, function (room){
+    if(room.name == Memory.settings.runnerFromRoom){
+      runnerFromRoom = room;
+    }
+    if(room.name == Memory.settings.runnerToRoom){
+      runnerToRoom = room;
+    }
+  });
 
   if(creeps.length > 0){
     log('------------ ' + creeps.length ,'Runners');
 
     var i = 0;
 
-    _.forEach(creeps, function (creep){
+    _.forEach(creeps, function (id){
+      var creep = Game.getObjectById(id);
+
       if(creep.spawning === true){
         lca(creep, 'is still spawning.');
         return OK;
@@ -81,6 +97,6 @@ function run(creep){
     break;
   default:
     lca(creep, 'my state ' + creep.memory.state + ' has no functionality...');
-    creep.memory.state = 'roomTransfer';
+    creep.memory.state = 'getEnergy';
   }
 }

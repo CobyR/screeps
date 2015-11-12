@@ -538,27 +538,27 @@ function maintainLinks(room){
   });
 
   if(toLink){
-    console.log('toLink ' + toLink.pos.x + ',' + toLink.pos.y +  ' - ' + toLink.id + '.');
+    // console.log('toLink ' + toLink.pos.x + ',' + toLink.pos.y +  ' - ' + toLink.id + '.');
   }
   if(fromLink){
-    console.log('fromLink ' + fromLink.pos.x + ',' + fromLink.pos.y + ' - ' + fromLink.id + '.');
+    // log('fromLink ' + fromLink.pos.x + ',' + fromLink.pos.y + ' - ' + fromLink.id + '.','maintainLink');
   }
 
   if(fromLink && toLink){
-    console.log('both links are defined.');
+    // console.log('both links are defined.');
     if(fromLink.cooldown === 0){
-      console.log('from link is cool.');
+      // console.log('from link is cool.');
       if(toLink.energy < toLink.energyCapacity - 50){
-        console.log('toLink needs energy.');
+        // console.log('toLink needs energy.');
         var results = fromLink.transferEnergy(toLink);
         console.log(displayErr(results));
         log('Transfering energy from link at ' + fromLink.pos.x + ',' + fromLink.pos.y +
           ' to link at ' + toLink.pos.x + ',' + toLink.pos.y + ' resulted in ' + displayErr(results) + '.');
       } else {
-        console.log('toLink is full.');
+        // console.log('toLink is full.');
       }
     } else {
-      console.log('fromLink needs to cool down.');
+      // console.log('fromLink needs to cool down.');
     }
   }
 

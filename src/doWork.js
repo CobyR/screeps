@@ -11,6 +11,7 @@ function doWork(){
     var upgraders = [];
     var warriors = [];
     var medics = [];
+    var runners = [];
 
     console.log(' ');
     log('------------------------------------------------', room.name);
@@ -59,6 +60,9 @@ function doWork(){
         case 'transporter':
           transporters.push(creep.id);
           break;
+        case 'runner':
+          runners.push(creep.id);
+          break;
         default:
           lca(creep, 'does not have a programmed role.');
           break;
@@ -78,5 +82,6 @@ function doWork(){
 
     processBuilders(builders,room);
     processExplorers(explorers,room);
+    processRunners(runners, room);
   });
 }

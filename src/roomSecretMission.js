@@ -34,14 +34,6 @@ function processCallForReplacement(creep){
   }
 }
 
-function processRunnerArrival(creep){
-  if(creep.memory.role == 'runner'){
-    lca(creep, 'processRunnerArrival code has not yet been written.');
-  } else {
-    return ERR_INVALID_ARGS;
-  }
-}
-
 function processSecretMission(creep){
   switch(creep.room.name){
   case 'W13N17':

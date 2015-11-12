@@ -36,7 +36,8 @@ function displayReports(){
 
 function creepCountReport(room, guards, warriors, medics,
                           harvesters, hoarders, sweepers, transporters,
-                          upgraders, builders, explorers, unknowns, max){
+                          upgraders, builders, explorers, runners, unknowns,
+                          max){
 
   var report = '';
 
@@ -70,6 +71,10 @@ function creepCountReport(room, guards, warriors, medics,
   if(max.medics > 0 || medics > 0){
     report +=   medics + ' of ' + max.medics + ' medics, ';
   }
+  if(max.runners > 0 || runners > 0){
+    report += runners + ' of ' + max.runners + ' runners, ';
+  }
+
   report += unknowns + ' unknown creeps.';
 
   log(report,room.name);

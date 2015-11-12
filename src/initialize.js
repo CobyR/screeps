@@ -10,7 +10,8 @@ function initializeRoom(room){
       warrior: 0,
       medic: 0,
       builder: 0,
-      explorer: 0
+      explorer: 0,
+      runners: 0
     };
   }
   if(!room.memory.max){
@@ -24,7 +25,8 @@ function initializeRoom(room){
       warriors: 0,
       medics: 0,
       builders: 0,
-      explorers: 0
+      explorers: 0,
+      runners: 0
     };
   }
 
