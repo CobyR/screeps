@@ -62,7 +62,8 @@ function initializeSettings(){
       explorerDestination: '',
       explorerDestinationMode: '',
       runnerFromRoom: '',
-      runnerToRoom: ''
+      runnerToRoom: '',
+      structureReports: false
     };
   }
 }

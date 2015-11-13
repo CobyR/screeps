@@ -3,16 +3,15 @@ function displayReports(){
     storageReport(room);
     //console.log(' ');
     //log('Energy ' + nwc(room.energyAvailable) + ' of ' + nwc(room.energyCapacityAvailable) + ' totalEnergy calculated: ' + nwc(totalEnergy(room)), 'Energy Report');
-  var rptController = room.controller;
+    var rptController = room.controller;
 
-  if(structureReports()){
-    console.log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal));
-    structureReport(p_room, STRUCTURE_RAMPART);
-    structureReport(p_room, STRUCTURE_ROAD);
-    structureReport(p_room, STRUCTURE_WALL);
-  }
-
-            });
+    if(structureReports()){
+      log('Room Control Report - Level: ' + rptController.level + ' Progress: ' + nwc(rptController.progress) + '/' + nwc(rptController.progressTotal), room.name);
+      structureReport(room, STRUCTURE_RAMPART);
+      structureReport(room, STRUCTURE_ROAD);
+      structureReport(room, STRUCTURE_WALL);
+    }
+  });
 
 
   log('Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.','Global Control Report');

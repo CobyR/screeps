@@ -23,7 +23,6 @@ function processHarvesters(creeps){
       var creep = Game.getObjectById(creeps[id]);
       index ++;
 
-      // lca(creep, creep.room.name + ' vs ' + p_room.name, true );
       sources = creep.room.find(FIND_SOURCES);
 
       if(sources.length > 1){
