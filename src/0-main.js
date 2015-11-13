@@ -35,6 +35,15 @@ module.exports.loop = function () {
   log('=============================================================', 'Start Tick');
   log('===== ' + Game.time + '|' + Game.cpuLimit + ' ===== ', 'Start Tick');
 
+  _.forEach(Game.rooms, function (room){
+    if(room.name == Memory.settings.runnerFromRoom){
+      runnerFromRoom = room;
+    }
+    if(room.name == Memory.settings.runnerToRoom){
+      runnerToRoom = room;
+    }
+  });
+
   spawnCreeps();
 
   doWork();

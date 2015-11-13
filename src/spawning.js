@@ -56,13 +56,16 @@ function stayAlive(spawn, room) {
 
   for(var name in Game.creeps) {
     var creep = Game.creeps[name];
-    if(creep.spawning){
-      log(creep.name +  ' is still spawning.','spawn');
-      continue;
-    }
 
     if(creep.room.name == room.name){
       totalCreeps ++;
+
+      if(creep.spawning){
+        log(creep.name +  ' is still spawning.', room.name + ' spawn');
+        continue;
+      }
+
+
       switch(creep.memory.role){
       case 'harvester':
         harvesters ++;
@@ -142,10 +145,11 @@ function stayAlive(spawn, room) {
     spawnExplorer(spawn, room, explorers, maximums.explorers);
     break;
   case(runners < maximums.runners):
-    if(Game.time % 100 === 0){
+    log('runnerFromRoom.storage.energy ' + runnerFromRoom.storage.store.energy);
+    if(Game.time % 10 === 0 && runnerFromRoom.storage.store.energy > 350000){
       spawnRunner(spawn, room, runners, maximums.runners);
-      break;
     }
+    break;
   default:
     log('No spawning happening this tick.', room.name);
   }

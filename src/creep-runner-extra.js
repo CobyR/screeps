@@ -51,7 +51,7 @@ function runnerPutEnergy(creep){
     creep.moveTo(runnerToRoom.storage);
     pickupEnergy(creep);
     lca(creep, 'using simplified move to storage in other room.');
-  };
+  }
 }
 
 function processRunnerArrival(creep){
