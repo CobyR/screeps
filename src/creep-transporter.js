@@ -44,10 +44,10 @@ var TRANSPORTER = {
      ]
 }
 
-function processTransporters(transporters, hoarders){
+function processTransporters(transporters, hoarders, room){
 
   if(transporters.length > 0){
-    log('------------ ' + transporters.length ,'Transporters');
+    log('------------ ' + transporters.length ,'Transporters', room.name);
 
     var i = 0;
 

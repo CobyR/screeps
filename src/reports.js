@@ -76,5 +76,5 @@ function creepCountReport(room, guards, warriors, medics,
 
   report += unknowns + ' unknown creeps.';
 
-  log(report,room.name);
+  log(report,room.name, room.name);
 }

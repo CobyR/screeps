@@ -23,13 +23,13 @@ var EXPLORER = {
 
 var explorerDestination = Memory.settings.explorerRoomDestination;
 
-function processExplorers(explorers) {
+function processExplorers(explorers, room) {
   if(!Memory.settings.explorerRoomDestination){
     Memory.settings.explorerRoomDestination = '';
   }
 
   if(explorers.length > 0) {
-    log('[Explorers] ------------------ ' + explorers.length,'creep');
+    log('[Explorers] ------------------ ' + explorers.length,'creep', room.name);
     var poss = [];
     var creep = null;
 

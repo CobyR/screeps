@@ -81,7 +81,7 @@ function modeRoom(creep){
     lca(creep,'is in room mode, but has no roomDestination');
   } else {
     lca(creep, 'is in room mode in room: ' + creep.pos.roomName + ' heading to ' + creep.memory.roomDestination + '.');
-    if(creep.carryCapacity > 0 && creep.carry.energy != creep.carryCapacity){
+    if(creep.carryCapacity > 0 && creep.carry.energy != creep.carryCapacity && creep.room.storage){
       creep.moveTo(creep.room.storage);
       creep.room.storage.transferEnergy(creep);
     }else {

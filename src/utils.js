@@ -513,3 +513,7 @@ function maintainLinks(room){
   }
 
 }
+
+function defendSelf(creep){
+
+}

@@ -15,11 +15,11 @@ var UPGRADER = {
      ]
 }
 
-function processUpgraders(creeps){
+function processUpgraders(creeps, room){
   var index = 0;
 
     if(creeps.length > 0){
-      log('------------------- ' + creeps.length,'Upgraders');
+      log('------------------- ' + creeps.length,'Upgraders', room.name);
 
       var sources = null;
       var source = null;

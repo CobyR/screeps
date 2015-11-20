@@ -30,7 +30,7 @@ var SWEEPER = {
 
 function processSweepers(sweepers, room){
   if(sweepers.length > 0) {
-    log('----------------- ' + sweepers.length,'Sweepers');
+    log('----------------- ' + sweepers.length,'Sweepers', room.name);
 
     for(var id in sweepers) {
       var creep = Game.getObjectById(sweepers[id]);
