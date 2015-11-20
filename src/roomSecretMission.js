@@ -56,7 +56,7 @@ function processSecretMission(creep){
       lca(creep, 'there is no secret mission defined for ' + creep.memory.role);
     }
     break;
-  case 'W4N11':
+  case 'W3N11':
     switch(creep.memory.role){
     case 'explorer':
       creep.memory.mode = 'controller';

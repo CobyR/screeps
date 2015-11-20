@@ -2,6 +2,8 @@ function overrideMaximums(room, maximums){
 // Let's start with the basics
   var sources = room.find(FIND_SOURCES);
 
+  var fromRoom = Game.rooms[Memory.settings.runnerFromRoom];
+
   // ROOM CONTROLLER LEVEL 1
   if(room.controller && room.controller.level == 1){
     log('Room Controller is at level: ' + room.controller.level);
@@ -12,6 +14,7 @@ function overrideMaximums(room, maximums){
     }
 
   }
+
   if(maximums.hoarders < sources.length){
     maximums.hoarders = sources.length;
   }
@@ -23,6 +26,12 @@ function overrideMaximums(room, maximums){
   }
   if(maximums.builders <= 0){
     maximums.builders = 1;
+  }
+
+  if(fromRoom.storage.store.energy > 500000 && room.name == Memory.settings.runnerToRoom){
+    maximums.runners = 1;
+  } else {
+    maximums.runners = 0;
   }
 
   if(room.storage && room.storage.store.energy < 35000){
