@@ -18,13 +18,9 @@ function doWork(){
 
     maintainLinks(room);
 
-    ALLOW_SPAWN_USE = room.find(FIND_FLAGS,
-      { filter: { name: 'USE_SPAWN',
-      color: COLOR_WHITE}}).length;
+    ALLOW_SPAWN_USE = room.memory.useSpawn;
 
-    USE_DROPS = room.find(FIND_FLAGS,
-      { filter: {name: 'USE_DROPS',
-      color: COLOR_WHITE}}).length;
+    USE_DROPS = room.memory.useDrops;
 
     _.forEach(Game.creeps, function(creep) {
 
