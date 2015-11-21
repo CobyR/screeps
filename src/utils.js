@@ -28,6 +28,8 @@ function findEnergy(creep,source){
     }
   } else if(spawn) {
     var nearestEnergy = findNearestEnergy(creep);
+    var nearestDrop = findNearestDroppedEnergy(creep);
+
     if(nearestEnergy){
       lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
       creep.moveTo(nearestEnergy);
@@ -36,6 +38,10 @@ function findEnergy(creep,source){
       } else{
         nearestEnergy.transferEnergy(creep);
       }
+    } else if(nearestDrop){
+      lca(creep, 'is getting energy from dropped energy at ' + nearestDrop.pos.x + ',' + nearestDrop.pos.y + '.');
+      creep.moveTo(nearestDrop);
+      creep.pickup(nearestDrop);
     } else if(source) {
       lca(creep, 'is gathering energy from a source.');
       creep.moveTo(source);
