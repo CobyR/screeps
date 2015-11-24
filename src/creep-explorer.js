@@ -141,7 +141,10 @@ function explore(creep) {
   case 'reserve':
     modeReserve(creep);
     break;
+  case 'follow':
+    modeFollow(creep);
+    break;
   default:
-    //console.log(creep.name + ' is in ' + creep.memory.mode + ' mode (default?).');
+    console.log(creep.name + ' is in ' + creep.memory.mode + ' mode (default?).');
   }
 }

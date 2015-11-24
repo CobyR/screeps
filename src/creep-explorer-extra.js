@@ -35,6 +35,18 @@ function modeBuild(creep){
   }
 }
 
+function modeFollow(creep){
+  console.log('modeFollow for explorer.');
+  if(creep.memory.followCreep){
+    var target = Game.getObjectById(creep.memory.followCreep.id);
+
+    creep.moveTo(target);
+    lca(creep, 'following ' + target.name + ' at ' + target.pos.x + ',' + target.pos.y + '.');
+  } else {
+    lca(creep, 'is in follow mode, but you have not specified followCreep.');
+  }
+}
+
 function modePillage(creep){
   var target = null;
   // lca(creep, 'pillageing in ' + creep.room.name + '.',true);

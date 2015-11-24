@@ -25,6 +25,12 @@ function overrideMaximums(room, maximums){
     maximums.builders = 1;
   }
 
+  if(fromRoom && fromRoom.storage.store.energy > 500000 && room.name == Memory.settings.runnerToRoom){
+    maximums.runners = 1;
+  } else {
+    maximums.runners = 0;
+  }
+
   if(room.storage && room.storage.store.energy < 35000){
     maximums.buidlers = 0;
     maximums.upgraders = 1;

@@ -79,6 +79,14 @@ function processSecretMission(creep){
       break;
     }
     break;
+  case 'W6N8':
+    switch(creep.memory.role){
+    case 'explorer':
+      creep.memory.mode = 'room';
+      creep.memory.roomDestination = 'W6N9';
+      break;
+    }
+    break;
   case 'W5N11':
     switch(creep.memory.role){
     case 'explorer':
