@@ -28,7 +28,11 @@ function overrideMaximums(room, maximums){
     maximums.builders = 1;
   }
 
+<<<<<<< Updated upstream
   if(fromRoom && fromRoom.storage && fromRoom.storage.store.energy > 500000 && room.name == Memory.settings.runnerToRoom){
+=======
+  if(fromRoom && fromRoom.storage.store.energy > 500000 && room.name == Memory.settings.runnerToRoom){
+>>>>>>> Stashed changes
     maximums.runners = 1;
   } else {
     maximums.runners = 0;
