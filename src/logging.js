@@ -1,22 +1,25 @@
-function log(message, classification){
+function log(message, classification, roomName){
   if(!Memory.settings.log){
     return OK;
   }
+
   var reportFor = Memory.settings.reportFor;
 
-  var creepReport = (reportFor.indexOf('global') > -1 );
+  if(!roomName || reportFor == roomName || reportFor == 'all'){
+    var creepReport = (reportFor.indexOf('global') > -1 );
 
-  switch(classification){
-  case 'creep':
-    if(creepReport){
-      console.log('[creep] ' + message);
+    switch(classification){
+    case 'creep':
+      if(creepReport){
+        console.log('[creep] ' + message);
+      }
+      break;
+    default:
+      if(classification === 'undefined'){
+        classification = '';
+      }
+      console.log('[' + classification + '] ' + message);
     }
-    break;
-  default:
-    if(classification === 'undefined'){
-      classification = '';
-    }
-    console.log('[' + classification + '] ' + message);
   }
 }
 

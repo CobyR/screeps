@@ -25,11 +25,11 @@ var HOARDER = {
       MOVE, WORK, WORK]
 }
 
-function processHoarders(hoarders) {
+function processHoarders(hoarders, room) {
   var HOARD_REMOTE = false;
 
   if(hoarders.length > 0){
-    log('-------------- ' + hoarders.length,'Hoarders');
+    log('-------------- ' + hoarders.length,'Hoarders', room.name);
     var i = 0;
     for(var id in hoarders) {
       var creep = Game.getObjectById(hoarders[id]);

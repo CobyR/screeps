@@ -4,14 +4,22 @@ var UPGRADER = {
   3: [MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK],
   4: [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK],
   5: [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, WORK],
-  6: [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK]
+  6: [MOVE, MOVE, MOVE, MOVE,
+      MOVE, MOVE, MOVE, MOVE,
+      MOVE,
+      CARRY, CARRY, CARRY,
+      CARRY, CARRY, CARRY,
+      WORK, WORK, WORK, WORK,
+      WORK, WORK, WORK, WORK,
+      WORK, WORK, WORK, WORK
+     ]
 }
 
-function processUpgraders(creeps){
+function processUpgraders(creeps, room){
   var index = 0;
 
     if(creeps.length > 0){
-      log('------------------- ' + creeps.length,'Upgraders');
+      log('------------------- ' + creeps.length,'Upgraders', room.name);
 
       var sources = null;
       var source = null;
