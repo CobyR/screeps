@@ -6,8 +6,9 @@ function findEnergy(creep,source){
     source = findNearestSource(creep);
   }
 
+  var nearestDrop;
   if(creep.room.storage  && creep.room.memory.preferStorage){
-    var nearestDrop = findNearestDroppedEnergy(creep);
+    nearestDrop = findNearestDroppedEnergy(creep);
     var dropDistance = creep.pos.getRangeTo(nearestDrop);
     var storageDistance = creep.pos.getRangeTo(creep.room.storage);
     lca(creep, 'storageDistance is: ' + storageDistance +
@@ -28,7 +29,7 @@ function findEnergy(creep,source){
     }
   } else if(spawn) {
     var nearestEnergy = findNearestEnergy(creep);
-    var nearestDrop = findNearestDroppedEnergy(creep);
+    nearestDrop = findNearestDroppedEnergy(creep);
 
     if(nearestEnergy){
       lca(creep, 'is getting energy from a ' + nearestEnergy.structureType + '.');
