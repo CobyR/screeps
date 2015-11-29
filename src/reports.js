@@ -16,21 +16,66 @@ function displayReports(){
 
   log('Level: ' + Game.gcl.level + ' - ' + nwc(Game.gcl.progress) + ' of ' + nwc(Game.gcl.progressTotal) + '.','Global Control Report');
 
-  var endCpu = Game.getUsedCpu();
-
-  if(Memory.cpuUsage){
-    Memory.cpuUsage.push(endCpu);
-    while(Memory.cpuUsage.length > 100){
-      var shifted = Memory.cpuUsage.shift();
-      // log('Discarding ' + shifted, 'debug');
+  // If the CPU Usage logging is not defined, populate it with the first sample
+  var usedCpu = [];
+  if( Memory.cpuUsage === undefined || Memory.cpuUsage.subSum === undefined || Memory.cpuUsage.subSum === null ) {
+    usedCpu = [ Game.getUsedCpu(), (new Date()).getTime() ];
+    Memory.cpuUsage = {
+      subSum: usedCpu[0],
+      subSamples: [ usedCpu ],
+      samples: [], // 10 minute samples
+      average: 0,
+      tickDuration: 3.0, // Aproximate value taken from field measurement
+      lastSuperSample: 0,
+      lastMegaSample: 0
     }
-  } else{
-    Memory.cpuUsage = [];
+  } else {
+    var ticksFor5min = Math.round( 300 / Memory.cpuUsage.tickDuration );
+
+    // Sum the CPU Usage
+    usedCpu = [ Game.getUsedCpu(), (new Date()).getTime() ];
+    Memory.cpuUsage.subSum += usedCpu[0];
+    Memory.cpuUsage.subSamples.push( usedCpu );
+
+    // Clear entries older than 5 minutes
+    while ( Memory.cpuUsage.subSamples.length > ticksFor5min ) {
+      Memory.cpuUsage.subSum -= Memory.cpuUsage.subSamples.shift()[0];
+    }
+
+    // Improve the average tick duration
+    Memory.cpuUsage.tickDuration = (new Date()).getTime() - Memory.cpuUsage.subSamples[0][1];
+    Memory.cpuUsage.tickDuration /= Memory.cpuUsage.subSamples.length * 1000;
+
+    // Log samples based on the average for every 5 minute subsamping intervals
+    if( Memory.cpuUsage.lastSuperSample + ticksFor5min <= Game.time ) {
+      Memory.cpuUsage.lastSuperSample = Game.time;
+
+      // Calculate new average
+      Memory.cpuUsage.average *= Memory.cpuUsage.samples.length;
+      var sample = Memory.cpuUsage.subSum / Memory.cpuUsage.subSamples.length;
+      Memory.cpuUsage.average += sample;
+      Memory.cpuUsage.samples.push( sample );
+
+      // Remove old samples
+      while ( Memory.cpuUsage.samples.length > 72 ) { // 6 hours
+        Memory.cpuUsage.average -= Memory.cpuUsage.samples.shift();
+      }
+
+      Memory.cpuUsage.average /= Memory.cpuUsage.samples.length;
+
+      // Reset subsamping
+      usedCpu = [ Game.getUsedCpu(), (new Date()).getTime() ];
+      Memory.cpuUsage.subSum = usedCpu[0];
+      Memory.cpuUsage.subSamples = [ usedCpu ];
+
+      // Every 6 hours email the user with the average CPU Usage
+      var time = (new Date()).getTime();
+      if( Memory.cpuUsage.lastMegaSample + 6 * 3600 * 1000 <= time ) {
+        Memory.cpuUsage.lastMegaSample = time;
+        Game.notify('Average CPU Usage for the last 6h as of ' + new Date() + ' was ' + (Memory.cpuUsage.average).toFixed(2) + 'ms. Game speed at the moment is: ' + (1 / Memory.cpuUsage.tickDuration).toFixed(2) + ' ticks/s.');
+      }
+    }
   }
-  // log(Memory.cpuUsage.length,'debug');
-  console.log(' ');
-  log('all scripts completed ' + nwc(endCpu.toPrecision(4)) + ' of ' + Game.cpuLimit + ', average execution time for last ' + Memory.cpuUsage.length + ' ticks is ' + average(Memory.cpuUsage).toPrecision(4) + '.','End Tick');
-  Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),60);
 }
 
 function creepCountReport(room, guards, warriors, medics,
