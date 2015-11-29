@@ -22,12 +22,12 @@ function modeBuild(creep){
 
       if(site){
         lca(creep, 'building site ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
-        creep.moveTo(site);
-        creep.build(site);
+        if( creep.build(site) == ERR_NOT_IN_RANGE )
+          creep.moveTo(site);
       } else {
         lca(creep, 'upgrading controller');
-        creep.moveTo(creep.room.controller);
-        creep.upgradeController(creep.room.controller);
+        if( creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE )
+          creep.moveTo(creep.room.controller);
       }
       break;
     }
