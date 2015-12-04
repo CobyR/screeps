@@ -5,11 +5,16 @@ function modeBuild(creep){
   switch(creep.memory.state){
   case 'fill':
     if(creep.carry.energy < creep.carryCapacity){
-      var source = findNearestSource(creep);
-      lca(creep, 'mining energy.');
-      creep.moveTo(source);
-      creep.pickup(findNearestDroppedEnergy(creep,2));
-      creep.harvest(source);
+      // lca(creep, 'mining energy.');
+      var energy = findNearestDroppedEnergy(creep);
+      if( energy ) {
+        if( creep.pickup(energy) == ERR_NOT_IN_RANGE )
+          creep.moveTo(energy);
+      } else {
+        var source = findNearestSource(creep);
+        if( creep.harvest(source) == ERR_NOT_IN_RANGE )
+          creep.moveTo(source);
+      }
     } else {
       creep.memory.state = 'build';
     }
@@ -22,12 +27,12 @@ function modeBuild(creep){
 
       if(site){
         lca(creep, 'building site ' + site.structureType + ' at ' + site.pos.x + ',' + site.pos.y + '.');
-        creep.moveTo(site);
-        creep.build(site);
+        if( creep.build(site) == ERR_NOT_IN_RANGE )
+          creep.moveTo(site);
       } else {
         lca(creep, 'upgrading controller');
-        creep.moveTo(creep.room.controller);
-        creep.upgradeController(creep.room.controller);
+        if( creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE )
+          creep.moveTo(creep.room.controller);
       }
       break;
     }

@@ -97,8 +97,8 @@ function buildThings(creep, builder_index) {
     }
     if(road){
       if(currentRoad  && currentRoad.hits < currentRoad.hitsMax){
-        creep.moveTo(currentRoad);
-        creep.repair(currentRoad);
+        if( creep.repair(currentRoad) == ERR_NOT_IN_RANGE )
+          creep.moveTo(currentRoad);
         lca(creep, 'repairing road at ' + currentRoad.pos.x +
             ',' + currentRoad.pos.y + ' ' +
             currentRoad.hits + ' of ' + currentRoad.hitsMax + '.');
@@ -154,9 +154,10 @@ function buildThings(creep, builder_index) {
     if(site){
       lca(creep, 'found a ' + site.structureType +
         ' to construct at ' + site.pos.x + ',' + site.pos.y + '.');
-      creep.moveTo(site);
-      pickupEnergy(creep);
-      creep.build(site);
+      if( pickupEnergy(creep) == ERR_NOT_IN_RANGE )
+        creep.moveTo(site);
+      if( creep.build(site) == ERR_NOT_IN_RANGE )
+        creep.moveTo(site);
       creep.memory.currentTarget = site;
     } else {
       /* This gets hit when there are no construction sites. */
@@ -270,12 +271,9 @@ function fixPrioritizedStructure(creep) {
     }
     // Take Action
     // Move
-    var results = creep.moveTo(t);
-    if(results != OK) {
-      // lca(creep, 'call to MoveTo returned: ' + displayErr(results));
-    }
-    // attempt repair target
-    results = creep.repair(t);
+    var results;
+    if( (results = creep.repair(t)) == ERR_NOT_IN_RANGE )
+      creep.moveTo(t);
     if(results != OK && results != ERR_NOT_IN_RANGE) {
       lca(creep, 'call to repair returned: ' + displayErr(results));
     }
