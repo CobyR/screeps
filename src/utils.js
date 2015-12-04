@@ -296,6 +296,7 @@ function findNearestEnergyNeed(creep, ignoreStorage){
   }
 
   _.forEach(links, function(link){
+    if( link.id == creep.room.memory.toLink.id ) return;
     distance = creep.pos.getRangeTo(link);
 
     if(distance <= shortestDistance){
