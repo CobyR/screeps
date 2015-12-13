@@ -32,7 +32,7 @@ function modeBuild(creep){
       break;
     }
     break;
-  case 'repair':
+/*  case 'repair':
     if(creep.carry.energy === 0){
       creep.memory.state = 'fill';
       creep.memory.previousState = 'repair';
@@ -43,6 +43,7 @@ function modeBuild(creep){
       creep.moveTo(target);
     }
     break;
+*/
   }
 }
 
