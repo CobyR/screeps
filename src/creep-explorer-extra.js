@@ -32,6 +32,17 @@ function modeBuild(creep){
       break;
     }
     break;
+  case 'repair':
+    if(creep.carry.energy === 0){
+      creep.memory.state = 'fill';
+      creep.memory.previousState = 'repair';
+    } else {
+      var target = findMostUrgentRepair(creep);
+      lca(creep, 'repairing ' + target.structureType + ' @ ' + target.pos.x + ',' + target.pos.y + '.');
+
+      creep.moveTo(target);
+    }
+    break;
   }
 }
 

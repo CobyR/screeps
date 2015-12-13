@@ -5,7 +5,7 @@ var RECRUIT_TIME = 75;
     console.log('recruit time.');
     if(creep.room.controller && creep.room.controller.level < 4){
       console.log('my room is insufficient');
-      // request upgrader from another room
+      // request from another room
       lca(creep, 'it is time to request a replacement.');
       _.forEach(Game.rooms, function (room) {
                   console.log('considering ' + room.name);
