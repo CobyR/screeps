@@ -30,7 +30,6 @@ function displayReports(){
   // log(Memory.cpuUsage.length,'debug');
   console.log(' ');
   log('all scripts completed ' + nwc(endCpu.toPrecision(4)) + ' of ' + Game.cpuLimit + ', average execution time for last ' + Memory.cpuUsage.length + ' ticks is ' + average(Memory.cpuUsage).toPrecision(4) + '.','End Tick');
-  Game.notify(Game.time + ' tick completed in ' + nwc(endCpu),60);
 }
 
 function creepCountReport(room, guards, warriors, medics,

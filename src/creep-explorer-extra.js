@@ -71,29 +71,17 @@ function modePillage(creep){
     creep.moveTo(enemy);
     creep.attack(enemy);
   } else {
-    var hostileTargets = creep.room.find(FIND_HOSTILE_STRUCTURES);
-    // lca(creep, 'hostile targets present: ' + hostileTargets.length,true);
-    if(hostileTargets && hostileTargets.length > 1){
-      lca(creep, ' pillaging ' + hostileTargets.length + ' hostile structures in ' + creep.room.name + '.');
-      for(var x in hostileTargets) {
-        target = hostileTargets[x];
-        if(target.structureType != 'controller') {
-          creep.moveTo(target);
-          creep.attack(target);
-          break;
-        }
-      }
-    } else {
-      var targets = creep.room.find(FIND_STRUCTURES);
+    var hostileTarget = findNearestEnemyTarget(creep);
 
-      for(var y in targets) {
-        target = targets[y];
-        if(target.structureType != 'controller') {
-          lca(creep, ' pillaging a ' + target.structureType + ' at ' + target.pos.x + ',' + target.pos.y + ' of '+ targets.length + ' standard structures in ' + creep.room.name + '.');
-          creep.moveTo(target);
-          creep.attack(target);
-          break;
-        }
+    // lca(creep, 'hostile targets present: ' + hostileTargets.length,true);
+    if(hostileTarget){
+      if(hostileTarget.structureType != 'controller') {
+        lca(creep, 'attacking: ' + hostileTarget.structureType + ' @ ' + hostileTarget.pos.x + ',' + hostileTarget.pos.y + ' it has ' + hostileTarget.hits + ' remaining.');
+        creep.moveTo(hostileTarget);
+        creep.attack(hostileTarget);
+      } else {
+        creep.moveTo(hostileTarget);
+        creep.claimController(hostileTarget);
       }
     }
   }

@@ -114,7 +114,27 @@ function findNearestEmergencyRepair(creep){
 
   return nearestEmergency;
 }
+function findNearestEnemyTarget(creep){
+  var shortestDistance = 50;
+  var distance = 0;
+  var closestTarget = null;
 
+  var targets = creep.room.find(FIND_HOSTILE_STRUCTURES);
+
+  if(targets && targets.length > 1){
+    _.forEach(targets, function(target){
+      distance = creep.pos.getRangeTo(target);
+
+      if(distance < shortestDistance){
+        shortestDistance = distance;
+        closestTarget = target;
+      }
+      });
+
+  }
+
+  return closestTarget;
+}
 function findNearestEnemy(creep, enemies){
   var shortestDistance = 50;
   var distance = 0;
@@ -262,6 +282,7 @@ function findNearestEnergyNeed(creep, ignoreStorage){
 
   var extensions = getExtensionsWithEnergyNeeds(creep);
   var links = getLinksWithEnergyNeeds(creep);
+  var towers = getTowersWithEnergyNeeds(creep);
 
   var storage = null;
   if(typeof creep.room.storage !== 'undefined'){
@@ -333,6 +354,22 @@ function getLinksWithEnergy(creep){
   return usefulLinks;
 }
 
+function getTowersWithEnergy(creep){
+  var links = creep.room.find(FIND_MY_STRUCTURES,
+                              {filter: { structureType: STRUCTURE_TOWER } });
+
+  var usefulLinks = [];
+  var link = null;
+
+  _.forEach(links, function(link){
+    if(link.energy >= creep.carryCapacity){
+      usefulLinks.push(link);
+    }
+  });
+
+  return usefulLinks;
+}
+
 function getExtensionsWithEnergy(creep) {
   var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
                                   structureType: STRUCTURE_EXTENSION
@@ -363,6 +400,22 @@ function getLinksWithEnergyNeeds(creep){
 
   return withNeeds;
 }
+
+function getTowersWithEnergyNeeds(creep){
+  var links = creep.room.find(FIND_MY_STRUCTURES,
+    {filter: { structureType: STRUCTURE_TOWER} } );
+
+  var withNeeds = [];
+
+  _.forEach(links, function(link){
+    if(link.energy < link.energyCapacity){
+      withNeeds.push(link);
+    }
+  });
+
+  return withNeeds;
+}
+
 
 function getExtensionsWithEnergyNeeds(creep){
   var extensions = creep.room.find(FIND_MY_STRUCTURES, {filter: {
