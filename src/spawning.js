@@ -191,7 +191,7 @@ function spawnCreep(spawn, room, current, max,
     }
 
     if(current < max) {
-      log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.');
+      log('Attempting to spawn a level ' + spawnLevel + ' ' + classification + '.',spawn.room.name);
       results = spawn.createCreep(BODY_PARTS[spawnLevel],
                   classification.charAt(0).toUpperCase() + spawnLevel +
                   '_' + room.memory.counter[classification],

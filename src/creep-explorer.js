@@ -106,14 +106,18 @@ function spawnExplorer(spawn, room, current, max){
       explorers ++;
     }
   });
-  if(explorers < Memory.settings.maxGlobalExplorers){
-    spawnCreep(spawn, room, current, max,
-             EXPLORER, 'explorer');
-  } else {
-    console.log('You have ' + Memory.settings.maxGlobalExplorers + ' global explorers, not spawning more at this time.');
+  if(Memory.settings.maxGlobalExplorers){
+    if(explorers < Memory.settings.maxGlobalExplorers){
+      spawnCreep(spawn, room, current, max,
+        EXPLORER, 'explorer');
+    } else {
+      console.log('You have ' + Memory.settings.maxGlobalExplorers + ' global explorers, not spawning more at this time.');
+    }
+   } else {
+     Memory.settings.maxGlobalExplorers = 2;
+   }
   }
 
-}
 
 function explore(creep) {
   var results = null;
